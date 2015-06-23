@@ -12,8 +12,8 @@ int main(int argc, char **argv) {
   VectorVector der;
   Point3D p = c.eval(0.5, 2, der);
   std::cout << p[0] << ", " << p[1] << std::endl;
-  std::cout << der[0][0] << ", " << der[0][1] << std::endl;
   std::cout << der[1][0] << ", " << der[1][1] << std::endl;
+  std::cout << der[2][0] << ", " << der[2][1] << std::endl;
   
   return 0;
 }

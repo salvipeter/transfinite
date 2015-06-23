@@ -25,6 +25,9 @@ public:
   Point3D eval(double u, size_t nr_der, VectorVector &der) const {
     const Vector<3, double> *bsp_der;
     Vector<3, double> p(c_.Eval(u, nr_der, bsp_der));
+    der.clear();
+    der.reserve(nr_der + 1);
+    der.push_back(Vector3D(p[0], p[1], p[2]));
     for (size_t i = 0; i < nr_der; ++i) {
       const Vector<3, double> &v = bsp_der[i];
       der.push_back(Vector3D(v[0], v[1], v[2]));

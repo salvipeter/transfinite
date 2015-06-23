@@ -9,6 +9,9 @@ if(CMAKE_COMPILER_IS_GNUCXX)
   set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 endif(CMAKE_COMPILER_IS_GNUCXX)
 
+set(USE_OWN_GEOMETRY_LIB OFF)
+
+add_subdirectory(geom)
 add_subdirectory(geometry)
 add_subdirectory(transfinite)
 add_subdirectory(test)
