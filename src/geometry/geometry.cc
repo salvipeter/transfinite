@@ -1,8 +1,9 @@
 #include <limits>
 
 #include "vector-impl.hh"
+#include "bspline-impl.hh"
 
-const double EPS_REAL = std::numeric_limits<double>::epsilon();
+//const double EPS_REAL = std::numeric_limits<double>::epsilon();
 
 Vector2D::Vector2D()
   : impl_(std::make_unique<Vector2DImpl>())
@@ -268,3 +269,43 @@ Vector3D::normalize()
   return *this;
 }
 
+BSCurve::BSCurve()
+  : impl_(std::make_unique<BSCurveImpl>())
+{
+}
+
+BSCurve::BSCurve(size_t degree, DoubleVector knots, PointVector cpts)
+  : impl_(std::make_unique<BSCurveImpl>(degree, knots, cpts))
+{
+}
+
+BSCurve::BSCurve(const BSCurve &v)
+  : impl_(std::make_unique<BSCurveImpl>(*v.impl_))
+{
+}
+
+BSCurve::BSCurve(BSCurve &&v) = default;
+
+BSCurve::~BSCurve() = default;
+
+BSCurve &
+BSCurve::operator=(BSCurve &&v) = default;
+
+BSCurve &
+BSCurve::operator=(const BSCurve &v)
+{
+  *impl_ = *v.impl_;
+  return *this;
+}
+
+Point3D
+BSCurve::eval(double u) const
+{
+  return impl_->eval(u);
+}
+
+Point3D
+BSCurve::eval(double u, size_t nr_der, VectorVector &der) const
+{
+  return impl_->eval(u, nr_der, der);
+}

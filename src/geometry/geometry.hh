@@ -1,6 +1,9 @@
 #pragma once
 
 #include <memory>
+#include <vector>
+
+using DoubleVector = std::vector<double>;
 
 class Vector2D {
 public:
@@ -85,9 +88,28 @@ private:
   std::unique_ptr<Vector3DImpl> impl_;
 };
 
+using VectorVector = std::vector<Vector3D>;
 using Point3D = Vector3D;
+using PointVector = std::vector<Point3D>;
 
-// class BSCurve {
-// public:
-//   BSplineCurve<Point3D> BSCurve;
-// };
+class BSCurve {
+public:
+  // Constructors & destructor
+  BSCurve();
+  BSCurve(size_t degree, DoubleVector knots, PointVector cpts);
+  BSCurve(const BSCurve &c);
+  BSCurve(BSCurve &&c);
+  ~BSCurve();
+
+  // Assignments
+  BSCurve &operator=(const BSCurve &c);
+  BSCurve &operator=(BSCurve &&v);
+
+  // Evaluation
+  Point3D eval(double u) const;
+  Point3D eval(double u, size_t nr_der, VectorVector &der) const;
+
+private:
+  class BSCurveImpl;
+  std::unique_ptr<BSCurveImpl> impl_;
+};

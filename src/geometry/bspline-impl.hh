@@ -1,0 +1,36 @@
+#pragma once
+
+#include "geometry.hh"
+
+#include "BSplineCurve.hh"
+
+class BSCurve::BSCurveImpl
+{
+public:
+  BSCurveImpl() {}
+  BSCurveImpl(size_t degree, DoubleVector knots, PointVector cpts)
+  {
+    BSplineCurve<Point<3, double>>::KnotVectorType bsp_knots;
+    BSplineCurve<Point<3, double>>::ControlVectorType bsp_cpts;
+    bsp_knots.insert(knots.begin(), knots.end());
+    for (const auto &cp : cpts) {
+      bsp_cpts.push_back(Point<3, double>(cp[0], cp[1], cp[2]));
+    }
+    c_ = BSplineCurve<Point<3, double>>(degree, bsp_knots, bsp_cpts);
+  }
+  Point3D eval(double u) const {
+    Vector<3, double> p(c_.Eval(u));
+    return Point3D(p[0], p[1], p[2]);
+  }
+  Point3D eval(double u, size_t nr_der, VectorVector &der) const {
+    const Vector<3, double> *bsp_der;
+    Vector<3, double> p(c_.Eval(u, nr_der, bsp_der));
+    for (size_t i = 0; i < nr_der; ++i) {
+      const Vector<3, double> &v = bsp_der[i];
+      der.push_back(Vector3D(v[0], v[1], v[2]));
+    }
+    return Point3D(p[0], p[1], p[2]);
+  }
+private:
+  BSplineCurve<Point<3, double>> c_;
+};

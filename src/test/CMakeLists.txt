@@ -1,4 +1,7 @@
 include_directories(../geometry)
 
 add_executable(test test.cc)
-target_link_libraries(test geometry)
+
+set(GEOM_LIB -L../geometry -lgeometry)
+
+target_link_libraries(test ${GEOM_LIB})
