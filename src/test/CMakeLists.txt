@@ -6,6 +6,8 @@ else()
   set(GEOM_LIB -L../geometry -lgeometry)
 endif()
 
+include_directories(../transfinite)
+
 add_executable(test test.cc)
 
-target_link_libraries(test ${GEOM_LIB})
+target_link_libraries(test ${GEOM_LIB} transfinite)

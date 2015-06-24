@@ -321,3 +321,10 @@ BSCurve::normalize()
 {
   impl_->normalize();
 }
+
+double
+BSCurve::arcLength(double from, double to) const
+{
+  return impl_->arcLength(from, to);
+}
+

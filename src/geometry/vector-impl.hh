@@ -17,7 +17,7 @@ public:
   const double &operator[](size_t i) const { return v_[i]; }
   Vector2DImpl operator-() const { return Vector2DImpl(-v_); }
   Vector2DImpl operator+(const Vector2DImpl &v) const { return Vector2DImpl(v_ + v.v_); }
-  Vector2DImpl operator-(const Vector2DImpl &v) const { return Vector2DImpl(v_ + v.v_); }
+  Vector2DImpl operator-(const Vector2DImpl &v) const { return Vector2DImpl(v_ - v.v_); }
   double operator*(const Vector2DImpl &v) const { return v_ * v.v_; }
   Vector2DImpl operator*(double x) const { return Vector2DImpl(v_ * x); }
   Vector2DImpl operator/(double x) const { return Vector2DImpl(v_ / x); }
@@ -42,7 +42,7 @@ public:
   const double &operator[](size_t i) const { return v_[i]; }
   Vector3DImpl operator-() const { return Vector3DImpl(-v_); }
   Vector3DImpl operator+(const Vector3DImpl &v) const { return Vector3DImpl(v_ + v.v_); }
-  Vector3DImpl operator-(const Vector3DImpl &v) const { return Vector3DImpl(v_ + v.v_); }
+  Vector3DImpl operator-(const Vector3DImpl &v) const { return Vector3DImpl(v_ - v.v_); }
   Vector3DImpl operator^(const Vector3DImpl &v) const { return Vector3DImpl(v_ ^ v.v_); }
   double operator*(const Vector3DImpl &v) const { return v_ * v.v_; }
   Vector3DImpl operator*(double x) const { return Vector3DImpl(v_ * x); }

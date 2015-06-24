@@ -4,7 +4,7 @@
 #include <memory>
 #include <vector>
 
-using DoubleVector = std::vector<double>;
+const double epsilon = 1.0e-8;
 
 class Vector2D {
 public:
@@ -38,8 +38,6 @@ public:
 private:
   std::array<double, 2> v_;
 };
-
-using Point2D = Vector2D;
 
 class Vector3D {
 public:
@@ -75,6 +73,8 @@ private:
   std::array<double, 3> v_;
 };
 
+using DoubleVector = std::vector<double>;
+using Point2D = Vector2D;
 using VectorVector = std::vector<Vector3D>;
 using Point3D = Vector3D;
 using PointVector = std::vector<Point3D>;
@@ -92,6 +92,9 @@ public:
   // Parameterization
   void reverse();
   void normalize();
+
+  // Other
+  double arcLength(double from, double to) const;
 
 private:
   size_t findSpan(double u) const;

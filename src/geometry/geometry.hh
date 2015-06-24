@@ -3,7 +3,7 @@
 #include <memory>
 #include <vector>
 
-using DoubleVector = std::vector<double>;
+const double epsilon = 1.0e-8;
 
 class Vector2D {
 public:
@@ -44,8 +44,6 @@ private:
   Vector2D(std::unique_ptr<Vector2DImpl> &&impl);
   std::unique_ptr<Vector2DImpl> impl_;
 };
-
-using Point2D = Vector2D;
 
 class Vector3D {
 public:
@@ -88,6 +86,8 @@ private:
   std::unique_ptr<Vector3DImpl> impl_;
 };
 
+using DoubleVector = std::vector<double>;
+using Point2D = Vector2D;
 using VectorVector = std::vector<Vector3D>;
 using Point3D = Vector3D;
 using PointVector = std::vector<Point3D>;
@@ -112,6 +112,9 @@ public:
   // Parameterization
   void reverse();
   void normalize();
+
+  // Other
+  double arcLength(double from, double to) const;
 
 private:
   class BSCurveImpl;

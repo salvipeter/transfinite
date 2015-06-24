@@ -124,3 +124,26 @@ BSCurve::normalize() {
     knots_[i] = (knots_[i] - low) / len;
   }
 }
+
+double
+BSCurve::arcLength(double from, double to) const {
+  if (from >= to)
+    return 0.0;
+  double next = std::min(to, knots_[findSpan(from) + 1]);
+
+  // Estimate each knot interval using Gaussian quadratures
+  const static double gauss[] = {-0.861136312, 0.347854845,
+                                 -0.339981044, 0.652145155,
+                                 0.339981044, 0.652145155,
+                                 0.861136312, 0.347854845};
+
+  double sum = 0.0;
+  for (size_t i = 0; i < 8; i += 2) {
+    VectorVector der;
+    double u = ((next - from) * gauss[i] + from + next) * 0.5;
+    eval(u, 1, der);
+    sum += der[1].norm() * gauss[i+1] * (next - from) * 0.5;
+  }
+
+  return sum + arcLength(next, to);
+}

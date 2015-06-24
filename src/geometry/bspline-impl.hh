@@ -40,6 +40,9 @@ public:
   void normalize() {
     c_.Reparametrize(0.0, 1.0);
   }
+  double arcLength(double from, double to) const {
+    return c_.EstimateArcLength(from, to);
+  }
 private:
   BSplineCurve<Point<3, double>> c_;
 };
