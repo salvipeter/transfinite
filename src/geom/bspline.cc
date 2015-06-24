@@ -98,3 +98,29 @@ BSCurve::eval(double u, size_t nr_der, VectorVector &der) const {
     der.push_back(Vector3D(0.0, 0.0, 0.0));
   return der[0];
 }
+
+void
+BSCurve::reverse() {
+  size_t k = knots_.size();
+  DoubleVector new_knots;
+  new_knots.reserve(k);
+
+  double curr = knots_.front();
+  for (size_t i = 1, j = k - 1; i < k; ++i, --j) {
+    new_knots.push_back(curr);
+    curr += knots_[j] - knots_[j-1];
+  }
+  new_knots.push_back(curr);
+
+  knots_ = new_knots;
+  std::reverse(cp_.begin(), cp_.end());
+}
+
+void
+BSCurve::normalize() {
+  size_t k = knots_.size();
+  double low = knots_.front(), high = knots_.back(), len = high - low;
+  for (size_t i = 0; i < k; ++i) {
+    knots_[i] = (knots_[i] - low) / len;
+  }
+}

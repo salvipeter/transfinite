@@ -109,6 +109,10 @@ public:
   Point3D eval(double u) const;
   Point3D eval(double u, size_t nr_der, VectorVector &der) const;
 
+  // Parameterization
+  void reverse();
+  void normalize();
+
 private:
   class BSCurveImpl;
   std::unique_ptr<BSCurveImpl> impl_;

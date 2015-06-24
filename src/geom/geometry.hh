@@ -8,7 +8,7 @@ using DoubleVector = std::vector<double>;
 
 class Vector2D {
 public:
-  // Constructors & destructor
+  // Constructors
   Vector2D();
   Vector2D(double x, double y);
 
@@ -43,7 +43,7 @@ using Point2D = Vector2D;
 
 class Vector3D {
 public:
-  // Constructors & destructor
+  // Constructors
   Vector3D();
   Vector3D(double x, double y, double z);
 
@@ -81,13 +81,17 @@ using PointVector = std::vector<Point3D>;
 
 class BSCurve {
 public:
-  // Constructors & destructor
+  // Constructors
   BSCurve();
   BSCurve(size_t degree, DoubleVector knots, PointVector cpts);
 
   // Evaluation
   Point3D eval(double u) const;
   Point3D eval(double u, size_t nr_der, VectorVector &der) const;
+
+  // Parameterization
+  void reverse();
+  void normalize();
 
 private:
   size_t findSpan(double u) const;

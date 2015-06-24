@@ -34,6 +34,12 @@ public:
     }
     return Point3D(p[0], p[1], p[2]);
   }
+  void reverse() {
+    c_.Reverse();
+  }
+  void normalize() {
+    c_.Reparametrize(0.0, 1.0);
+  }
 private:
   BSplineCurve<Point<3, double>> c_;
 };

@@ -309,3 +309,15 @@ BSCurve::eval(double u, size_t nr_der, VectorVector &der) const
 {
   return impl_->eval(u, nr_der, der);
 }
+
+void
+BSCurve::reverse()
+{
+  impl_->reverse();
+}
+
+void
+BSCurve::normalize()
+{
+  impl_->normalize();
+}
