@@ -60,8 +60,9 @@ Domain::toGlobal(size_t i, const Point2D &p) const {
 
 const Point2DVector &
 Domain::globalParameters(size_t resolution) const {
-  if(parameters_.empty()) {
-    parameters_.reserve(1 + n_ * resolution * (resolution + 1) / 2);
+  size_t size = 1 + n_ * resolution * (resolution + 1) / 2;
+  if(parameters_.size() != size) {
+    parameters_.reserve(size);
     parameters_.push_back(center_);
     for(size_t j = 1; j <= resolution; ++j) {
       double u = (double)j / (double)resolution;
