@@ -12,7 +12,7 @@ public:
   Vector2DImpl &operator+=(Vector2DImpl v) { v_ += v.v_; return *this; }
   Vector2DImpl &operator-=(Vector2DImpl v) { v_ -= v.v_; return *this; }
   Vector2DImpl &operator*=(double x) { v_ *= x; return *this; }
-  Vector2DImpl &operator/=(double x) { v_ *= x; return *this; }
+  Vector2DImpl &operator/=(double x) { v_ /= x; return *this; }
   double &operator[](size_t i) { return v_[i]; }
   const double &operator[](size_t i) const { return v_[i]; }
   Vector2DImpl operator-() const { return Vector2DImpl(-v_); }
@@ -37,7 +37,7 @@ public:
   Vector3DImpl &operator+=(Vector3DImpl v) { v_ += v.v_; return *this; }
   Vector3DImpl &operator-=(Vector3DImpl v) { v_ -= v.v_; return *this; }
   Vector3DImpl &operator*=(double x) { v_ *= x; return *this; }
-  Vector3DImpl &operator/=(double x) { v_ *= x; return *this; }
+  Vector3DImpl &operator/=(double x) { v_ /= x; return *this; }
   double &operator[](size_t i) { return v_[i]; }
   const double &operator[](size_t i) const { return v_[i]; }
   Vector3DImpl operator-() const { return Vector3DImpl(-v_); }

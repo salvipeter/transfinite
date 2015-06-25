@@ -1,8 +1,11 @@
+#include <algorithm>
 #include <fstream>
 #include <iomanip>
 #include <iostream>
 
 #include "rmf.hh"
+#include "domain-regular.hh"
+#include "domain-circular.hh"
 
 int main(int argc, char **argv) {
   Vector2D u(1, 3), v(4, 5);
@@ -48,6 +51,21 @@ int main(int argc, char **argv) {
     f2 << p[0] << ' ' << p[1] << ' ' << p[2] << std::endl;
   }
   f2.close();
+
+  // Domain test
+  const size_t mesh_res = 15;
+  DomainCircular d;
+  d.setSides({c,c,c2,c,c2});
+  const Point2DVector &params = d.globalParameters(mesh_res);
+  TriMesh mesh = d.meshTopology(mesh_res);
+  std::cout << "Mesh: topology assigned" << std::endl;
+  PointVector points;
+  std::transform(params.begin(), params.end(), std::back_inserter(points),
+                 [](const Point2D &p) { return Point3D(p[0], p[1], 1.0-p[0]*p[0]-p[1]*p[1]); });
+  mesh.setPoints(points);
+  std::cout << "Mesh: points assigned" << std::endl;
+  mesh.writeOBJ("/tmp/test.obj");
+  std::cout << "Mesh: OBJ file written" << std::endl;
 
   return 0;
 }

@@ -4,4 +4,4 @@ else()
   include_directories(../geometry)
 endif()
 
-add_library(transfinite rmf.cc)
+add_library(transfinite rmf.cc domain.cc domain-regular.cc domain-circular.cc)

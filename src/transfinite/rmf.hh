@@ -1,7 +1,5 @@
 #pragma once
 
-#include <array>
-
 #include "geometry.hh"
 
 class RMF

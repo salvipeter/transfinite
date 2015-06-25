@@ -2,6 +2,7 @@
 
 #include "vector-impl.hh"
 #include "bspline-impl.hh"
+#include "trimesh-impl.hh"
 
 //const double EPS_REAL = std::numeric_limits<double>::epsilon();
 
@@ -328,3 +329,51 @@ BSCurve::arcLength(double from, double to) const
   return impl_->arcLength(from, to);
 }
 
+TriMesh::TriMesh()
+  : impl_(std::make_unique<TriMeshImpl>())
+{
+}
+
+TriMesh::TriMesh(const TriMesh &v)
+  : impl_(std::make_unique<TriMeshImpl>(*v.impl_))
+{
+}
+
+TriMesh::TriMesh(TriMesh &&v) = default;
+
+TriMesh::~TriMesh() = default;
+
+TriMesh &
+TriMesh::operator=(TriMesh &&v) = default;
+
+TriMesh &
+TriMesh::operator=(const TriMesh &v)
+{
+  *impl_ = *v.impl_;
+  return *this;
+}
+
+void
+TriMesh::resizePoints(size_t n) {
+  impl_->resizePoints(n);
+}
+
+void
+TriMesh::setPoint(size_t i, const Point3D &p) {
+  impl_->setPoint(i, p);
+}
+
+void
+TriMesh::setPoints(const PointVector &pv) {
+  impl_->setPoints(pv);
+}
+
+void
+TriMesh::addTriangle(size_t a, size_t b, size_t c) {
+  impl_->addTriangle(a, b, c);
+}
+
+void
+TriMesh::writeOBJ(std::string filename) const {
+  impl_->writeOBJ(filename);
+}

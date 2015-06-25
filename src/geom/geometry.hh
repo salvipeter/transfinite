@@ -1,10 +1,24 @@
 #pragma once
 
 #include <array>
+#include <list>
 #include <memory>
 #include <vector>
 
 const double epsilon = 1.0e-8;
+
+class Vector2D;
+class Vector3D;
+class BSCurve;
+
+using Point2D = Vector2D;
+using Point3D = Vector3D;
+using DoubleVector = std::vector<double>;
+using Vector2DVector = std::vector<Vector2D>;
+using VectorVector = std::vector<Vector3D>;
+using Point2DVector = std::vector<Point2D>;
+using PointVector = std::vector<Point3D>;
+using CurveVector = std::vector<BSCurve>;
 
 class Vector2D {
 public:
@@ -73,12 +87,6 @@ private:
   std::array<double, 3> v_;
 };
 
-using DoubleVector = std::vector<double>;
-using Point2D = Vector2D;
-using VectorVector = std::vector<Vector3D>;
-using Point3D = Vector3D;
-using PointVector = std::vector<Point3D>;
-
 class BSCurve {
 public:
   // Constructors
@@ -106,4 +114,22 @@ private:
   size_t n_;
   DoubleVector knots_;
   PointVector cp_;
+};
+
+class TriMesh
+{
+public:
+  // Mesh building
+  void resizePoints(size_t n);
+  void setPoint(size_t i, const Point3D &p);
+  void setPoints(const PointVector &pv);
+  void addTriangle(size_t a, size_t b, size_t c);
+
+  // I/O
+  void writeOBJ(std::string filename) const;
+
+private:
+  using Triangle = std::array<size_t, 3>;
+  PointVector points_;
+  std::list<Triangle> triangles_;
 };

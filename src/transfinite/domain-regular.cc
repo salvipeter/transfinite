@@ -1,37 +1,25 @@
 #include "domain-regular.hh"
 
-namespace Transfinite
-{
+#include <cmath>
 
-  DomainRegular::
-  DomainRegular(Surface *surface) : Domain(surface), n(0)
-  {
-  }
+DomainRegular::~DomainRegular() {
+}
 
-  DomainRegular::
-  ~DomainRegular()
-  {
-  }
+void
+DomainRegular::setSides(const CurveVector &curves) {
+  size_t m = curves.size();
+  if(n_ == m)
+    return;
 
-  void DomainRegular::
-  setSides(CurveVector const &curves)
-  {
-    size_t const m = curves.size();
-    if(n == m)
-      return;
+  double alpha = 2.0 * M_PI / m;
+  vertices_.resize(m);
+  for(size_t i = 0; i < m; ++i)
+    vertices_[i] = Point2D(std::cos(alpha * i), std::sin(alpha * i));
 
-    double const alpha = 2.0 * M_PI / m;
-    vertices.resize(m);
-    for(size_t i = 0; i < m; ++i)
-      vertices[i] = Point2D(cos(alpha * i), sin(alpha * i));
+  invalidate();
+}
 
-    invalidate();
-  }
-
-  Point2D DomainRegular::
-  center() const
-  {
-    return Point2D(0.0, 0.0);
-  }
-
-} // Transfinite
+void
+DomainRegular::computeCenter() {
+  center_ = Point2D(0.0, 0.0);
+}

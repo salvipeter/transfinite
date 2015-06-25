@@ -6,35 +6,30 @@
 // - side i consists of vertices i-1 and i
 // - in the local coordinate system of side i, these vertices are (0,0) and (1,0)
 
-namespace Transfinite
+class Domain
 {
+public:
+  Domain();
+  virtual ~Domain();
+  virtual void setSides(const CurveVector &curves) = 0;
+  void invalidate();
+  const Point2DVector &globalParameters(size_t resolution) const;
+  TriMesh meshTopology(size_t resolution) const;
+  const Point2D &center() const;
+  const Point2DVector &verticesGlobal() const;
+  const Point2DVector &verticesLocal(size_t i) const; // in side i's local coordinate system
+  Point2D toLocal(size_t i, const Point2D &p) const;
+  Point2D toGlobal(size_t i, const Point2D &p) const;
 
-  class Surface;
+protected:
+  size_t next(size_t i) const { return (i + 1) % n_; }
+  size_t prev(size_t i) const { return (i + n_ - 1) % n_; }
+  virtual void computeCenter() = 0;
 
-  class Domain
-  {
-  public:
-    Domain(Surface *surface);
-    virtual ~Domain();
-    virtual void setSides(CurveVector const &curves) = 0;
-    void invalidate();
-    Point2DVector globalParameters(size_t resolution) const;
-    Mesh meshTopology(size_t resolution) const;
-    virtual Point2D center() const = 0;
-    Point2DVector const &verticesGlobal() const;
-    Point2DVector const &verticesLocal(size_t i) const; // in side i's local coordinate system
-    Point2D toLocal(size_t i, Point2D const &p) const;
-    Point2D toGlobal(size_t i, Point2D const &p) const;
-  protected:
-    size_t next(size_t i) const { return (i + 1) % n; }
-    size_t prev(size_t i) const { return (i + n - 1) % n; }
-
-    Surface *surface;
-    size_t n;
-    Point2DVector vertices;
-    std::vector<Vector2D> du, dv;
-    std::vector<Point2DVector> local_vertices;
-    mutable Point2DVector parameters; // cache
-  };
-
-} // Transfinite
+  size_t n_;
+  Point2D center_;
+  Point2DVector vertices_;
+  Vector2DVector du_, dv_;
+  std::vector<Point2DVector> local_vertices_;
+  mutable Point2DVector parameters_; // cache
+};

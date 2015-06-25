@@ -2,10 +2,10 @@
 
 #include "domain.hh"
 
-class DomainRegular : public Domain
+class DomainCircular : public Domain
 {
 public:
-  virtual ~DomainRegular();
+  virtual ~DomainCircular();
   virtual void setSides(const CurveVector &curves);
   virtual void computeCenter();
 };
