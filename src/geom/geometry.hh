@@ -116,8 +116,7 @@ private:
   PointVector cp_;
 };
 
-class TriMesh
-{
+class TriMesh {
 public:
   // Mesh building
   void resizePoints(size_t n);

@@ -2,24 +2,22 @@
 
 #include "geometry.hh"
 
-BSCurve::BSCurve() {}
+BSCurve::BSCurve() {
+}
 
 BSCurve::BSCurve(size_t degree, DoubleVector knots, PointVector cpts)
-  : p_(degree), n_(cpts.size() - 1), knots_(knots), cp_(cpts)
-{
+  : p_(degree), n_(cpts.size() - 1), knots_(knots), cp_(cpts) {
 }
 
 size_t
-BSCurve::findSpan(double u) const
-{
+BSCurve::findSpan(double u) const {
   if(u == knots_[n_+1])
     return n_;
   return (std::upper_bound(knots_.begin() + p_ + 1, knots_.end(), u) - knots_.begin()) - 1;
 }
 
 void
-BSCurve::basisFunctions(size_t i, double u, DoubleVector &coeff) const
-{
+BSCurve::basisFunctions(size_t i, double u, DoubleVector &coeff) const {
   coeff.clear(); coeff.reserve(p_ + 1);
   coeff.push_back(1.0);
   DoubleVector left(p_ + 1), right(p_ + 1);
@@ -37,8 +35,8 @@ BSCurve::basisFunctions(size_t i, double u, DoubleVector &coeff) const
 }
 
 void
-BSCurve::derivativeControlPoints(size_t d, size_t r1, size_t r2, std::vector<PointVector> &dcp) const
-{
+BSCurve::derivativeControlPoints(size_t d, size_t r1, size_t r2,
+                                 std::vector<PointVector> &dcp) const {
   dcp.clear(); dcp.resize(d + 1);
   size_t r = r2 - r1;
   dcp[0].reserve(r + 1);
@@ -53,8 +51,7 @@ BSCurve::derivativeControlPoints(size_t d, size_t r1, size_t r2, std::vector<Poi
 }
 
 void
-BSCurve::basisFunctionsAll(size_t i, double u, std::vector<DoubleVector> &coeff) const
-{
+BSCurve::basisFunctionsAll(size_t i, double u, std::vector<DoubleVector> &coeff) const {
   coeff.clear(); coeff.resize(p_ + 1);
   coeff[0].push_back(1.0);
   DoubleVector left(p_ + 1), right(p_ + 1);

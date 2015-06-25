@@ -2,8 +2,7 @@
 
 #include "geometry.hh"
 
-class RMF
-{
+class RMF {
 public:
   RMF();
   RMF(const BSCurve &c, const Vector3D &start, const Vector3D &end);
@@ -11,7 +10,8 @@ public:
 private:
   struct Frame {
     Frame(double u, double s, const Point3D &p, const Vector3D &d, const Vector3D &n)
-      : u(u), s(s), p(p), d(d), n(n) {}
+      : u(u), s(s), p(p), d(d), n(n) {
+    }
     double u, s;
     Point3D p;
     Vector3D d, n;

@@ -130,8 +130,7 @@ private:
   std::unique_ptr<BSCurveImpl> impl_;
 };
 
-class TriMesh
-{
+class TriMesh {
 public:
   // Constructors & destructor
   TriMesh();

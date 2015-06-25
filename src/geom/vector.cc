@@ -2,9 +2,12 @@
 
 #include "geometry.hh"
 
-Vector2D::Vector2D() {}
+Vector2D::Vector2D() {
+}
 
-Vector2D::Vector2D(double x, double y) : v_({x,y}) {}
+Vector2D::Vector2D(double x, double y)
+  : v_({x,y}) {
+}
 
 Vector2D &
 Vector2D::operator+=(const Vector2D &v) {
@@ -88,9 +91,12 @@ Vector2D::normalize() {
   return operator*=(1.0 / norm());
 }
 
-Vector3D::Vector3D() {}
+Vector3D::Vector3D() {
+}
 
-Vector3D::Vector3D(double x, double y, double z) : v_({x,y,z}) {}
+Vector3D::Vector3D(double x, double y, double z)
+  : v_({x,y,z}) {
+}
 
 Vector3D &
 Vector3D::operator+=(const Vector3D &v) {

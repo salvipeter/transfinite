@@ -4,12 +4,10 @@
 
 #include "BSplineCurve.hh"
 
-class BSCurve::BSCurveImpl
-{
+class BSCurve::BSCurveImpl {
 public:
   BSCurveImpl() {}
-  BSCurveImpl(size_t degree, DoubleVector knots, PointVector cpts)
-  {
+  BSCurveImpl(size_t degree, DoubleVector knots, PointVector cpts) {
     BSplineCurve<Point<3, double>>::KnotVectorType bsp_knots;
     BSplineCurve<Point<3, double>>::ControlVectorType bsp_cpts;
     bsp_knots.insert(knots.begin(), knots.end());

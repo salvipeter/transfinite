@@ -4,8 +4,7 @@
 
 #include "Vector.hh"
 
-class Vector2D::Vector2DImpl
-{
+class Vector2D::Vector2DImpl {
 public:
   Vector2DImpl() {}
   Vector2DImpl(double x, double y) : v_(Vector<2, double>(x, y)) {}
@@ -29,8 +28,7 @@ private:
   Vector<2, double> v_;
 };
 
-class Vector3D::Vector3DImpl
-{
+class Vector3D::Vector3DImpl {
 public:
   Vector3DImpl() {}
   Vector3DImpl(double x, double y, double z) : v_(Vector<3, double>(x, y, z)) {}

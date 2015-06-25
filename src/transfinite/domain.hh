@@ -6,8 +6,7 @@
 // - side i consists of vertices i-1 and i
 // - in the local coordinate system of side i, these vertices are (0,0) and (1,0)
 
-class Domain
-{
+class Domain {
 public:
   Domain();
   virtual ~Domain();

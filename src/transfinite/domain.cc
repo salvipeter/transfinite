@@ -2,7 +2,8 @@
 
 #include "domain.hh"
 
-Domain::Domain() : n_(0) {
+Domain::Domain()
+  : n_(0) {
 }
 
 Domain::~Domain() {
