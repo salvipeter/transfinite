@@ -51,6 +51,19 @@ int main(int argc, char **argv) {
     f2 << p[0] << ' ' << p[1] << ' ' << p[2] << std::endl;
   }
   f2.close();
+  c2.reverse();
+  c2.normalize();
+  RMF rmf2(c2, end, start);
+  std::ofstream f3("/tmp/rmftest2");
+  for (size_t i = 0; i <= res; ++i) {
+    double u = (double)i / (double)res;
+    Point3D p = c2.eval(u);
+    Vector3D n = rmf2.eval(u);
+    f3 << p[0] << ' ' << p[1] << ' ' << p[2] << std::endl;
+    f3 << p[0] + n[0] << ' ' << p[1] + n[1] << ' ' << p[2] + n[2] << std::endl;
+    f3 << p[0] << ' ' << p[1] << ' ' << p[2] << std::endl;
+  }
+  f3.close();
 
   // Domain test
   const size_t mesh_res = 15;
