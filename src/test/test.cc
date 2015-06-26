@@ -6,6 +6,8 @@
 #include "rmf.hh"
 #include "domain-regular.hh"
 #include "domain-circular.hh"
+#include "parameterization-bilinear.hh"
+#include "parameterization-barycentric.hh"
 
 int main(int argc, char **argv) {
   Vector2D u(1, 3), v(4, 5);
@@ -67,18 +69,25 @@ int main(int argc, char **argv) {
 
   // Domain test
   const size_t mesh_res = 15;
-  DomainCircular d;
-  d.setSides({c,c,c2,c,c2});
-  const Point2DVector &params = d.globalParameters(mesh_res);
-  TriMesh mesh = d.meshTopology(mesh_res);
-  std::cout << "Mesh: topology assigned" << std::endl;
-  PointVector points;
-  std::transform(params.begin(), params.end(), std::back_inserter(points),
-                 [](const Point2D &p) { return Point3D(p[0], p[1], 1.0-p[0]*p[0]-p[1]*p[1]); });
+  std::shared_ptr<Domain> d = std::make_shared<DomainCircular>();
+  d->setSides({c,c,c2,c,c2});
+  std::shared_ptr<Parameterization> par = std::make_shared<ParameterizationBarycentric>();
+  par->setDomain(d);
+  const Point2DVector &params = d->parameters(mesh_res);
+  TriMesh mesh = d->meshTopology(mesh_res);
+  PointVector points(params.size());
+  std::transform(params.begin(), params.end(), points.begin(),
+                 [par](const Point2D &p) {
+                   return Point3D(p[0], p[1], par->mapToRibbon(1, p)[0]);
+                 });
   mesh.setPoints(points);
-  std::cout << "Mesh: points assigned" << std::endl;
-  mesh.writeOBJ("/tmp/test.obj");
-  std::cout << "Mesh: OBJ file written" << std::endl;
+  mesh.writeOBJ("/tmp/test-s.obj");
+  std::transform(params.begin(), params.end(), points.begin(),
+                 [par](const Point2D &p) {
+                   return Point3D(p[0], p[1], par->mapToRibbon(1, p)[1]);
+                 });
+  mesh.setPoints(points);
+  mesh.writeOBJ("/tmp/test-d.obj");
 
   return 0;
 }

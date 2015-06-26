@@ -9,7 +9,7 @@ class Ribbon;
 // Invalidation rules:
 // - boundary curve changes => domain || ribbon
 //     (if the domain remains the same, the invalidate routine should invalidate the ribbon)
-// - fence changes => ribbon
+// - domain changes => parameterization
 // - ribbon handler changes => ribbon
 // - resolution changes => parameterization
 

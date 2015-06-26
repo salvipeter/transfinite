@@ -10,7 +10,7 @@ public:
   virtual ~Ribbon();
   void setCurve(BSCurve *curve);
   void setFence(Fence *fence);
-  void invalidate();
+  virtual void invalidate();
   Point3D evaluate(const Point2D &sd) const;
   Point3DVector evaluate(const Point2DVector &points) const;
 protected:

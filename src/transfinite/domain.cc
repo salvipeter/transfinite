@@ -23,44 +23,21 @@ Domain::invalidate() {
     if((center_ - vertices_[i]) * dv_[i] < 0)
       dv_[i] = -dv_[i];
   }
-  local_vertices_.resize(n_);
-  for(size_t i = 0; i < n_; ++i) {
-    local_vertices_[i].resize(n_);
-    for(size_t j = 0; j < n_; ++j)
-      local_vertices_[i][j] = toLocal(i, vertices_[j]);
-  }
 }
 
 Point2DVector const &
-Domain::verticesGlobal() const {
+Domain::vertices() const {
   return vertices_;
 }
 
-Point2DVector const &
-Domain::verticesLocal(size_t i) const {
-  return local_vertices_[i];
-}
-
 Point2D
-Domain::toLocal(size_t i, const Point2D &p) const {
-  Vector2D const v = p - vertices_[prev(i)];
-  if(std::abs(dv_[i][1]) < epsilon) {
-    double const a = (v[1] - v[0] * dv_[i][1] / dv_[i][0]) /
-      (du_[i][1] - du_[i][0] * dv_[i][1] / dv_[i][0]);
-    return Point2D(v[0] - a * du_[i][0] - dv_[i][0], a);
-  }
-  double const a = (v[0] - v[1] * dv_[i][0] / dv_[i][1]) /
-    (du_[i][0] - du_[i][1] * dv_[i][0] / dv_[i][1]);
-  return Point2D(a, v[1] - a * du_[i][1] - dv_[i][1]);
-}
-
-Point2D
-Domain::toGlobal(size_t i, const Point2D &p) const {
-  return vertices_[prev(i)] + du_[i] * p[0] + dv_[i] * p[1];
+Domain::toLocal(size_t i, const Vector2D &v) const {
+  double len2 = (vertices_[i] - vertices_[prev(i)]).normSqr();
+  return Point2D(v * du_[i], v * dv_[i]) / len2;
 }
 
 const Point2DVector &
-Domain::globalParameters(size_t resolution) const {
+Domain::parameters(size_t resolution) const {
   size_t size = 1 + n_ * resolution * (resolution + 1) / 2;
   if(parameters_.size() != size) {
     parameters_.reserve(size);
@@ -109,4 +86,9 @@ Domain::meshTopology(size_t resolution) const {
 const Point2D &
 Domain::center() const {
   return center_;
+}
+
+const double
+Domain::edgeLength(size_t i) const {
+  return (vertices_[i] - vertices_[prev(i)]).norm();
 }

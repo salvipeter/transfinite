@@ -1,29 +1,33 @@
-#include "parameterization.hh"
+#include <algorithm>
 
-Parameterization::Parameterization(Surface *surface)
-  : surface(surface) {
-}
+#include "domain.hh"
+#include "parameterization.hh"
 
 Parameterization::~Parameterization() {
 }
 
 void
-Parameterization::setDomain(Domain *new_domain, size_t i) {
-  domain = new_domain;
-  index = i;
+Parameterization::setDomain(const std::shared_ptr<Domain> &new_domain) {
+  domain_ = new_domain;
   invalidate();
 }
 
 void
 Parameterization::invalidate() {
-  cache.clear();
+  n_ = domain_->vertices().size();
+  cache_.clear();
 }
 
 Point2DVector
-Parameterization::mapToRibbon(const Point2DVector &points) const {
-  Point2DVector result;
-  result.reserve(points.size());
-  for(Point2DVector::const_iterator i = points.begin(), ie = points.end(); i != ie; ++i)
-    result.push_back(mapToRibbon(*i));
+Parameterization::mapToRibbons(const Point2D &uv) const {
+  auto cached = cache_.find(uv);
+  if(cached != cache_.end())
+    return cached->second;
+
+  Point2DVector result; result.reserve(n_);
+  for (size_t i = 0; i < n_; ++i)
+    result.push_back(mapToRibbon(i, uv));
+
+  cache_[uv] = result;
   return result;
 }

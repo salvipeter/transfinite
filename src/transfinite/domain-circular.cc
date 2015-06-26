@@ -11,6 +11,7 @@ DomainCircular::setSides(const CurveVector &curves) {
   size_t m = curves.size();
 
   DoubleVector lengths;
+  lengths.reserve(curves.size());
   std::transform(curves.begin(), curves.end(), std::back_inserter(lengths),
                  [](const BSCurve &c) { return c.arcLength(0.0, 1.0); });
   double normalizer = 2.0 * M_PI / std::accumulate(lengths.begin(), lengths.end(), 0.0);

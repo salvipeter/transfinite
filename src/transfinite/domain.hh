@@ -11,24 +11,24 @@ public:
   Domain();
   virtual ~Domain();
   virtual void setSides(const CurveVector &curves) = 0;
-  void invalidate();
-  const Point2DVector &globalParameters(size_t resolution) const;
+  virtual void invalidate();
+  const Point2DVector &parameters(size_t resolution) const;
   TriMesh meshTopology(size_t resolution) const;
   const Point2D &center() const;
-  const Point2DVector &verticesGlobal() const;
-  const Point2DVector &verticesLocal(size_t i) const; // in side i's local coordinate system
-  Point2D toLocal(size_t i, const Point2D &p) const;
-  Point2D toGlobal(size_t i, const Point2D &p) const;
+  const double edgeLength(size_t i) const;
+  const Point2DVector &vertices() const;
+  Point2D toLocal(size_t i, const Vector2D &v) const;
 
 protected:
-  size_t next(size_t i) const { return (i + 1) % n_; }
-  size_t prev(size_t i) const { return (i + n_ - 1) % n_; }
+  size_t next(size_t i, size_t j = 1) const { return (i + j) % n_; }
+  size_t prev(size_t i, size_t j = 1) const { return (i + n_ - j) % n_; }
   virtual void computeCenter() = 0;
 
   size_t n_;
   Point2D center_;
   Point2DVector vertices_;
   Vector2DVector du_, dv_;
-  std::vector<Point2DVector> local_vertices_;
+
+private:
   mutable Point2DVector parameters_; // cache
 };
