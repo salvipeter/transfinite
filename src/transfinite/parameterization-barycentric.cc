@@ -12,7 +12,30 @@ ParameterizationBarycentric::mapToRibbon(size_t i, const Point2D &uv) const {
   Point2D sd;
   double denom = l[prev(i)] + l[i];
   if (denom < epsilon) {
-    sd[0] = 0.5;                // kutykurutty
+    // TODO:
+    // The following workaround is valid only for type_ == BarycentricType::WACHSPRESS;
+    // for the other types it will be discontinuous.
+
+    // s = alpha * dprev / (alpha * dprev + (1.0 - alpha) * dnext), where alpha is a constant,
+    // and dprev/dnext are perpendicular distances from the previous/next sides.
+    // Compute alpha from a regular point, e.g. the center.
+    // (Good choice, because it is certainly regular, and almost certainly in the cache.)
+    double dprev, dnext, alpha;
+    Point2D c = domain_->center();
+    dprev = domain_->toLocal(prev(i), c - domain_->vertices()[prev(i)])[1] *
+      domain_->edgeLength(prev(i));
+    dnext = domain_->toLocal(next(i), c - domain_->vertices()[i])[1] *
+      domain_->edgeLength(next(i));
+    const DoubleVector &lc = barycentric(c);
+    double sc = lc[i] / (lc[prev(i)] + lc[i]);
+    alpha = sc * dnext / (dprev + sc * (dnext - dprev));
+
+    // Compute s from dprev, dnext and alpha
+    dprev = domain_->toLocal(prev(i), uv - domain_->vertices()[prev(i)])[1] *
+      domain_->edgeLength(prev(i));
+    dnext = domain_->toLocal(next(i), uv - domain_->vertices()[i])[1] *
+      domain_->edgeLength(next(i));
+    sd[0] = alpha * dprev / (alpha * dprev + (1.0 - alpha) * dnext);
   } else
     sd[0] = l[i] / denom;
   sd[1] = 1.0 - l[i] - l[prev(i)];
