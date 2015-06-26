@@ -88,7 +88,14 @@ Domain::center() const {
   return center_;
 }
 
-const double
+double
 Domain::edgeLength(size_t i) const {
   return (vertices_[i] - vertices_[prev(i)]).norm();
+}
+
+double
+Domain::angle(size_t i) const {
+  Vector2D v1 = vertices_[prev(i)] - vertices_[i];
+  Vector2D v2 = vertices_[next(i)] - vertices_[i];
+  return std::acos(std::min(std::max(v1.normalize() * v2.normalize(), -1.0), 1.0));
 }

@@ -16,14 +16,10 @@ ParameterizationBarycentric::mapToRibbon(size_t i, const Point2D &uv) const {
     // The following workaround is valid only for type_ == BarycentricType::WACHSPRESS;
     // for the other types it will be discontinuous.
     const Point2DVector &v = domain_->vertices();
-    double hi_2 = domain_->toLocal(i, v[prev(i, 2)] - v[prev(i)])[1];
-    double hi1 = domain_->toLocal(i, v[next(i)] - v[i])[1];
-    double ei_1 = domain_->edgeLength(prev(i));
-    double ei1 = domain_->edgeLength(next(i));
-    double alpha = ei_1 * hi1, beta = ei1 * hi_2;
+    double alpha = domain_->angle(i), beta = domain_->angle(prev(i));
     double dprev = domain_->toLocal(prev(i), uv - v[prev(i)])[1] * domain_->edgeLength(prev(i));
     double dnext = domain_->toLocal(next(i), uv - v[i])[1] * domain_->edgeLength(next(i));
-    sd[0] = alpha * dprev / (alpha * dprev + beta * dnext);
+    sd[0] = std::sin(alpha) * dprev / (std::sin(alpha) * dprev + std::sin(beta) * dnext);
   } else
     sd[0] = l[i] / denom;
   sd[1] = 1.0 - l[i] - l[prev(i)];
