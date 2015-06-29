@@ -9,6 +9,7 @@
 #include "parameterization-bilinear.hh"
 #include "parameterization-barycentric.hh"
 #include "ribbon-compatible.hh"
+#include "surface-side-based.hh"
 
 CurveVector readLOP(std::string filename) {
   std::ifstream f(filename);
@@ -169,6 +170,13 @@ int main(int argc, char **argv) {
     mesh2.setPoints(pv);
     mesh2.writeOBJ("/tmp/ribtest.obj");
   }
+
+  // Surface test
+  std::shared_ptr<Surface> surf = std::make_shared<SurfaceSideBased>();
+  surf->setCurves(cv);
+  surf->setupLoop();             // should be called after curve pointers changed
+  surf->update();                // should be called after curves changed
+  surf->eval(15).writeOBJ("/tmp/surftest.obj");
 
   return 0;
 }

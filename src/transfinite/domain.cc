@@ -10,6 +10,13 @@ Domain::~Domain() {
 }
 
 void
+Domain::setSide(size_t i, const std::shared_ptr<BSCurve> &curve) {
+  if (curves_.size() <= i)
+    curves_.resize(i + 1);
+  curves_[i] = curve;
+}
+
+void
 Domain::setSides(const CurveVector &curves) {
   curves_ = curves;
 }

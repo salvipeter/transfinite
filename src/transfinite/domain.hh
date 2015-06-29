@@ -10,6 +10,7 @@ class Domain {
 public:
   Domain();
   virtual ~Domain();
+  void setSide(size_t i, const std::shared_ptr<BSCurve> &curve);
   void setSides(const CurveVector &curves);
   virtual bool update();
   const Point2DVector &parameters(size_t resolution) const;

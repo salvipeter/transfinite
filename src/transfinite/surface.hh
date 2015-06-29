@@ -6,37 +6,30 @@ class Domain;
 class Parameterization;
 class Ribbon;
 
-// Update sequences:
-// (a) curve changes
-// => domain
-//    => [if the domain changes] parameterization
-// => ribbon (and rmf [automatic])
-// (b) resolution changes
-// => parameterization
-
 class Surface {
 public:
-  enum class Invalidation {
-    InvalidateNothing = 0,
-    InvalidateDomain = 1,              // => InvalidateParameterization
-    InvalidateParameterization = 2,    // => InvalidateBlendFunctions, InvalidateAllRibbons
-    InvalidateRibbon = 3,
-    InvalidateBlendFunctions = 4,
-    InvalidateAllRibbons = 5
-  };
-
-  Surface(size_t sides);
+  Surface();
   virtual ~Surface();
-  void setSide(size_t i, const BSCurve *curve);
-  void setSides(const CurveVector &curves);
-  void setFence(size_t i, const Fence *fence);
-  void setFences(const FenceVector &fences);
-  void invalidate(Invalidation what, size_t i = 0); // i only for InvalidateRibbon
-  const Ribbon *ribbon(size_t i) const;
-  Point3D evaluate(const Point2D &uv) const;
-  Mesh evaluate(size_t resolution) const;
+  void setGamma(bool use_gamma);
+  void setCurve(size_t i, const std::shared_ptr<BSCurve> &curve);
+  void setCurves(const CurveVector &curves);
+  void setupLoop();
+  virtual void update(size_t i);
+  virtual void update();
+  virtual Point3D eval(const Point2D &uv) const = 0;
+  TriMesh eval(size_t resolution) const;
+
 protected:
-  Domain *domain_;
-  std::vector<Parameterization *> param_;
-  std::vector<Ribbon *> ribbons_;
+  virtual std::shared_ptr<Ribbon> newRibbon() const = 0;
+  DoubleVector blendSideSingular(const Point2DVector &sds) const;
+  double gamma(double d) const;
+
+  size_t next(size_t i, size_t j = 1) const { return (i + j) % n_; }
+  size_t prev(size_t i, size_t j = 1) const { return (i + n_ - j) % n_; }
+
+  size_t n_;
+  std::shared_ptr<Domain> domain_;
+  std::shared_ptr<Parameterization> param_;
+  std::vector<std::shared_ptr<Ribbon>> ribbons_;
+  bool use_gamma_;
 };
