@@ -6,14 +6,14 @@
 DomainCircular::~DomainCircular() {
 }
 
-void
-DomainCircular::setSides(const CurveVector &curves) {
-  size_t m = curves.size();
+bool
+DomainCircular::update() {
+  size_t m = curves_.size();
 
   DoubleVector lengths;
-  lengths.reserve(curves.size());
-  std::transform(curves.begin(), curves.end(), std::back_inserter(lengths),
-                 [](const BSCurve &c) { return c.arcLength(0.0, 1.0); });
+  lengths.reserve(curves_.size());
+  std::transform(curves_.begin(), curves_.end(), std::back_inserter(lengths),
+                 [](const std::shared_ptr<BSCurve> &c) { return c->arcLength(0.0, 1.0); });
   double normalizer = 2.0 * M_PI / std::accumulate(lengths.begin(), lengths.end(), 0.0);
   std::transform(lengths.begin(), lengths.end(), lengths.begin(),
                  [normalizer](double x) { return x * normalizer; });
@@ -25,7 +25,7 @@ DomainCircular::setSides(const CurveVector &curves) {
     vertices_[i] = Point2D(std::cos(alpha), std::sin(alpha));
   }
 
-  invalidate();
+  return Domain::update();
 }
 
 void

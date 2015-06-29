@@ -6,15 +6,13 @@ class Domain;
 class Parameterization;
 class Ribbon;
 
-// Invalidation rules:
-// - boundary curve changes => domain || ribbon
-//     (if the domain remains the same, the invalidate routine should invalidate the ribbon)
-// - domain changes => parameterization
-// - ribbon handler changes => ribbon
-// - resolution changes => parameterization
-
-// Notes:
-// - set... functions clear the appropriate cache data
+// Update sequences:
+// (a) curve changes
+// => domain
+//    => [if the domain changes] parameterization
+// => ribbon (and rmf [automatic])
+// (b) resolution changes
+// => parameterization
 
 class Surface {
 public:

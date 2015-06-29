@@ -10,8 +10,8 @@ class Domain {
 public:
   Domain();
   virtual ~Domain();
-  virtual void setSides(const CurveVector &curves) = 0;
-  virtual void invalidate();
+  void setSides(const CurveVector &curves);
+  virtual bool update();
   const Point2DVector &parameters(size_t resolution) const;
   TriMesh meshTopology(size_t resolution) const;
   const Point2D &center() const;
@@ -25,6 +25,7 @@ protected:
   size_t prev(size_t i, size_t j = 1) const { return (i + n_ - j) % n_; }
   virtual void computeCenter() = 0;
 
+  CurveVector curves_;
   size_t n_;
   Point2D center_;
   Point2DVector vertices_;

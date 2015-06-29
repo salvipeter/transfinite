@@ -5,18 +5,18 @@
 DomainRegular::~DomainRegular() {
 }
 
-void
-DomainRegular::setSides(const CurveVector &curves) {
-  size_t m = curves.size();
+bool
+DomainRegular::update() {
+  size_t m = curves_.size();
   if(n_ == m)
-    return;
+    return false;
 
   double alpha = 2.0 * M_PI / m;
   vertices_.resize(m);
   for(size_t i = 0; i < m; ++i)
     vertices_[i] = Point2D(std::cos(alpha * i), std::sin(alpha * i));
 
-  invalidate();
+  return Domain::update();
 }
 
 void

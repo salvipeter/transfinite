@@ -6,7 +6,7 @@ class ParameterizationBarycentric : public Parameterization {
 public:
   virtual ~ParameterizationBarycentric();
   virtual Point2D mapToRibbon(size_t i, const Point2D &uv) const;
-  virtual void invalidate();
+  virtual void update();
 
 protected:
   const DoubleVector &barycentric(const Point2D &uv) const;

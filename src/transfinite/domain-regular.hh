@@ -5,6 +5,6 @@
 class DomainRegular : public Domain {
 public:
   virtual ~DomainRegular();
-  virtual void setSides(const CurveVector &curves);
+  virtual bool update();
   virtual void computeCenter();
 };

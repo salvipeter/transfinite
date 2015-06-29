@@ -1,7 +1,6 @@
 #pragma once
 
 #include <map>
-#include <memory>
 
 #include "geometry.hh"
 
@@ -11,7 +10,7 @@ class Parameterization {
 public:
   virtual ~Parameterization();
   void setDomain(const std::shared_ptr<Domain> &new_domain);
-  virtual void invalidate();
+  virtual void update();
   virtual Point2D mapToRibbon(size_t i, const Point2D &uv) const = 0;
   Point2DVector mapToRibbons(const Point2D &uv) const;
 

@@ -4,9 +4,12 @@
 
 class RMF {
 public:
-  RMF();
-  RMF(const BSCurve &c, const Vector3D &start, const Vector3D &end);
+  void setCurve(const std::shared_ptr<BSCurve> &c);
+  void setStart(const Vector3D &start);
+  void setEnd(const Vector3D &end);
+  void update();
   Vector3D eval(double u) const;
+
 private:
   struct Frame {
     Frame(double u, double s, const Point3D &p, const Vector3D &d, const Vector3D &n)
@@ -19,10 +22,11 @@ private:
   using Matrix3x3 = std::array<std::array<double, 3>, 3>;
   static const Matrix3x3 &rotationMatrix(const Vector3D &u, double theta);
   static void rotateFrame(Frame &f, double angle);
-  static Frame nextFrame(const BSCurve &c, const Frame &prev, double u);
+  Frame nextFrame(const Frame &prev, double u) const;
 
   const static size_t resolution_;
-  BSCurve curve_;
+  std::shared_ptr<BSCurve> curve_;
+  Vector3D start_, end_;
   std::vector<Frame> frames_;
   double angleCorrection_;
 };

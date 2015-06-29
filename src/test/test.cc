@@ -8,6 +8,37 @@
 #include "domain-circular.hh"
 #include "parameterization-bilinear.hh"
 #include "parameterization-barycentric.hh"
+#include "ribbon-compatible.hh"
+
+CurveVector readLOP(std::string filename) {
+  std::ifstream f(filename);
+  if (!f.is_open()) {
+    std::cerr << "Unable to open file: " << filename << std::endl;
+    return CurveVector();
+  }
+
+  size_t n, deg, nk, nc;
+  DoubleVector knots;
+  PointVector cpts;
+  CurveVector result;
+
+  f >> n;
+  result.reserve(n);
+  for (size_t i = 0; i < n; ++i) {
+    f >> deg;
+    f >> nk;
+    knots.resize(nk);
+    for (size_t j = 0; j < nk; ++j)
+      f >> knots[j];
+    f >> nc;
+    cpts.resize(nc);
+    for (size_t j = 0; j < nc; ++j)
+      f >> cpts[j][0] >> cpts[j][1] >> cpts[j][2];
+    result.push_back(std::make_shared<BSCurve>(deg, knots, cpts));
+  }
+
+  return result;
+}
 
 int main(int argc, char **argv) {
   Vector2D u(1, 3), v(4, 5);
@@ -34,33 +65,43 @@ int main(int argc, char **argv) {
     c.arcLength(0.5, 0.7) << ", " << c.arcLength(0.8, 1.0) << std::endl;
   
   // RMF test
-  BSCurve c2(3, {0, 0, 0, 0, 0.133053, 0.232419, 0.338451, 0.43994, 0.541278, 0.667394, 1, 1, 1, 1},
-             {{0.155279, -2.14286, 0}, {0.0532173, -1.80779, 0}, {0.190782, -1.07383, 1},
-              {1.09142, -0.69642, 1}, {1.81621, -0.426967, 2}, {2.81035, -0.467704, 1},
-              {3.07214, 0.640326, 1}, {5.1987, -0.432608, 0}, {4.46645, -2.13998, 1},
-              {3.25645, -1.96703, -1}});
+  DoubleVector knots =
+    {0, 0, 0, 0, 0.133053, 0.232419, 0.338451, 0.43994, 0.541278, 0.667394, 1, 1, 1, 1};
+  PointVector cpts =
+    {{0.155279, -2.14286, 0}, {0.0532173, -1.80779, 0}, {0.190782, -1.07383, 1},
+     {1.09142, -0.69642, 1}, {1.81621, -0.426967, 2}, {2.81035, -0.467704, 1},
+     {3.07214, 0.640326, 1}, {5.1987, -0.432608, 0}, {4.46645, -2.13998, 1},
+     {3.25645, -1.96703, -1}};
+  std::shared_ptr<BSCurve> c2 = std::make_shared<BSCurve>(3, knots, cpts);
   Vector3D start(0.9041749728349117, 0.27541001827971723, -0.32652249590212407);
   Vector3D end(0.6838937155616026, -0.5642165240201893, -0.46254632182941535);
-  RMF rmf(c2, start, end);
+  
+  RMF rmf;
+  rmf.setCurve(c2);
+  rmf.setStart(start);
+  rmf.setEnd(end);
+  rmf.update();
   size_t res = 57;
   std::ofstream f2("/tmp/rmftest");
   for (size_t i = 0; i <= res; ++i) {
     double u = (double)i / (double)res;
-    Point3D p = c2.eval(u);
+    Point3D p = c2->eval(u);
     Vector3D n = rmf.eval(u);
     f2 << p[0] << ' ' << p[1] << ' ' << p[2] << std::endl;
     f2 << p[0] + n[0] << ' ' << p[1] + n[1] << ' ' << p[2] + n[2] << std::endl;
     f2 << p[0] << ' ' << p[1] << ' ' << p[2] << std::endl;
   }
   f2.close();
-  c2.reverse();
-  c2.normalize();
-  RMF rmf2(c2, end, start);
+  c2->reverse();
+  c2->normalize();
+  rmf.setStart(end);
+  rmf.setEnd(start);
+  rmf.update();
   std::ofstream f3("/tmp/rmftest2");
   for (size_t i = 0; i <= res; ++i) {
     double u = (double)i / (double)res;
-    Point3D p = c2.eval(u);
-    Vector3D n = rmf2.eval(u);
+    Point3D p = c2->eval(u);
+    Vector3D n = rmf.eval(u);
     f3 << p[0] << ' ' << p[1] << ' ' << p[2] << std::endl;
     f3 << p[0] + n[0] << ' ' << p[1] + n[1] << ' ' << p[2] + n[2] << std::endl;
     f3 << p[0] << ' ' << p[1] << ' ' << p[2] << std::endl;
@@ -70,9 +111,12 @@ int main(int argc, char **argv) {
   // Domain test
   const size_t mesh_res = 15;
   std::shared_ptr<Domain> d = std::make_shared<DomainCircular>();
-  d->setSides({c,c,c2,c,c2});
+  std::shared_ptr<BSCurve> cs = std::make_shared<BSCurve>(c);
+  d->setSides({cs,cs,c2,cs,c2});
+  d->update();
   std::shared_ptr<Parameterization> par = std::make_shared<ParameterizationBarycentric>();
   par->setDomain(d);
+  par->update();
   const Point2DVector &params = d->parameters(mesh_res);
   TriMesh mesh = d->meshTopology(mesh_res);
   PointVector points(params.size());
@@ -88,6 +132,43 @@ int main(int argc, char **argv) {
                  });
   mesh.setPoints(points);
   mesh.writeOBJ("/tmp/test-d.obj");
+
+  // Ribbon test
+  CurveVector cv = readLOP("../../models/cagd86.lop");
+  size_t n = cv.size();
+  double max_d = 0.25;
+  size_t rib_res = 15;
+  TriMesh mesh2;
+  mesh2.resizePoints((rib_res + 1) * (rib_res + 1) * n);
+  PointVector pv; pv.reserve((rib_res + 1) * (rib_res + 1) * n);
+  size_t index = 0;
+  std::vector<std::shared_ptr<Ribbon>> ribbons;
+  for (size_t side = 0; side < n; ++side) {
+    ribbons.push_back(std::make_shared<RibbonCompatible>());
+    ribbons.back()->setCurve(cv[side]);
+  }
+  for (size_t side = 0; side < n; ++side) {
+    ribbons[side]->setNeighbors(ribbons[(side+n-1)%n], ribbons[(side+1)%n]);
+    ribbons[side]->update();
+
+    for (size_t si = 0; si <= rib_res; ++si) {
+      double s = (double)si / (double)rib_res;
+      for (size_t di = 0; di <= rib_res; ++di) {
+        double d = (double)di / (double)rib_res;
+        d *= max_d;
+        pv.push_back(ribbons[side]->eval(Point2D(s, d)));
+
+        if (si != 0 && di != 0) {
+          mesh2.addTriangle(index, index - rib_res - 1, index - 1);
+          mesh2.addTriangle(index - rib_res - 1, index - rib_res - 2, index - 1);
+        }
+
+        ++index;
+      }
+    }
+    mesh2.setPoints(pv);
+    mesh2.writeOBJ("/tmp/ribtest.obj");
+  }
 
   return 0;
 }

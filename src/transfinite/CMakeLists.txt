@@ -8,4 +8,5 @@ add_library(transfinite
   rmf.cc
   domain.cc domain-regular.cc domain-circular.cc
   parameterization.cc parameterization-bilinear.cc parameterization-barycentric.cc
+  ribbon.cc ribbon-compatible.cc
 )

@@ -9,10 +9,15 @@ Domain::Domain()
 Domain::~Domain() {
 }
 
+void
+Domain::setSides(const CurveVector &curves) {
+  curves_ = curves;
+}
+
 // Computes everything from vertices
 // except for parameters, which are computed only when needed
-void
-Domain::invalidate() {
+bool
+Domain::update() {
   n_ = vertices_.size();
   computeCenter();
   parameters_.clear();
@@ -23,6 +28,7 @@ Domain::invalidate() {
     if((center_ - vertices_[i]) * dv_[i] < 0)
       dv_[i] = -dv_[i];
   }
+  return true;
 }
 
 Point2DVector const &

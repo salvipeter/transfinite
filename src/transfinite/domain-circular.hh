@@ -5,6 +5,6 @@
 class DomainCircular : public Domain {
 public:
   virtual ~DomainCircular();
-  virtual void setSides(const CurveVector &curves);
+  virtual bool update();
   virtual void computeCenter();
 };

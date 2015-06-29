@@ -27,9 +27,9 @@ ParameterizationBarycentric::mapToRibbon(size_t i, const Point2D &uv) const {
 }
 
 void
-ParameterizationBarycentric::invalidate() {
+ParameterizationBarycentric::update() {
   cache_.clear();
-  Parameterization::invalidate();
+  Parameterization::update();
 }
 
 const DoubleVector &

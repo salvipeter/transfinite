@@ -9,11 +9,10 @@ Parameterization::~Parameterization() {
 void
 Parameterization::setDomain(const std::shared_ptr<Domain> &new_domain) {
   domain_ = new_domain;
-  invalidate();
 }
 
 void
-Parameterization::invalidate() {
+Parameterization::update() {
   n_ = domain_->vertices().size();
   cache_.clear();
 }

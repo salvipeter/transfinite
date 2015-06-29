@@ -18,7 +18,7 @@ using Vector2DVector = std::vector<Vector2D>;
 using VectorVector = std::vector<Vector3D>;
 using Point2DVector = std::vector<Point2D>;
 using PointVector = std::vector<Point3D>;
-using CurveVector = std::vector<BSCurve>;
+using CurveVector = std::vector<std::shared_ptr<BSCurve>>;
 
 class Vector2D {
 public:

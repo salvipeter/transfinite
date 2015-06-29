@@ -1,20 +1,19 @@
 #pragma once
 
 #include "geometry.hh"
-
-class Surface;
+#include "rmf.hh"
 
 class Ribbon {
 public:
-  Ribbon(Surface *surface);
   virtual ~Ribbon();
-  void setCurve(BSCurve *curve);
-  void setFence(Fence *fence);
-  virtual void invalidate();
-  Point3D evaluate(const Point2D &sd) const;
-  Point3DVector evaluate(const Point2DVector &points) const;
+  std::shared_ptr<BSCurve> curve() const;
+  void setCurve(const std::shared_ptr<BSCurve> &curve);
+  void setNeighbors(const std::shared_ptr<Ribbon> &prev, const std::shared_ptr<Ribbon> &next);
+  virtual void update();
+  virtual Point3D eval(const Point2D &sd) const = 0;
+
 protected:
-  Surface *surface_;
-  BSCurve *curve_;
-  Fence *fence_;
+  std::shared_ptr<BSCurve> curve_;
+  std::shared_ptr<Ribbon> prev_, next_;
+  RMF rmf_;
 };
