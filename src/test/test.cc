@@ -41,6 +41,14 @@ CurveVector readLOP(std::string filename) {
   return result;
 }
 
+void surfaceTest(std::shared_ptr<Surface> &&surf, const CurveVector &cv,
+                 std::string filename, size_t resolution) {
+  surf->setCurves(cv);
+  surf->setupLoop();             // should be called after curve pointers changed
+  surf->update();                // should be called after curves changed
+  surf->eval(resolution).writeOBJ(filename);
+}
+
 int main(int argc, char **argv) {
   Vector2D u(1, 3), v(4, 5);
   u += v;
@@ -172,11 +180,10 @@ int main(int argc, char **argv) {
   }
 
   // Surface test
-  std::shared_ptr<Surface> surf = std::make_shared<SurfaceSideBased>();
-  surf->setCurves(cv);
-  surf->setupLoop();             // should be called after curve pointers changed
-  surf->update();                // should be called after curves changed
-  surf->eval(15).writeOBJ("/tmp/surftest.obj");
+  surfaceTest(std::make_shared<SurfaceSideBased>(), cv, "/tmp/surf-sb.obj", 15);
+  // surfaceTest(std::make_shared<SurfaceCornerBased>(), cv, "/tmp/surf-cb.obj", 15);
+  // surfaceTest(std::make_shared<SurfaceGeneralizedCoons>(), cv, "/tmp/surf-gc.obj", 15);
+  // surfaceTest(std::make_shared<SurfaceCompositeRibbon>(), cv, "/tmp/surf-cr.obj", 15);
 
   return 0;
 }
