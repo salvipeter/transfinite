@@ -3,8 +3,13 @@
 Ribbon::~Ribbon() {
 }
 
-std::shared_ptr<BSCurve>
+std::shared_ptr<const BSCurve>
 Ribbon::curve() const {
+  return curve_;
+}
+
+std::shared_ptr<BSCurve>
+Ribbon::curve() {
   return curve_;
 }
 
@@ -40,4 +45,9 @@ Ribbon::update() {
   rmf_.setEnd(normal);
 
   rmf_.update();
+}
+
+Vector3D
+Ribbon::normal(double s) const {
+  return rmf_.eval(s);
 }

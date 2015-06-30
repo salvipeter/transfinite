@@ -94,6 +94,11 @@ Surface::update() {
   updateCorners();
 }
 
+std::shared_ptr<const Ribbon>
+Surface::ribbon(size_t i) const {
+  return ribbons_[i];
+}
+
 TriMesh
 Surface::eval(size_t resolution) const {
   TriMesh mesh = domain_->meshTopology(resolution);

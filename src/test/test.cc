@@ -50,6 +50,52 @@ void surfaceTest(std::shared_ptr<Surface> &&surf, const CurveVector &cv,
   surf->setupLoop();             // should be called after curve pointers changed
   surf->update();                // should be called after curves changed
   surf->eval(resolution).writeOBJ(filename);
+
+  DomainRegular domain;          // the surface's domain is protected, so we simulate it here
+  domain.setSides(cv);
+  domain.update();
+  const Point2DVector &v = domain.vertices();
+
+  size_t n = cv.size();
+  size_t res = 40;
+  double step = 1.0e-4;
+
+  // Positional test
+  double max_pos_error = 0.0;
+  for (size_t i = 0; i < n; ++i) {
+    for (size_t j = 0; j <= res; ++j) {
+      double s = (double)j / (double)res;
+      Point2D uv = v[(i+n-1)%n] * (1.0 - s) + v[i] * s;
+      Point3D p = surf->eval(uv), q = cv[i]->eval(s);
+      max_pos_error = std::max(max_pos_error, (p - q).norm());
+    }
+  }
+
+  // Tangential test
+  double max_tan_error = 0.0;
+  VectorVector der;
+  for (size_t i = 0; i < n; ++i) {
+    Vector2D perp = v[i] - v[(i+n-1)%n];
+    perp = Vector2D(perp[1], -perp[0]);
+    if ((domain.center() - v[i]) * perp < 0)
+      perp = -perp;
+    perp.normalize();
+    for (size_t j = 0; j <= res; ++j) {
+      double s = (double)j / (double)res;
+      Point2D uv = v[(i+n-1)%n] * (1.0 - s) + v[i] * s;
+      Point2D uv2 = uv + perp * step;
+      Point3D p = surf->eval(uv), q = surf->eval(uv2);
+      cv[i]->eval(s, 1, der);
+      Vector3D surf_normal = (der[1] ^ (q - p)).normalize();
+      Vector3D normal = surf->ribbon(i)->normal(s);
+      double angle = acos(surf_normal * normal);
+      max_tan_error = std::max(max_tan_error, angle);
+    }
+  }
+
+  std::cout << filename << ":" << std::endl;
+  std::cout << "  positional error: " << max_pos_error << std::endl;
+  std::cout << "  tangential error: " << max_tan_error * 180.0 / M_PI << std::endl;
 }
 
 int main(int argc, char **argv) {
