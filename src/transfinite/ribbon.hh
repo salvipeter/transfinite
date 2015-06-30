@@ -11,7 +11,8 @@ public:
   void setCurve(const std::shared_ptr<BSCurve> &curve);
   void setNeighbors(const std::shared_ptr<Ribbon> &prev, const std::shared_ptr<Ribbon> &next);
   virtual void update();
-  virtual Point3D eval(const Point2D &sd) const = 0;
+  virtual Vector3D crossDerivative(double s) const = 0;
+  Point3D eval(const Point2D &sd) const;
   Vector3D normal(double s) const;
 
 protected:

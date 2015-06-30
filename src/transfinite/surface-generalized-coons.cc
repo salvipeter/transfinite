@@ -1,10 +1,10 @@
 #include "domain-regular.hh"
-#include "parameterization-barycentric.hh"
+#include "parameterization-interconnected.hh"
 #include "ribbon-compatible.hh"
 #include "surface-generalized-coons.hh"
 
 using DomainType = DomainRegular;
-using ParamType = ParameterizationBarycentric;
+using ParamType = ParameterizationInterconnected;
 using RibbonType = RibbonCompatible;
 
 SurfaceGeneralizedCoons::SurfaceGeneralizedCoons() {

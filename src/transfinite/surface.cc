@@ -111,15 +111,15 @@ Surface::eval(size_t resolution) const {
 }
 
 Point3D
-Surface::cornerCorrection(size_t i, double si, double si1) const {
-  // Assumes that both si and si1 are 0 at the corner
-  si = std::min(std::max(si, 0.0), 1.0);
-  si1 = std::min(std::max(si1, 0.0), 1.0);
+Surface::cornerCorrection(size_t i, double s1, double s2) const {
+  // Assumes that both s1 and s2 are 0 at the corner,
+  // s1 increases towards corner (i-1), and s2 towards corner (i+1).
+  s1 = std::min(std::max(gamma(s1), 0.0), 1.0);
+  s2 = std::min(std::max(gamma(s2), 0.0), 1.0);
   return corner_data_[i].point
-    + corner_data_[i].tangent1 * gamma(si)
-    + corner_data_[i].tangent2 * gamma(si1)
-    + rationalTwist(si, si1, corner_data_[i].twist1, corner_data_[i].twist2)
-      * gamma(si) * gamma(si1);
+    + corner_data_[i].tangent1 * s1
+    + corner_data_[i].tangent2 * s2
+    + rationalTwist(s1, s2, corner_data_[i].twist2, corner_data_[i].twist1) * s1 * s2;
 }
 
 Point3D
@@ -206,17 +206,16 @@ Surface::updateCorner(size_t i) {
 
   VectorVector der;
   Vector3D d1, d2;
-  ribbons_[i]->curve()->eval(1.0, 1, der);
-  corner_data_[i].point = der[0];
+  corner_data_[i].point = ribbons_[i]->curve()->eval(1.0, 1, der);
   corner_data_[i].tangent1 = -der[1];
   ribbons_[ip]->curve()->eval(0.0, 1, der);
   corner_data_[i].tangent2 = der[1];
-  d1 = ribbons_[i]->eval(Point2D(1.0, 1.0));
-  d2 = ribbons_[i]->eval(Point2D(1.0 - step, 1.0));
+  d1 = ribbons_[i]->crossDerivative(1.0);
+  d2 = ribbons_[i]->crossDerivative(1.0 - step);
   corner_data_[i].twist1 = (d2 - d1) / step;
-  d1 = ribbons_[ip]->eval(Point2D(0.0, 1.0));
-  d2 = ribbons_[ip]->eval(Point2D(step, 1.0));
-  corner_data_[i].twist1 = (d2 - d1) / step;
+  d1 = ribbons_[ip]->crossDerivative(0.0);
+  d2 = ribbons_[ip]->crossDerivative(step);
+  corner_data_[i].twist2 = (d2 - d1) / step;
 }
 
 void

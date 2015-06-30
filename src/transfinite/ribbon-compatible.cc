@@ -14,10 +14,10 @@ RibbonCompatible::update() {
   Ribbon::update();
 }
 
-Point3D
-RibbonCompatible::eval(const Point2D &sd) const {
-  Vector3D n = rmf_.eval(sd[0]);
+Vector3D
+RibbonCompatible::crossDerivative(double s) const {
+  Vector3D n = rmf_.eval(s);
   Vector3D pt = prev_tangent_ - n * (prev_tangent_ * n);
   Vector3D nt = next_tangent_ - n * (next_tangent_ * n);
-  return curve_->eval(sd[0]) + (pt * (1.0 - sd[0]) + nt * sd[0]) * sd[1];
+  return pt * (1.0 - s) + nt * s;
 }

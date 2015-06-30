@@ -47,6 +47,11 @@ Ribbon::update() {
   rmf_.update();
 }
 
+Point3D
+Ribbon::eval(const Point2D &sd) const {
+  return curve_->eval(sd[0]) + crossDerivative(sd[0]) * sd[1];
+}
+
 Vector3D
 Ribbon::normal(double s) const {
   return rmf_.eval(s);
