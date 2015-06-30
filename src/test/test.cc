@@ -10,6 +10,9 @@
 #include "parameterization-barycentric.hh"
 #include "ribbon-compatible.hh"
 #include "surface-side-based.hh"
+#include "surface-corner-based.hh"
+#include "surface-generalized-coons.hh"
+#include "surface-composite-ribbon.hh"
 
 CurveVector readLOP(std::string filename) {
   std::ifstream f(filename);
@@ -181,9 +184,9 @@ int main(int argc, char **argv) {
 
   // Surface test
   surfaceTest(std::make_shared<SurfaceSideBased>(), cv, "/tmp/surf-sb.obj", 15);
-  // surfaceTest(std::make_shared<SurfaceCornerBased>(), cv, "/tmp/surf-cb.obj", 15);
-  // surfaceTest(std::make_shared<SurfaceGeneralizedCoons>(), cv, "/tmp/surf-gc.obj", 15);
-  // surfaceTest(std::make_shared<SurfaceCompositeRibbon>(), cv, "/tmp/surf-cr.obj", 15);
+  surfaceTest(std::make_shared<SurfaceCornerBased>(), cv, "/tmp/surf-cb.obj", 15);
+  surfaceTest(std::make_shared<SurfaceGeneralizedCoons>(), cv, "/tmp/surf-gc.obj", 15);
+  surfaceTest(std::make_shared<SurfaceCompositeRibbon>(), cv, "/tmp/surf-cr.obj", 15);
 
   return 0;
 }

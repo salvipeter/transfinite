@@ -81,6 +81,8 @@ Surface::update(size_t i) {
   if (domain_->update())
     param_->update();
   ribbons_[i]->update();
+  updateCorner(prev(i));
+  updateCorner(i);
 }
 
 void
@@ -89,6 +91,7 @@ Surface::update() {
     param_->update();
   for (auto &r : ribbons_)
     r->update();
+  updateCorners();
 }
 
 TriMesh
@@ -100,6 +103,62 @@ Surface::eval(size_t resolution) const {
                  [this](const Point2D &uv) { return eval(uv); });
   mesh.setPoints(points);
   return mesh;
+}
+
+Point3D
+Surface::cornerCorrection(size_t i, double si, double si1) const {
+  // Assumes that both si and si1 are 0 at the corner
+  si = std::min(std::max(si, 0.0), 1.0);
+  si1 = std::min(std::max(si1, 0.0), 1.0);
+  return corner_data_[i].point
+    + corner_data_[i].tangent1 * gamma(si)
+    + corner_data_[i].tangent2 * gamma(si1)
+    + rationalTwist(si, si1, corner_data_[i].twist1, corner_data_[i].twist2)
+      * gamma(si) * gamma(si1);
+}
+
+Point3D
+Surface::sideInterpolant(size_t i, double si, double di) const {
+  si = std::min(std::max(si, 0.0), 1.0);
+  di = std::max(gamma(di), 0.0);
+  return ribbons_[i]->eval(Point2D(si, di));
+}
+
+DoubleVector
+Surface::blendCorner(const Point2DVector &sds) const {
+  DoubleVector blf; blf.reserve(n_);
+
+  size_t close_to_boundary = 0;
+  for (const auto &sd : sds) {
+    if (sd[1] < epsilon)
+      ++close_to_boundary;
+  }
+
+  if (close_to_boundary > 0) {
+    for (size_t i = 0; i < n_; ++i) {
+      size_t ip = next(i);
+      if (close_to_boundary > 1)
+        blf.push_back(sds[i][1] < epsilon && sds[ip][1] < epsilon ? 1.0 : 0.0);
+      else if (sds[i][1] < epsilon) {
+        double tmp = std::pow(sds[ip][1], -2);
+        blf.push_back(tmp / (tmp + std::pow(sds[prev(i)][1], -2)));
+      } else if (sds[ip][1] < epsilon) {
+        double tmp = std::pow(sds[i][1], -2);
+        blf.push_back(tmp / (tmp + std::pow(sds[next(ip)][1], -2)));
+      } else
+        blf.push_back(0.0);
+    }
+  } else {
+    double denominator = 0.0;
+    for (size_t i = 0; i < n_; ++i) {
+      blf.push_back(std::pow(sds[i][1] * sds[next(i)][1], -2));
+      denominator += blf.back();
+    }
+    std::transform(blf.begin(), blf.end(), blf.begin(),
+                   [denominator](double x) { return x / denominator; });
+  }
+
+  return blf;
 }
 
 DoubleVector
@@ -130,8 +189,48 @@ Surface::blendSideSingular(const Point2DVector &sds) const {
 }
 
 double
+Surface::blendHermite(double x) {
+  double x2 = x * x;
+  return 2.0 * x * x2 - 3.0 * x2 + 1.0;
+}
+
+void
+Surface::updateCorner(size_t i) {
+  static const double step = 1.0e-4;
+  size_t ip = next(i);
+
+  VectorVector der;
+  Vector3D d1, d2;
+  ribbons_[i]->curve()->eval(1.0, 1, der);
+  corner_data_[i].point = der[0];
+  corner_data_[i].tangent1 = -der[1];
+  ribbons_[ip]->curve()->eval(0.0, 1, der);
+  corner_data_[i].tangent2 = der[1];
+  d1 = ribbons_[i]->eval(Point2D(1.0, 1.0));
+  d2 = ribbons_[i]->eval(Point2D(1.0 - step, 1.0));
+  corner_data_[i].twist1 = (d2 - d1) / step;
+  d1 = ribbons_[ip]->eval(Point2D(0.0, 1.0));
+  d2 = ribbons_[ip]->eval(Point2D(step, 1.0));
+  corner_data_[i].twist1 = (d2 - d1) / step;
+}
+
+void
+Surface::updateCorners() {
+  corner_data_.resize(n_);
+  for (size_t i = 0; i < n_; ++i)
+    updateCorner(i);
+}
+
+double
 Surface::gamma(double d) const {
   if (use_gamma_)
     return d / (2.0 * d + 1.0);
   return d;
+}
+
+Vector3D
+Surface::rationalTwist(double u, double v, const Vector3D &f, const Vector3D &g) {
+  if (std::abs(u + v) < epsilon)
+    return Vector3D(0,0,0);
+  return (f * u + g * v) / (u + v);
 }

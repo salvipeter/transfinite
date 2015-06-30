@@ -9,5 +9,6 @@ add_library(transfinite
   domain.cc domain-regular.cc domain-circular.cc
   parameterization.cc parameterization-bilinear.cc parameterization-barycentric.cc
   ribbon.cc ribbon-compatible.cc
-  surface.cc surface-side-based.cc
+  surface.cc surface-side-based.cc surface-corner-based.cc
+             surface-generalized-coons.cc surface-composite-ribbon.cc
 )

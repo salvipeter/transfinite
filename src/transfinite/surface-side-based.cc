@@ -21,10 +21,8 @@ SurfaceSideBased::eval(const Point2D &uv) const {
   Point2DVector sds = param_->mapToRibbons(uv);
   DoubleVector blends = blendSideSingular(sds);
   Point3D p(0,0,0);
-  for (size_t i = 0; i < n_; ++i) {
-    Point2D sd2(std::min(std::max(sds[i][0], 0.0), 1.0), gamma(sds[i][1]));
-    p += ribbons_[i]->eval(sd2) * blends[i];
-  }
+  for (size_t i = 0; i < n_; ++i)
+    p += sideInterpolant(i, sds[i][0], sds[i][1]) * blends[i];
   return p;
 }
 
