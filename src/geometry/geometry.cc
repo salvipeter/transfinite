@@ -3,6 +3,7 @@
 #include "vector-impl.hh"
 #include "bspline-impl.hh"
 #include "trimesh-impl.hh"
+#include "fitter-impl.hh"
 
 //const double EPS_REAL = std::numeric_limits<double>::epsilon();
 
@@ -323,4 +324,171 @@ TriMesh::addTriangle(size_t a, size_t b, size_t c) {
 void
 TriMesh::writeOBJ(std::string filename) const {
   impl_->writeOBJ(filename);
+}
+
+CurveFitter::CurveFitter()
+  : impl_(std::make_unique<CurveFitterImpl>()) {
+}
+
+CurveFitter::CurveFitter(const CurveFitter &v)
+  : impl_(std::make_unique<CurveFitterImpl>(*v.impl_)) {
+}
+
+CurveFitter::CurveFitter(CurveFitter &&v) = default;
+
+CurveFitter::~CurveFitter() = default;
+
+CurveFitter &
+CurveFitter::operator=(CurveFitter &&v) = default;
+
+CurveFitter &
+CurveFitter::operator=(const CurveFitter &v) {
+  *impl_ = *v.impl_;
+  return *this;
+}
+
+void
+CurveFitter::setTolerance(double tol) {
+  impl_->setTolerance(tol);
+}
+
+void
+CurveFitter::setDegree(size_t deg) {
+  impl_->setDegree(deg);
+}
+
+void
+CurveFitter::setNrControlPoints(size_t nr_cpts) {
+  impl_->setNrControlPoints(nr_cpts);
+}
+
+void
+CurveFitter::setKnotVector(const DoubleVector &knots) {
+  impl_->setKnotVector(knots);
+}
+
+void
+CurveFitter::addControlPoint(size_t i, const Point3D &point) {
+  impl_->addControlPoint(i, point);
+}
+
+void
+CurveFitter::addParamPoint(double param, const Point3D &point) {
+  impl_->addParamPoint(param, point);
+}
+
+void
+CurveFitter::fit() {
+  impl_->fit();
+}
+
+size_t
+CurveFitter::degree() const {
+  return impl_->degree();
+}
+
+DoubleVector
+CurveFitter::knotVector() const {
+  return impl_->knotVector();
+}
+
+PointVector
+CurveFitter::controlPoints() const {
+  return impl_->controlPoints();
+}
+
+SurfaceFitter::SurfaceFitter()
+  : impl_(std::make_unique<SurfaceFitterImpl>()) {
+}
+
+SurfaceFitter::SurfaceFitter(const SurfaceFitter &v)
+  : impl_(std::make_unique<SurfaceFitterImpl>(*v.impl_)) {
+}
+
+SurfaceFitter::SurfaceFitter(SurfaceFitter &&v) = default;
+
+SurfaceFitter::~SurfaceFitter() = default;
+
+SurfaceFitter &
+SurfaceFitter::operator=(SurfaceFitter &&v) = default;
+
+SurfaceFitter &
+SurfaceFitter::operator=(const SurfaceFitter &v) {
+  *impl_ = *v.impl_;
+  return *this;
+}
+
+void
+SurfaceFitter::setTolerance(double tol) {
+  impl_->setTolerance(tol);
+}
+
+void
+SurfaceFitter::setDegreeU(size_t deg_u) {
+  impl_->setDegreeU(deg_u);
+}
+
+void
+SurfaceFitter::setDegreeV(size_t deg_v) {
+  impl_->setDegreeV(deg_v);
+}
+
+void
+SurfaceFitter::setNrControlPointsU(size_t nr_cpts_u) {
+  impl_->setNrControlPointsU(nr_cpts_u);
+}
+
+void
+SurfaceFitter::setNrControlPointsV(size_t nr_cpts_v) {
+  impl_->setNrControlPointsV(nr_cpts_v);
+}
+
+void
+SurfaceFitter::setKnotVectorU(const DoubleVector &knots_u) {
+  impl_->setKnotVectorU(knots_u);
+}
+
+void
+SurfaceFitter::setKnotVectorV(const DoubleVector &knots_v) {
+  impl_->setKnotVectorV(knots_v);
+}
+
+void
+SurfaceFitter::addControlPoint(size_t i, size_t j, const Point3D &point) {
+  impl_->addControlPoint(i, j, point);
+}
+
+void
+SurfaceFitter::addParamPoint(const Point2D &param, const Point3D &point) {
+  impl_->addParamPoint(param, point);
+}
+
+void
+SurfaceFitter::fit() {
+  impl_->fit();
+}
+
+size_t
+SurfaceFitter::degreeU() const {
+  return impl_->degreeU();
+}
+
+size_t
+SurfaceFitter::degreeV() const {
+  return impl_->degreeV();
+}
+
+DoubleVector
+SurfaceFitter::knotVectorU() const {
+  return impl_->knotVectorU();
+}
+
+DoubleVector
+SurfaceFitter::knotVectorV() const {
+  return impl_->knotVectorV();
+}
+
+PointMatrix
+SurfaceFitter::controlPoints() const {
+  return impl_->controlPoints();
 }

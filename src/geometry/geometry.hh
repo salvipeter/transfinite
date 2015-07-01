@@ -18,6 +18,7 @@ using Vector2DVector = std::vector<Vector2D>;
 using VectorVector = std::vector<Vector3D>;
 using Point2DVector = std::vector<Point2D>;
 using PointVector = std::vector<Point3D>;
+using PointMatrix = std::vector<PointVector>;
 using CurveVector = std::vector<std::shared_ptr<BSCurve>>;
 
 class Vector2D {
@@ -154,4 +155,75 @@ public:
 private:
   class TriMeshImpl;
   std::unique_ptr<TriMeshImpl> impl_;
+};
+
+class CurveFitter {
+public:
+  // Constructors & destructor
+  CurveFitter();
+  CurveFitter(const CurveFitter &c);
+  CurveFitter(CurveFitter &&c);
+  ~CurveFitter();
+
+  // Assignments
+  CurveFitter &operator=(const CurveFitter &c);
+  CurveFitter &operator=(CurveFitter &&v);
+
+  // Fitting constraints
+  void setTolerance(double tol);
+  void setDegree(size_t deg);
+  void setNrControlPoints(size_t nr_cpts);
+  void setKnotVector(const DoubleVector &knots);
+  void addControlPoint(size_t i, const Point3D &point);
+  void addParamPoint(double param, const Point3D &point);
+
+  // Fit
+  void fit();
+
+  // Getters
+  size_t degree() const;
+  DoubleVector knotVector() const;
+  PointVector controlPoints() const;
+
+private:
+  class CurveFitterImpl;
+  std::unique_ptr<CurveFitterImpl> impl_;
+};
+
+class SurfaceFitter {
+public:
+  // Constructors & destructor
+  SurfaceFitter();
+  SurfaceFitter(const SurfaceFitter &c);
+  SurfaceFitter(SurfaceFitter &&c);
+  ~SurfaceFitter();
+
+  // Assignments
+  SurfaceFitter &operator=(const SurfaceFitter &c);
+  SurfaceFitter &operator=(SurfaceFitter &&v);
+
+  // Fitting constraints
+  void setTolerance(double tol);
+  void setDegreeU(size_t deg_u);
+  void setDegreeV(size_t deg_v);
+  void setNrControlPointsU(size_t nr_cpts_u);
+  void setNrControlPointsV(size_t nr_cpts_v);
+  void setKnotVectorU(const DoubleVector &knots_u);
+  void setKnotVectorV(const DoubleVector &knots_v);
+  void addControlPoint(size_t i, size_t j, const Point3D &point);
+  void addParamPoint(const Point2D &param, const Point3D &point);
+
+  // Fit
+  void fit();
+
+  // Getters
+  size_t degreeU() const;
+  size_t degreeV() const;
+  DoubleVector knotVectorU() const;
+  DoubleVector knotVectorV() const;
+  PointMatrix controlPoints() const;
+
+private:
+  class SurfaceFitterImpl;
+  std::unique_ptr<SurfaceFitterImpl> impl_;
 };
