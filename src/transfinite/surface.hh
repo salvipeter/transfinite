@@ -20,6 +20,11 @@ public:
   virtual Point3D eval(const Point2D &uv) const = 0;
   TriMesh eval(size_t resolution) const;
 
+#ifndef NO_SURFACE_FIT
+  // void fitTrimmed() const;
+  void fitCentralSplit(double knot_snapping_tol = 1.0e-2, size_t sampling_density = 30) const;
+#endif  // NO_SURFACE_FIT
+
 protected:
   virtual std::shared_ptr<Ribbon> newRibbon() const = 0;
   Point3D cornerCorrection(size_t i, double s1, double s2) const;
