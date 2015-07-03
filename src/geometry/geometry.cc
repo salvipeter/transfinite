@@ -4,8 +4,7 @@
 #include "bspline-impl.hh"
 #include "trimesh-impl.hh"
 #include "fitter-impl.hh"
-
-//const double EPS_REAL = std::numeric_limits<double>::epsilon();
+#include "iges-impl.hh"
 
 Vector2D::Vector2D()
   : impl_(std::make_unique<Vector2DImpl>()) {
@@ -453,27 +452,23 @@ SurfaceFitter::fit() {
   impl_->fit();
 }
 
-size_t
-SurfaceFitter::degreeU() const {
-  return impl_->degreeU();
+BSSurface
+SurfaceFitter::surface() const {
+  return impl_->surface();
 }
 
-size_t
-SurfaceFitter::degreeV() const {
-  return impl_->degreeV();
+IGES::IGES(std::string filename)
+  : impl_(std::make_unique<IGESImpl>(filename)) {
 }
 
-DoubleVector
-SurfaceFitter::knotVectorU() const {
-  return impl_->knotVectorU();
+IGES::~IGES() = default;
+
+void
+IGES::writeSurface(const BSSurface &surface) {
+  impl_->writeSurface(surface);
 }
 
-DoubleVector
-SurfaceFitter::knotVectorV() const {
-  return impl_->knotVectorV();
-}
-
-PointMatrix
-SurfaceFitter::controlPoints() const {
-  return impl_->controlPoints();
+void
+IGES::close() {
+  impl_->close();
 }

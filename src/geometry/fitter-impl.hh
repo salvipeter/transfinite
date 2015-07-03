@@ -121,30 +121,26 @@ public:
     }
     f_.Enlargement() = 0.0;
     f_.AddFunctional(new BSSF_FN_LsqDistance<Point<3, double>>());
-    f_.AddFunctional(new BSSF_FN_Curvature<Point<3, double>>());
+    // f_.AddFunctional(new BSSF_FN_Curvature<Point<3, double>>()); // kutykurutty
     f_.OptimizeParameters() = false;
     f_.Fit();
   }
-  size_t degreeU() const { return f_.Surface().DegreeU(); }
-  size_t degreeV() const { return f_.Surface().DegreeV(); }
-  DoubleVector knotVectorU() const {
-    const BSplineSurface<Point<3, double>>::KnotVectorType &knots = f_.Surface().KnotVectorU();
-    return DoubleVector(knots.begin(), knots.end());
-  }
-  DoubleVector knotVectorV() const {
-    const BSplineSurface<Point<3, double>>::KnotVectorType &knots = f_.Surface().KnotVectorV();
-    return DoubleVector(knots.begin(), knots.end());
-  }
-  PointMatrix controlPoints() const {
-    PointMatrix result;
+  BSSurface surface() const {
+    BSSurface result;
+    result.deg_u_ = f_.Surface().DegreeU();
+    result.deg_v_ = f_.Surface().DegreeV();
+    const BSplineSurface<Point<3, double>>::KnotVectorType &knots_u = f_.Surface().KnotVectorU();
+    result.knots_u_.assign(knots_u.begin(), knots_u.end());
+    const BSplineSurface<Point<3, double>>::KnotVectorType &knots_v = f_.Surface().KnotVectorV();
+    result.knots_v_.assign(knots_v.begin(), knots_v.end());
     const BSplineSurface<Point<3, double>>::ControlNetType &cnet = f_.Surface().theControlNet();
     size_t n = cnet.sizes()[0], m = cnet.sizes()[1];
-    result.resize(n);
+    result.cnet_.resize(n);
     for (size_t i = 0; i < n; ++i) {
-      result[i].reserve(m);
+      result.cnet_[i].reserve(m);
       for (size_t j = 0; j < m; ++j) {
         const Point<3, double> &p = cnet[i][j];
-        result[i].push_back(Point3D(p[0], p[1], p[2]));
+        result.cnet_[i].push_back(Point3D(p[0], p[1], p[2]));
       }
     }
     return result;

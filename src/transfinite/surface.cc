@@ -284,7 +284,7 @@ namespace {
   }
 }
 
-void
+std::vector<BSSurface>
 Surface::fitCentralSplit(double fit_tol, double knot_snapping_tol, size_t sampling_density) const {
   // Plan
   // ----
@@ -301,10 +301,7 @@ Surface::fitCentralSplit(double fit_tol, double knot_snapping_tol, size_t sampli
   //    6. fit
 
   knot_snap_tolerance = knot_snapping_tol;
-  SurfaceFitter fitter;
-  fitter.setTolerance(fit_tol);
-  fitter.setDegreeU(3);
-  fitter.setDegreeV(3);
+  std::vector<BSSurface> surfaces;
 
   if (n_ == 4) {
     // 1. Generate edge curves
@@ -323,6 +320,11 @@ Surface::fitCentralSplit(double fit_tol, double knot_snapping_tol, size_t sampli
     unifyKnots(edge_curves[1], edge_curves[3]);
 
     // 3. Fit
+    SurfaceFitter fitter;
+    fitter.setTolerance(fit_tol);
+    fitter.setDegreeU(3);
+    fitter.setDegreeV(3);
+
     ParameterizationBilinear param_bilinear;
     param_bilinear.setDomain(domain_);
     param_bilinear.update();
@@ -340,7 +342,7 @@ Surface::fitCentralSplit(double fit_tol, double knot_snapping_tol, size_t sampli
       double j_coeff = (double)j / u_step;
       for (size_t k = 0; k < 4; k++) {
         for (size_t i = 0; i < j; i++) {
-          Point2D p = center * (1.0 - j_coeff) + domain_->edgePoint(k, (double)i/j);
+          Point2D p = center * (1.0 - j_coeff) + domain_->edgePoint(k, (double)i/j) * j_coeff;
           point = eval(p);
           bilinear = param_bilinear.mapToRibbon(0, p);
           fitter.addParamPoint(bilinear, point);
@@ -354,7 +356,7 @@ Surface::fitCentralSplit(double fit_tol, double knot_snapping_tol, size_t sampli
     const size_t nr_ctrl[] = { edge_curves[0].nrControlPoints(),
                                edge_curves[1].nrControlPoints() };
 
-    // Setup control points constraints
+    // Setup control point constraints
     for (size_t i = 0; i < 2; ++i) {
       size_t end = nr_ctrl[1-i] - 1;
       const BSCurve &e1 = edge_curves[i], &e2 = edge_curves[i+2];
@@ -368,7 +370,11 @@ Surface::fitCentralSplit(double fit_tol, double knot_snapping_tol, size_t sampli
         }
       }
     }
+
+    fitter.fit();
+    surfaces.push_back(fitter.surface());
   } else {
+    surfaces.reserve(n_);
     Point2D center = domain_->center();
     size_t &u_step = sampling_density;
 
@@ -434,6 +440,11 @@ Surface::fitCentralSplit(double fit_tol, double knot_snapping_tol, size_t sampli
       unifyKnots(edge_curves[1], div_curves[1]);
 
       // 3. Fit
+      SurfaceFitter fitter;
+      fitter.setTolerance(fit_tol);
+      fitter.setDegreeU(3);
+      fitter.setDegreeV(3);
+
       Point2D u1 = edge_mid_u[i];
       Point2D v1 = edge_mid_u[next(i)];
       Point2D u_end = domain_->vertices()[i];
@@ -458,7 +469,7 @@ Surface::fitCentralSplit(double fit_tol, double knot_snapping_tol, size_t sampli
       size_t const nr_ctrl[] = { edge_curves[0].nrControlPoints(),
                                  edge_curves[1].nrControlPoints() };
 
-      // Setup control points constraints
+      // Setup control point constraints
       for (size_t k = 0; k < 2; ++k) {
         size_t end = nr_ctrl[1-k] - 1;
         const BSCurve &e = edge_curves[k], &d = div_curves[k];
@@ -472,10 +483,12 @@ Surface::fitCentralSplit(double fit_tol, double knot_snapping_tol, size_t sampli
           }
         }
       }
+
+      fitter.fit();
+      surfaces.push_back(fitter.surface());
     }
   }
-
-  fitter.fit();
+  return surfaces;
 }
 
 #endif  // NO_SURFACE_FIT

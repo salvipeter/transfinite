@@ -49,7 +49,7 @@ void surfaceTest(std::shared_ptr<Transfinite::Surface> &&surf, const CurveVector
   surf->setCurves(cv);
   surf->setupLoop();             // should be called after curve pointers changed
   surf->update();                // should be called after curves changed
-  surf->eval(resolution).writeOBJ(filename);
+  surf->eval(resolution).writeOBJ(filename + ".obj");
 
   Transfinite::DomainRegular domain; // the surface's domain is protected, so we simulate it here
   domain.setSides(cv);
@@ -99,7 +99,11 @@ void surfaceTest(std::shared_ptr<Transfinite::Surface> &&surf, const CurveVector
 
 #ifndef NO_SURFACE_FIT
 
-  surf->fitCentralSplit();
+  std::vector<BSSurface> surfaces = surf->fitCentralSplit();
+  IGES iges(filename + ".igs");
+  for (const auto &s : surfaces)
+    iges.writeSurface(s);
+  iges.close();
 
 #endif  // NO_SURFACE_FIT
 }
@@ -205,6 +209,7 @@ int main(int argc, char **argv) {
 
   // Ribbon test
   CurveVector cv = readLOP("../../models/cagd86.lop");
+  // CurveVector cv = readLOP("../../models/pocket4sided.lop");
   size_t n = cv.size();
   double max_d = 0.25;
   size_t rib_res = 15;
@@ -241,10 +246,10 @@ int main(int argc, char **argv) {
   }
 
   // Surface test
-  surfaceTest(std::make_shared<Transfinite::SurfaceSideBased>(), cv, "/tmp/surf-sb.obj", 15);
-  surfaceTest(std::make_shared<Transfinite::SurfaceCornerBased>(), cv, "/tmp/surf-cb.obj", 15);
-  surfaceTest(std::make_shared<Transfinite::SurfaceGeneralizedCoons>(), cv, "/tmp/surf-gc.obj", 15);
-  surfaceTest(std::make_shared<Transfinite::SurfaceCompositeRibbon>(), cv, "/tmp/surf-cr.obj", 15);
+  surfaceTest(std::make_shared<Transfinite::SurfaceSideBased>(), cv, "/tmp/surf-sb", 15);
+  surfaceTest(std::make_shared<Transfinite::SurfaceCornerBased>(), cv, "/tmp/surf-cb", 15);
+  surfaceTest(std::make_shared<Transfinite::SurfaceGeneralizedCoons>(), cv, "/tmp/surf-gc", 15);
+  surfaceTest(std::make_shared<Transfinite::SurfaceCompositeRibbon>(), cv, "/tmp/surf-cr", 15);
 
   return 0;
 }

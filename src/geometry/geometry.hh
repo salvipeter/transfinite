@@ -138,6 +138,12 @@ private:
   std::unique_ptr<BSCurveImpl> impl_;
 };
 
+struct BSSurface {
+  size_t deg_u_, deg_v_;
+  DoubleVector knots_u_, knots_v_;
+  PointMatrix cnet_;
+};
+
 class TriMesh {
 public:
   // Constructors & destructor
@@ -193,10 +199,6 @@ public:
   SurfaceFitter();
   ~SurfaceFitter();
 
-  // Assignments
-  SurfaceFitter &operator=(const SurfaceFitter &c);
-  SurfaceFitter &operator=(SurfaceFitter &&v);
-
   // Fitting constraints
   void setTolerance(double tol);
   void setDegreeU(size_t deg_u);
@@ -210,15 +212,24 @@ public:
 
   // Fit
   void fit();
-
-  // Getters
-  size_t degreeU() const;
-  size_t degreeV() const;
-  DoubleVector knotVectorU() const;
-  DoubleVector knotVectorV() const;
-  PointMatrix controlPoints() const;
+  BSSurface surface() const;
 
 private:
   class SurfaceFitterImpl;
   std::unique_ptr<SurfaceFitterImpl> impl_;
+};
+
+class IGES {
+public:
+  // Constructor & destructor
+  IGES(std::string filename);
+  ~IGES();
+
+  // I/O
+  void writeSurface(const BSSurface &surface);
+  void close();
+
+private:
+  class IGESImpl;
+  std::unique_ptr<IGESImpl> impl_;
 };
