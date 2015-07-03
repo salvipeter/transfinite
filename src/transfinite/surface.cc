@@ -5,6 +5,9 @@
 #include "ribbon.hh"
 #include "surface.hh"
 
+// For the 4-sided central split fit
+#include "parameterization-bilinear.hh"
+
 Surface::Surface()
   : n_(0), use_gamma_(true) {
 }
@@ -244,35 +247,33 @@ Surface::rationalTwist(double u, double v, const Vector3D &f, const Vector3D &g)
 namespace {
   double knot_snap_tolerance;
 
-  double snapToKnot(double x, S::CurveType const &c) {
-    S::CurveType::KnotVectorType const &knots = c.theKnotVector();
-    double tolerance = knot_snap_tolerance * fabs(knots.back() - knots.front()); 
-    for (S::CurveType::KnotVectorType::const_iterator i = knots.begin(), ie = knots.end();
-         i != ie; ++i)
-      if (fabs(*i - x) < tolerance)
-        return *i;
+  double snapToKnot(double x, const BSCurve &c) {
+    DoubleVector knots = c.knotVector();
+    for (double i : knots)
+      if (fabs(i - x) < knot_snap_tolerance)
+        return i;
     return x;
   }
 
-  void unifyKnots(S::CurveType &c1, S::CurveType &c2) {
-    // Assumes that both curves are parameterized in [0,1]
+  void unifyKnots(BSCurve &c1, BSCurve &c2) {
     bool changed;
-    S::CurveType::KnotVectorType const &k1 = c1.theKnotVector();
-    S::CurveType::KnotVectorType const &k2 = c2.theKnotVector();
+    DoubleVector k1 = c1.knotVector(), k2 = c2.knotVector();
     do {
       changed = false;
-      for (S::CurveType::KnotVectorType::const_iterator i = k1.begin(), j = k2.begin(),
+      for (DoubleVector::const_iterator i = k1.begin(), j = k2.begin(),
              ie = k1.end(), je = k2.end(); i != ie && j != je; ++i, ++j) {
         if (fabs(*i - *j) < knot_snap_tolerance && *i != 1.0 && *j != 1.0) {
           // Treat these knots as if they were the same.
           // Better than inserting very small intervals in both.
           // Note, that we do not have this option at the ends of the knot vectors. 
         } else if (*i < *j) {
-          c2.InsertKnot(*i);
+          c2.insertKnot(*i);
+          k2.insert(j, *i);
           changed = true;
           break;
         } else if (*i > *j) {
-          c1.InsertKnot(*j);
+          c1.insertKnot(*j);
+          k1.insert(i, *j);
           changed = true;
           break;
         }
@@ -282,7 +283,7 @@ namespace {
 }
 
 void
-Surface::fitCentralSplit(double knot_snapping_tol, size_t sampling_density) const {
+Surface::fitCentralSplit(double fit_tol, double knot_snapping_tol, size_t sampling_density) const {
   // Plan
   // ----
   // when n == 4:
@@ -298,28 +299,21 @@ Surface::fitCentralSplit(double knot_snapping_tol, size_t sampling_density) cons
   //    6. fit
 
   knot_snap_tolerance = knot_snapping_tol;
+  SurfaceFitter fitter;
+  fitter.setTolerance(fit_tol);
+  fitter.setDegreeU(3);
+  fitter.setDegreeV(3);
 
-  if (n == 4) {
+  if (n_ == 4) {
     // 1. Generate edge curves
-    S::CurveType edge_curves[4];
+    BSCurve edge_curves[4];
     for (size_t i = 0; i < 4; ++i) {
-      SRibbon *r = Ribbons()[i];
-      edge_curves[i] = *r->FreeCurve()->Curve();
-      double start = r->Low();
-      double end = r->Up();
-      if (start > end) {
-        Real const lower = edge_curves[i].LowerParam();
-        Real const upper = edge_curves[i].UpperParam();
-        edge_curves[i].Reparametrize((end-lower)+start, (start-upper)+end);
-        std::swap(start, end);
+      std::shared_ptr<Ribbon> r = ribbons_[i];
+      edge_curves[i] = *r->curve();
+      if (i > 1) {
+        edge_curves[i].reverse();
+        edge_curves[i].normalize();
       }
-      start = snapToKnot(start, edge_curves[i]);
-      end = snapToKnot(end, edge_curves[i]);
-
-      edge_curves[i].Trim(start, end);
-      if (i > 1)
-        edge_curves[i].Reverse();
-      edge_curves[i].Reparametrize(0.0, 1.0);
     }
 
     // 2. Unify the opposite knot vectors
@@ -327,263 +321,159 @@ Surface::fitCentralSplit(double knot_snapping_tol, size_t sampling_density) cons
     unifyKnots(edge_curves[1], edge_curves[3]);
 
     // 3. Fit
-    SurfaceFitter::FitterType& fitter = sf->AddFitter(object_id, 0);
-
-    BSS_Fitter<S::PointType>::ParamPointSetReference point_set = fitter.ParamPointSet();
-    point_set.push_back(BSS_Fitter<S::PointType>::ParamPointGroupType(tol));
-    BSS_Fitter<S::PointType>::ParamPointGroupReference pg(point_set.front());
+    ParameterizationBilinear param_bilinear;
+    param_bilinear.setDomain(domain_);
+    param_bilinear.update();
 
     // Problem: we want to pass parameter values on a [0,1]x[0,1] square,
     //          but the actual domain can be anything, so we do a bilinear mapping,
     //          based on the first ribbon
-    S::PointType point;
-    int u_step = sampling_density;
-    S::Point2D const &centre = domain.Center();
-    if (GetSurfacePoint(centre, point)) {
-      S::Point2D const bilinear =
-        domain.MapNSidedDomainTo4SidedDomain(centre, 0, SDomain::BilinearSweep);
-      pg.push_back(BSS_Fitter<S::PointType>::ParamPointType(point, bilinear));
-      if (!parametrization_check)
-        fitted_points.push_back(point);
-    }
+    size_t &u_step = sampling_density;
+    Point2D center = domain_->center();
+    Point3D point = eval(center);
+    Point2D bilinear = param_bilinear.mapToRibbon(0, center);
+    fitter.addParamPoint(bilinear, point);
 
-    for (int j = 1; j <= u_step; ++j) {
-      double const j_coeff = (double)j / u_step;
-      for (size_t k = 0; k < n; k++) {
-        for (int i = 0; i < j; i++) {
-          S::Point2D const p = AffinComb(centre, j_coeff, domain.edge_point(k, (double)i/j));
-          if (GetSurfacePoint(p, point)) {
-            S::Point2D const bilinear =
-              domain.MapNSidedDomainTo4SidedDomain(p, 0, SDomain::BilinearSweep);
-            pg.push_back(BSS_Fitter<S::PointType>::ParamPointType(point, bilinear));
-            if (!parametrization_check)
-              fitted_points.push_back(point);
-          }
+    for (size_t j = 1; j <= u_step; ++j) {
+      double j_coeff = (double)j / u_step;
+      for (size_t k = 0; k < 4; k++) {
+        for (size_t i = 0; i < j; i++) {
+          Point2D p = center * (1.0 - j_coeff) + domain_->edgePoint(k, (double)i/j);
+          point = eval(p);
+          bilinear = param_bilinear.mapToRibbon(0, p);
+          fitter.addParamPoint(bilinear, point);
         }
       }
     }
         
-    fitter.DegreeU() = 3;
-    fitter.DegreeV() = 3;
+    fitter.setKnotVectorU(edge_curves[0].knotVector());
+    fitter.setKnotVectorV(edge_curves[1].knotVector());
 
-    fitter.KnotVectorU() = edge_curves[0].theKnotVector();
-    fitter.KnotVectorV() = edge_curves[1].theKnotVector();
-
-    size_t const nr_ctrl[] = { edge_curves[0].NrControlValues(),
-                               edge_curves[1].NrControlValues() };
+    const size_t nr_ctrl[] = { edge_curves[0].nrControlPoints(),
+                               edge_curves[1].nrControlPoints() };
 
     // Setup control points constraints
-    BSS_Fitter<S::PointType>::ConstraintsType cst(nr_ctrl);
     for (size_t i = 0; i < 2; ++i) {
       size_t end = nr_ctrl[1-i] - 1;
-      S::CurveType::ControlVectorType const &ctrl1 = edge_curves[i].theControlVector();
-      S::CurveType::ControlVectorType const &ctrl2 = edge_curves[i+2].theControlVector();
+      const BSCurve &e1 = edge_curves[i], &e2 = edge_curves[i+2];
       for (size_t j = 0; j < nr_ctrl[i]; ++j) {
         if (i == 0) {
-          cst[j][ 0 ] = ctrl1[j];
-          cst[j][end] = ctrl2[j];
+          fitter.addControlPoint(j,   0,   e1.controlPoint(j));
+          fitter.addControlPoint(j,   end, e2.controlPoint(j));
         } else {
-          cst[end][j] = ctrl1[j];
-          cst[ 0 ][j] = ctrl2[j];
+          fitter.addControlPoint(end, j,   e1.controlPoint(j));
+          fitter.addControlPoint(0,   j,   e2.controlPoint(j));
         }
       }
     }
-    std::swap(fitter.CtrlConstraints(), cst);
-
-    fitter.Enlargement() = 0.0;
-
-    fitter.AddFunctional(new BSSF_FN_LsqDistance<S::PointType>());
-    fitter.AddFunctional(new BSSF_FN_Curvature<S::PointType>());
-    fitter.OptimizeParameters() = false;
-
-    QString dump_file = getDumpFilePath(sf->GetFilename());
-    if (!dump_file.isEmpty())
-      fitter.DumpOut( dump_file.toAscii().data());
-
-    if (progress)
-      SketchesWindow::sketches_window->GetProgressIndicator()->setProgress(++(*progress));
   } else {
-    S::Point2D const &center = domain.Center();
-    int u_step = OptionHandler::instance().GetOption("Patch Sample Density")->IntValue();
+    Point2D center = domain_->center();
+    size_t &u_step = sampling_density;
+
     // 0. Generate dividing curves (from the side to the center)
-    std::vector<S::CurveType> dividing_curves; dividing_curves.reserve(n);
-    std::vector<double> edge_midpoints; edge_midpoints.reserve(n); edge_midpoints.resize(n);
-    std::vector<S::Point2D> edge_mid_u; edge_mid_u.reserve(n); edge_mid_u.resize(n);
-    for (size_t i = 0; i < n; ++i) {
-      BSC_Fitter<S::PointType> bf;
-      bf.Degree() = 3;
-      BSC_Fitter<S::PointType>::ParamPointGroupType ppoints(tol);
+    std::vector<BSCurve> dividing_curves; dividing_curves.reserve(n_);
+    DoubleVector edge_midpoints; edge_midpoints.resize(n_);
+    Point2DVector edge_mid_u; edge_mid_u.resize(n_);
+    for (size_t i = 0; i < n_; ++i) {
+      CurveFitter bf;
+      bf.setTolerance(fit_tol);
+      bf.setDegree(3);
 
       double edge_half;
       {
-        SRibbon *r = Ribbons()[i];
-        S::CurveType c = *r->FreeCurve()->Curve();
-        double mid = snapToKnot((r->Low() + r->Up()) / 2.0, c);
+        std::shared_ptr<Ribbon> r = ribbons_[i];
+        BSCurve c = *r->curve();
+        double mid = snapToKnot(0.5, c);
         edge_midpoints[i] = mid;
-        edge_half = (mid - r->Low()) / (r->Up() - r->Low());
+        edge_half = mid;
       }
-      S::Point2D const u0 = domain.edge_point(i, edge_half);
+      Point2D u0 = domain_->edgePoint(i, edge_half);
       edge_mid_u[i] = u0;
-      for (int j = 0; j <= u_step; j++) {
-        double const u = (double)j / u_step;
-        S::Point2D const param = AffinComb(u0, u, center);
-        S::PointType point;
-        if (GetSurfacePoint(param, point))
-          ppoints.push_back(BSC_Fitter<S::PointType>::ParamPointType(point, u));
+      for (size_t j = 0; j <= u_step; j++) {
+        double u = (double)j / u_step;
+        Point2D param = u0 * (1.0 - u) + center * u;
+        Point3D point = eval(param);
+        bf.addParamPoint(u, point);
       }
-      BSC_Fitter<S::PointType>::ConstraintsType cst(ppoints.size());
-      cst.front() = ppoints.front().Point();
-      cst.back() = ppoints.back().Point();
-      std::swap(bf.CtrlConstraints(), cst);
-      bf.ParamPointSet().push_back(ppoints);
-      bf.AddFunctional(new BSCF_FN_LsqDistance<S::PointType>());
-      bf.AddFunctional(new BSCF_FN_Curvature<S::PointType>());
-      bf.Enlargement() = 0.0;
-      bf.OptimizeParameters() = false;
-      bf.Fit();
-      dividing_curves.push_back(bf.Curve());
-      // TODO: this shouldn't be needed - why does it not interpolate the constraints?
-      size_t end = dividing_curves.back().NrControlValues() - 1;
-      dividing_curves.back().theControlVector()[0] = ppoints.front().Point();
-      dividing_curves.back().theControlVector()[end] = ppoints.back().Point();
+      size_t nr_cpts = 5;       // kutykurutty
+      bf.setNrControlPoints(nr_cpts);
+      bf.addControlPoint(0, eval(u0));
+      bf.addControlPoint(nr_cpts - 1, eval(center));
+      bf.fit();
+      dividing_curves.push_back(bf.curve());
     }
-    for (size_t i = 0; i < n; ++i) {
+
+    for (size_t i = 0; i < n_; ++i) {
       // 1. Generate edge curves
-      S::CurveType edge_curves[2];
+      BSCurve edge_curves[2];
       for (size_t j = 0; j < 2; ++j) {
-        size_t ip = (i + j) % n;
-        SRibbon *r = Ribbons()[ip];
-        edge_curves[j] = *r->FreeCurve()->Curve();
+        size_t ip = next(i, j);
+        std::shared_ptr<Ribbon> r = ribbons_[ip];
+        edge_curves[j] = *r->curve();
         double mid = edge_midpoints[ip];
         if (j == 0) {
-          double end = snapToKnot(r->Up(), edge_curves[j]);
-          if (mid > end) {
-            Real const lower = edge_curves[j].LowerParam();
-            Real const upper = edge_curves[j].UpperParam();
-            edge_curves[j].Reparametrize((end-lower)+mid, (mid-upper)+end);
-            std::swap(mid, end);
-            mid = snapToKnot(mid, edge_curves[j]);
-            end = snapToKnot(end, edge_curves[j]);
-          }
-          edge_curves[j].Trim(mid, end);
+          double end = snapToKnot(1.0, edge_curves[j]);
+          edge_curves[j].trim(mid, end);
         } else {
-          double start = snapToKnot(r->Low(), edge_curves[j]);
-          if (start > mid) {
-            Real const lower = edge_curves[j].LowerParam();
-            Real const upper = edge_curves[j].UpperParam();
-            edge_curves[j].Reparametrize((mid-lower)+start, (start-upper)+mid);
-            std::swap(mid, start);
-            mid = snapToKnot(mid, edge_curves[j]);
-            start = snapToKnot(start, edge_curves[j]);
-          }
-          edge_curves[j].Trim(start, mid);
+          double start = snapToKnot(0.0, edge_curves[j]);
+          edge_curves[j].trim(start, mid);
         }
-        edge_curves[j].Reparametrize(0.0, 1.0);
+        edge_curves[j].normalize();
       }
 
       // 2. Unify the opposite knot vectors
-      S::CurveType div_curves[2];
-      div_curves[0] = dividing_curves[(i+1)%n];
-      div_curves[0].Reverse();
-      div_curves[0].Reparametrize(0.0, 1.0);
+      BSCurve div_curves[2];
+      div_curves[0] = dividing_curves[next(i)];
+      div_curves[0].reverse();
+      div_curves[0].normalize();
       div_curves[1] = dividing_curves[i];
-      div_curves[1].Reparametrize(0.0, 1.0);
+      div_curves[1].normalize();
       unifyKnots(edge_curves[0], div_curves[0]);
       unifyKnots(edge_curves[1], div_curves[1]);
 
       // 3. Fit
-      SurfaceFitter::FitterType& fitter = sf->AddFitter(object_id, i);
+      Point2D u1 = edge_mid_u[i];
+      Point2D v1 = edge_mid_u[next(i)];
+      Point2D u_end = domain_->vertices()[i];
 
-      BSS_Fitter<S::PointType>::ParamPointSetReference point_set = fitter.ParamPointSet();
-      point_set.push_back( BSS_Fitter<S::PointType>::ParamPointGroupType(tol));
-      BSS_Fitter<S::PointType>::ParamPointGroupReference pg(point_set.front());
+      size_t v_step = u_step;
 
-      S::Point2D const u1 = edge_mid_u[i];
-      S::Point2D const v1 = edge_mid_u[(i+1)%n];
-      S::Point2D const u_end = domain.edge_point(i, 1.0);
-
-      int v_step = u_step;
-
-      for (int j = 0; j <= u_step; j++) {
-        double const u = (double)j / u_step;
-        S::Point2D const u_v0 = AffinComb(u1, u, u_end);
-        S::Point2D const u_v1 = AffinComb(center, u, v1);
-        for (int k = 0; k <= v_step; k++) {
-          double const v = (double)k / v_step;
-          S::Point2D const param(AffinComb(u_v0, v, u_v1));
-          S::PointType point;
-          if (GetSurfacePoint(param, point)) {
-            pg.push_back(BSS_Fitter<S::PointType>::ParamPointType(point, S::Point2D(u, v)));
-            if (!parametrization_check)
-              fitted_points.push_back(point);
-          }
+      for (size_t j = 0; j <= u_step; j++) {
+        double u = (double)j / u_step;
+        Point2D u_v0 = u1 * (1.0 - u) + u_end * u;
+        Point2D u_v1 = center * (1.0 - u) + v1 * u;
+        for (size_t k = 0; k <= v_step; k++) {
+          double v = (double)k / v_step;
+          Point2D param = u_v0 * (1.0 - v) + u_v1 * v;
+          Point3D point = eval(param);
+          fitter.addParamPoint(Point2D(u, v), point);
         }
       }
 
-      fitter.DegreeU() = 3;
-      fitter.DegreeV() = 3;
+      fitter.setKnotVectorU(edge_curves[0].knotVector());
+      fitter.setKnotVectorV(edge_curves[1].knotVector());
 
-      fitter.KnotVectorU() = edge_curves[0].theKnotVector();
-      fitter.KnotVectorV() = edge_curves[1].theKnotVector();
+      size_t const nr_ctrl[] = { edge_curves[0].nrControlPoints(),
+                                 edge_curves[1].nrControlPoints() };
 
-      size_t const nr_ctrl[] = { edge_curves[0].NrControlValues(),
-                                 edge_curves[1].NrControlValues() };
-#if 1
-      size_t const nr_div_ctrl[] = { div_curves[0].NrControlValues(),
-                                     div_curves[1].NrControlValues() };
-      if (nr_ctrl[0] != nr_div_ctrl[0] || nr_ctrl[1] != nr_div_ctrl[1])
-        {
-          S_ERROR(QString("QuadFit: different number of ctrlpoints! edge_crv(%1,%2) div_crv(%3,%4)")
-                  .arg(nr_ctrl[0]).arg(nr_ctrl[1]).arg(nr_div_ctrl[0]).arg(nr_div_ctrl[1]));
-
-          QString knots_str;
-          for (int i1=0; i1<2; i1++)
-            {
-              for (int i2=0; i2<2; i2++)
-                {
-                  knots_str = QString("QuadFit: knots on %1[%2]: ").arg(i1 ? "div_curves" : "edge_curves").arg(i2);
-                  S::CurveType* crv = (i1 ? &div_curves[i2] : &edge_curves[i2]);
-                  for (UInt i3=0, i3e=crv->theKnotVector().size(); i3<i3e; i3++)
-                    {
-                      knots_str += QString("%1%2").arg(i3 ? "," : "").arg(crv->theKnotVector()[i3]);
-                    }
-                  S_ERROR(knots_str);
-                }
-            }
-        }
-#endif
       // Setup control points constraints
-      BSS_Fitter<S::PointType>::ConstraintsType cst(nr_ctrl);
       for (size_t k = 0; k < 2; ++k) {
         size_t end = nr_ctrl[1-k] - 1;
-        S::CurveType::ControlVectorType const &ctrl1 = edge_curves[k].theControlVector();
-        S::CurveType::ControlVectorType const &ctrl2 = div_curves[k].theControlVector();
+        const BSCurve &e = edge_curves[k], &d = div_curves[k];
         for (size_t j = 0; j < nr_ctrl[k]; ++j) {
           if (k == 0) {
-            cst[j][ 0 ] = ctrl1[j];
-            cst[j][end] = ctrl2[j];
+            fitter.addControlPoint(j,   0,   e.controlPoint(j));
+            fitter.addControlPoint(j,   end, d.controlPoint(j));
           } else {
-            cst[end][j] = ctrl1[j];
-            cst[ 0 ][j] = ctrl2[j];
+            fitter.addControlPoint(end, j,   e.controlPoint(j));
+            fitter.addControlPoint(0,   j,   d.controlPoint(j));
           }
         }
       }
-      std::swap(fitter.CtrlConstraints(), cst);
-
-      fitter.Enlargement() = 0.0;
-
-      fitter.AddFunctional(new BSSF_FN_LsqDistance<S::PointType>());
-      fitter.AddFunctional(new BSSF_FN_Curvature<S::PointType>());
-      fitter.OptimizeParameters() = false;
-
-      QString dump_file = getDumpFilePath(sf->GetFilename(), i);
-      if (!dump_file.isEmpty())
-        fitter.DumpOut( dump_file.toAscii().data());
-
-      if (progress)
-        SketchesWindow::sketches_window->GetProgressIndicator()->setProgress(++(*progress));
     }
   }
+
+  fitter.fit();
 }
 
 #endif  // NO_SURFACE_FIT

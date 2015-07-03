@@ -16,6 +16,7 @@ public:
   const Point2DVector &parameters(size_t resolution) const;
   TriMesh meshTopology(size_t resolution) const;
   const Point2D &center() const;
+  Point2D edgePoint(size_t i, double s) const;
   double edgeLength(size_t i) const;
   double angle(size_t i) const;
   const Point2DVector &vertices() const;

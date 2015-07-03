@@ -65,7 +65,7 @@ void surfaceTest(std::shared_ptr<Surface> &&surf, const CurveVector &cv,
   for (size_t i = 0; i < n; ++i) {
     for (size_t j = 0; j <= res; ++j) {
       double s = (double)j / (double)res;
-      Point2D uv = v[(i+n-1)%n] * (1.0 - s) + v[i] * s;
+      Point2D uv = domain.edgePoint(i, s);
       Point3D p = surf->eval(uv), q = cv[i]->eval(s);
       max_pos_error = std::max(max_pos_error, (p - q).norm());
     }
@@ -82,7 +82,7 @@ void surfaceTest(std::shared_ptr<Surface> &&surf, const CurveVector &cv,
     perp.normalize();
     for (size_t j = 0; j <= res; ++j) {
       double s = (double)j / (double)res;
-      Point2D uv = v[(i+n-1)%n] * (1.0 - s) + v[i] * s;
+      Point2D uv = domain.edgePoint(i, s);
       Point2D uv2 = uv + perp * step;
       Point3D p = surf->eval(uv), q = surf->eval(uv2);
       cv[i]->eval(s, 1, der);
@@ -96,6 +96,12 @@ void surfaceTest(std::shared_ptr<Surface> &&surf, const CurveVector &cv,
   std::cout << filename << ":" << std::endl;
   std::cout << "  positional error: " << max_pos_error << std::endl;
   std::cout << "  tangential error: " << max_tan_error * 180.0 / M_PI << std::endl;
+
+#ifndef NO_SURFACE_FIT
+
+  surf->fitCentralSplit();
+
+#endif  // NO_SURFACE_FIT
 }
 
 int main(int argc, char **argv) {

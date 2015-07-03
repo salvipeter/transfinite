@@ -101,6 +101,11 @@ Domain::center() const {
   return center_;
 }
 
+Point2D
+Domain::edgePoint(size_t i, double s) const {
+  return vertices_[i] * s + vertices_[prev(i)] * (1.0 - s);
+}
+
 double
 Domain::edgeLength(size_t i) const {
   return (vertices_[i] - vertices_[prev(i)]).norm();

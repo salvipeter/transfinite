@@ -265,6 +265,16 @@ BSCurve::eval(double u, size_t nr_der, VectorVector &der) const {
   return impl_->eval(u, nr_der, der);
 }
 
+DoubleVector
+BSCurve::knotVector() const {
+  return impl_->knotVector();
+}
+
+void
+BSCurve::insertKnot(double k) {
+  impl_->insertKnot(k);
+}
+
 void
 BSCurve::reverse() {
   impl_->reverse();
@@ -275,9 +285,24 @@ BSCurve::normalize() {
   impl_->normalize();
 }
 
+size_t
+BSCurve::nrControlPoints() const {
+  return impl_->nrControlPoints();
+}
+
+Point3D
+BSCurve::controlPoint(size_t i) const {
+  return impl_->controlPoint(i);
+}
+
 double
 BSCurve::arcLength(double from, double to) const {
   return impl_->arcLength(from, to);
+}
+
+void
+BSCurve::trim(double from, double to) {
+  impl_->trim(from, to);
 }
 
 TriMesh::TriMesh()
@@ -382,19 +407,9 @@ CurveFitter::fit() {
   impl_->fit();
 }
 
-size_t
-CurveFitter::degree() const {
-  return impl_->degree();
-}
-
-DoubleVector
-CurveFitter::knotVector() const {
-  return impl_->knotVector();
-}
-
-PointVector
-CurveFitter::controlPoints() const {
-  return impl_->controlPoints();
+BSCurve
+CurveFitter::curve() const {
+  return impl_->curve();
 }
 
 SurfaceFitter::SurfaceFitter()

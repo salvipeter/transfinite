@@ -120,11 +120,18 @@ public:
   Point3D eval(double u, size_t nr_der, VectorVector &der) const;
 
   // Parameterization
+  DoubleVector knotVector() const;
+  void insertKnot(double k);
   void reverse();
   void normalize();
 
+  // Control
+  size_t nrControlPoints() const;
+  Point3D controlPoint(size_t i) const;
+
   // Other
   double arcLength(double from, double to) const;
+  void trim(double from, double to);
 
 private:
   class BSCurveImpl;
@@ -179,11 +186,7 @@ public:
 
   // Fit
   void fit();
-
-  // Getters
-  size_t degree() const;
-  DoubleVector knotVector() const;
-  PointVector controlPoints() const;
+  BSCurve curve() const;
 
 private:
   class CurveFitterImpl;

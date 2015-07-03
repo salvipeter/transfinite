@@ -18,6 +18,8 @@ include_directories(.
   ${SKETCHSRC}/BaseFunctions
   ${SKETCHSRC}/Container
   ${SKETCHSRC}/Curves
+  ${SKETCHSRC}/Filter/IGES
+  ${SKETCHSRC}/Flattener4.1/src
   ${SKETCHSRC}/Globals
   ${SKETCHSRC}/Mesh
   ${SKETCHSRC}/Numeric/Factorize
@@ -39,6 +41,8 @@ link_directories(
   ${SKETCHLIB}/Approx/ApproxUtil
   ${SKETCHLIB}/BaseFunctions
   ${SKETCHLIB}/Curves
+  ${SKETCHLIB}/Filter/IGES
+  ${SKETCHLIB}/Flattener4.1/src
   ${SKETCHLIB}/Globals
   ${SKETCHLIB}/Mesh
   ${SKETCHLIB}/Numeric/Factorize
@@ -50,11 +54,11 @@ link_directories(
 add_library(geometry SHARED geometry.cc)
 
 target_link_libraries(geometry
-  BaseFunctions Curves Surfaces
+  IGES
+  ApproxSurf ApproxCrv ApproxUtil BSSF_KI BSSF_FN BSSF_Base BSCF_KI BSCF_FN BSCF_Base
+  Surfaces Curves BaseFunctions
+  tmf4
   Mesh
-  Factorize LinAlgTypes Misc
+  Misc Factorize LinAlgTypes
   Globals
-  ApproxUtil
-  ApproxCrv BSCF_Base BSCF_FN BSCF_KI
-  ApproxSurf BSSF_Base BSSF_FN BSSF_KI
   )

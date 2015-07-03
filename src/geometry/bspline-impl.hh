@@ -32,15 +32,25 @@ public:
     }
     return Point3D(p[0], p[1], p[2]);
   }
+  DoubleVector knotVector() const {
+    return DoubleVector(c_.theKnotVector().begin(), c_.theKnotVector().end());
+  }
+  void insertKnot(double k) { c_.InsertKnot(k); }
   void reverse() {
     c_.Reverse();
   }
   void normalize() {
     c_.Reparametrize(0.0, 1.0);
   }
+  size_t nrControlPoints() const { return c_.NrControlValues(); }
+  Point3D controlPoint(size_t i) const {
+    const Point<3, double> &p = c_.theControlVector()[i];
+    return Point3D(p[0], p[1], p[2]);
+  }
   double arcLength(double from, double to) const {
     return c_.EstimateArcLength(from, to);
   }
+  void trim(double from, double to) { c_.Trim(from, to); }
 private:
   BSplineCurve<Point<3, double>> c_;
 };

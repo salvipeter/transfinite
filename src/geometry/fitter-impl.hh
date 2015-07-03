@@ -18,8 +18,7 @@ public:
   void setDegree(size_t deg) { f_.Degree() = deg; }
   void setNrControlPoints(size_t nr_cpts) { f_.NrControlPoints() = nr_cpts; }
   void setKnotVector(const DoubleVector &knots) {
-    f_.theKnotVector() =
-      BSC_Fitter<Point<3, double>>::KnotVectorType(knots.begin(), knots.end());
+    f_.theKnotVector().assign(knots.begin(), knots.end());
   }
   void addControlPoint(size_t i, const Point3D &point) {
     cpts_.push_back(ControlPointConstraint(i, point));
@@ -51,21 +50,19 @@ public:
     f_.OptimizeParameters() = false;
     f_.Fit();
   }
-  size_t degree() const { return f_.Curve().Degree(); }
-  DoubleVector knotVector() const {
-    const BSplineCurve<Point<3, double>>::KnotVectorType &knots = f_.Curve().theKnotVector();
-    return DoubleVector(knots.begin(), knots.end());
-  }
-  PointVector controlPoints() const {
-    PointVector result;
-    const BSplineCurve<Point<3, double>>::ControlVectorType &cv = f_.Curve().theControlVector();
-    size_t n = cv.size();
-    result.reserve(n);
+  BSCurve curve() const {
+    size_t deg = f_.Curve().Degree();
+    const BSplineCurve<Point<3, double>>::KnotVectorType &knots1 = f_.Curve().theKnotVector();
+    const BSplineCurve<Point<3, double>>::ControlVectorType &cpts1 = f_.Curve().theControlVector();
+    DoubleVector knots(knots1.begin(), knots1.end());
+    PointVector cpts;
+    size_t n = cpts1.size();
+    cpts.reserve(n);
     for (size_t i = 0; i < n; ++i) {
-      const Point<3, double> &p = cv[i];
-      result.push_back(Point3D(p[0], p[1], p[2]));
+      const Point<3, double> &p = cpts1[i];
+      cpts.push_back(Point3D(p[0], p[1], p[2]));
     }
-    return result;
+    return BSCurve(deg, knots, cpts);
   }
 private:
   struct ParameterPoint {
@@ -92,12 +89,10 @@ public:
   void setNrControlPointsU(size_t nr_cpts_u) { f_.NrControlPointsU() = nr_cpts_u; }
   void setNrControlPointsV(size_t nr_cpts_v) { f_.NrControlPointsV() = nr_cpts_v; }
   void setKnotVectorU(const DoubleVector &knots_u) {
-    f_.KnotVectorU() =
-      BSplineSurface<Point<3, double>>::KnotVectorType(knots_u.begin(), knots_u.end());
+    f_.KnotVectorU().assign(knots_u.begin(), knots_u.end());
   }
   void setKnotVectorV(const DoubleVector &knots_v) {
-    f_.KnotVectorV() =
-      BSplineSurface<Point<3, double>>::KnotVectorType(knots_v.begin(), knots_v.end());
+    f_.KnotVectorV().assign(knots_v.begin(), knots_v.end());
   }
   void addControlPoint(size_t i, size_t j, const Point3D &point) {
     cpts_.push_back(ControlPointConstraint(i, j, point));

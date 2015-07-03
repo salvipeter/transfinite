@@ -22,7 +22,8 @@ public:
 
 #ifndef NO_SURFACE_FIT
   // void fitTrimmed() const;
-  void fitCentralSplit(double knot_snapping_tol = 1.0e-2, size_t sampling_density = 30) const;
+  void fitCentralSplit(double fit_tol = 1.0e-2, double knot_snapping_tol = 1.0e-2,
+                       size_t sampling_density = 30) const;
 #endif  // NO_SURFACE_FIT
 
 protected:
