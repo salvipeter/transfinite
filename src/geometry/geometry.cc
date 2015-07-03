@@ -355,22 +355,7 @@ CurveFitter::CurveFitter()
   : impl_(std::make_unique<CurveFitterImpl>()) {
 }
 
-CurveFitter::CurveFitter(const CurveFitter &v)
-  : impl_(std::make_unique<CurveFitterImpl>(*v.impl_)) {
-}
-
-CurveFitter::CurveFitter(CurveFitter &&v) = default;
-
 CurveFitter::~CurveFitter() = default;
-
-CurveFitter &
-CurveFitter::operator=(CurveFitter &&v) = default;
-
-CurveFitter &
-CurveFitter::operator=(const CurveFitter &v) {
-  *impl_ = *v.impl_;
-  return *this;
-}
 
 void
 CurveFitter::setTolerance(double tol) {
@@ -416,22 +401,7 @@ SurfaceFitter::SurfaceFitter()
   : impl_(std::make_unique<SurfaceFitterImpl>()) {
 }
 
-SurfaceFitter::SurfaceFitter(const SurfaceFitter &v)
-  : impl_(std::make_unique<SurfaceFitterImpl>(*v.impl_)) {
-}
-
-SurfaceFitter::SurfaceFitter(SurfaceFitter &&v) = default;
-
 SurfaceFitter::~SurfaceFitter() = default;
-
-SurfaceFitter &
-SurfaceFitter::operator=(SurfaceFitter &&v) = default;
-
-SurfaceFitter &
-SurfaceFitter::operator=(const SurfaceFitter &v) {
-  *impl_ = *v.impl_;
-  return *this;
-}
 
 void
 SurfaceFitter::setTolerance(double tol) {

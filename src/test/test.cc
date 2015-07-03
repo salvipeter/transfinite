@@ -105,6 +105,11 @@ void surfaceTest(std::shared_ptr<Surface> &&surf, const CurveVector &cv,
 }
 
 int main(int argc, char **argv) {
+#ifdef DEBUG
+  std::cout << "Compiled in DEBUG mode" << std::endl;
+#else  // !DEBUG
+  std::cout << "Compiled in RELEASE mode" << std::endl;
+#endif  // DEBUG
   Vector2D u(1, 3), v(4, 5);
   u += v;
   Vector2D w = u + v;

@@ -166,15 +166,9 @@ private:
 
 class CurveFitter {
 public:
-  // Constructors & destructor
+  // Constructor & destructor
   CurveFitter();
-  CurveFitter(const CurveFitter &c);
-  CurveFitter(CurveFitter &&c);
   ~CurveFitter();
-
-  // Assignments
-  CurveFitter &operator=(const CurveFitter &c);
-  CurveFitter &operator=(CurveFitter &&v);
 
   // Fitting constraints
   void setTolerance(double tol);
@@ -195,10 +189,8 @@ private:
 
 class SurfaceFitter {
 public:
-  // Constructors & destructor
+  // Constructor & destructor
   SurfaceFitter();
-  SurfaceFitter(const SurfaceFitter &c);
-  SurfaceFitter(SurfaceFitter &&c);
   ~SurfaceFitter();
 
   // Assignments

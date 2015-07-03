@@ -1,5 +1,10 @@
 set(SKETCHSRC "../../../sketches/engine/src")
-set(SKETCHLIB "../../../sketches/engine/debug")
+
+if(CMAKE_BUILD_TYPE MATCHES Debug)
+  set(SKETCHLIB "../../../sketches/engine/debug")
+else()
+  set(SKETCHLIB "../../../sketches/engine/release")
+endif()
 
 add_definitions(-DNO_AFFIN_EXPR)
 add_definitions(-DEXPLICIT_TEMPLATES)
