@@ -2,6 +2,8 @@
 
 #include "ribbon.hh"
 
+namespace Transfinite {
+
 class RibbonCompatible : public Ribbon {
 public:
   virtual ~RibbonCompatible();
@@ -11,3 +13,5 @@ public:
 protected:
   Vector3D prev_tangent_, next_tangent_;
 };
+
+} // namespace Transfinite

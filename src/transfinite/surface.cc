@@ -8,6 +8,8 @@
 // For the 4-sided central split fit
 #include "parameterization-bilinear.hh"
 
+namespace Transfinite {
+
 Surface::Surface()
   : n_(0), use_gamma_(true) {
 }
@@ -477,3 +479,5 @@ Surface::fitCentralSplit(double fit_tol, double knot_snapping_tol, size_t sampli
 }
 
 #endif  // NO_SURFACE_FIT
+
+} // namespace Transfinite

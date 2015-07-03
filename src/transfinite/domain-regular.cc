@@ -2,6 +2,8 @@
 
 #include <cmath>
 
+namespace Transfinite {
+
 DomainRegular::~DomainRegular() {
 }
 
@@ -23,3 +25,5 @@ void
 DomainRegular::computeCenter() {
   center_ = Point2D(0.0, 0.0);
 }
+
+} // namespace Transfinite

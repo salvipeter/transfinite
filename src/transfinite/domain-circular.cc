@@ -3,6 +3,8 @@
 #include <algorithm>
 #include <cmath>
 
+namespace Transfinite {
+
 DomainCircular::~DomainCircular() {
 }
 
@@ -39,3 +41,5 @@ DomainCircular::computeCenter() {
     center_ += vertices_[i] * (lengths[i] + lengths[next(i)]);
   center_ /= std::accumulate(lengths.begin(), lengths.end(), 0.0) * 2.0;
 }
+
+} // namespace Transfinite

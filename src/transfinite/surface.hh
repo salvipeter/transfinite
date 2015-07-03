@@ -2,6 +2,8 @@
 
 #include "geometry.hh"
 
+namespace Transfinite {
+
 class Domain;
 class Parameterization;
 class Ribbon;
@@ -56,3 +58,5 @@ private:
   std::vector<CornerData> corner_data_;
   bool use_gamma_;
 };
+
+} // namespace Transfinite

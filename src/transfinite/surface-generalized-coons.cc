@@ -3,6 +3,8 @@
 #include "ribbon-compatible.hh"
 #include "surface-generalized-coons.hh"
 
+namespace Transfinite {
+
 using DomainType = DomainRegular;
 using ParamType = ParameterizationInterconnected;
 using RibbonType = RibbonCompatible;
@@ -33,3 +35,5 @@ std::shared_ptr<Ribbon>
 SurfaceGeneralizedCoons::newRibbon() const {
   return std::make_shared<RibbonType>();
 }
+
+} // namespace Transfinite

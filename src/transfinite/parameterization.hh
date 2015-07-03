@@ -4,6 +4,8 @@
 
 #include "geometry.hh"
 
+namespace Transfinite {
+
 class Domain;
 
 class Parameterization {
@@ -31,3 +33,5 @@ private:
   using ParameterCache = std::map<Point2D, Point2DVector, PointComparator>;
   mutable ParameterCache cache_;
 };
+
+} // namespace Transfinite

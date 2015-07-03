@@ -3,6 +3,8 @@
 
 #include "rmf.hh"
 
+namespace Transfinite {
+
 const size_t RMF::resolution_ = 100;
 
 void
@@ -103,3 +105,5 @@ RMF::nextFrame(const Frame &prev, double u) const {
     nNext = nL - v2 * 2 / c2 * (v2 * nL);
   return Frame(u, prev.s + curve_->arcLength(prev.u, u), der[0], der[1], nNext);
 }
+
+} // namespace Transfinite

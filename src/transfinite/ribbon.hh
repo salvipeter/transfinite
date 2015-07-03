@@ -3,6 +3,8 @@
 #include "geometry.hh"
 #include "rmf.hh"
 
+namespace Transfinite {
+
 class Ribbon {
 public:
   virtual ~Ribbon();
@@ -20,3 +22,5 @@ protected:
   std::shared_ptr<Ribbon> prev_, next_;
   RMF rmf_;
 };
+
+} // namespace Transfinite

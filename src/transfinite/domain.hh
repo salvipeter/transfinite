@@ -6,6 +6,8 @@
 // - side i consists of vertices i-1 and i
 // - in the local coordinate system of side i, these vertices are (0,0) and (1,0)
 
+namespace Transfinite {
+
 class Domain {
 public:
   Domain();
@@ -36,3 +38,5 @@ protected:
 private:
   mutable Point2DVector parameters_; // cache
 };
+
+} // namespace Transfinite

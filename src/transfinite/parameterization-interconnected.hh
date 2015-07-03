@@ -2,6 +2,8 @@
 
 #include "parameterization-bilinear.hh"
 
+namespace Transfinite {
+
 class ParameterizationInterconnected : public ParameterizationBilinear {
 public:
   virtual ~ParameterizationInterconnected();
@@ -11,3 +13,5 @@ public:
 protected:
   static double blendHermite(double x);
 };
+
+} // namespace Transfinite

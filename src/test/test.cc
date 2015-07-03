@@ -44,14 +44,14 @@ CurveVector readLOP(std::string filename) {
   return result;
 }
 
-void surfaceTest(std::shared_ptr<Surface> &&surf, const CurveVector &cv,
+void surfaceTest(std::shared_ptr<Transfinite::Surface> &&surf, const CurveVector &cv,
                  std::string filename, size_t resolution) {
   surf->setCurves(cv);
   surf->setupLoop();             // should be called after curve pointers changed
   surf->update();                // should be called after curves changed
   surf->eval(resolution).writeOBJ(filename);
 
-  DomainRegular domain;          // the surface's domain is protected, so we simulate it here
+  Transfinite::DomainRegular domain; // the surface's domain is protected, so we simulate it here
   domain.setSides(cv);
   domain.update();
   const Point2DVector &v = domain.vertices();
@@ -145,7 +145,7 @@ int main(int argc, char **argv) {
   Vector3D start(0.9041749728349117, 0.27541001827971723, -0.32652249590212407);
   Vector3D end(0.6838937155616026, -0.5642165240201893, -0.46254632182941535);
   
-  RMF rmf;
+  Transfinite::RMF rmf;
   rmf.setCurve(c2);
   rmf.setStart(start);
   rmf.setEnd(end);
@@ -179,11 +179,12 @@ int main(int argc, char **argv) {
 
   // Domain test
   const size_t mesh_res = 15;
-  std::shared_ptr<Domain> d = std::make_shared<DomainCircular>();
+  std::shared_ptr<Transfinite::Domain> d = std::make_shared<Transfinite::DomainCircular>();
   std::shared_ptr<BSCurve> cs = std::make_shared<BSCurve>(c);
   d->setSides({cs,cs,c2,cs,c2});
   d->update();
-  std::shared_ptr<Parameterization> par = std::make_shared<ParameterizationBarycentric>();
+  std::shared_ptr<Transfinite::Parameterization> par =
+    std::make_shared<Transfinite::ParameterizationBarycentric>();
   par->setDomain(d);
   par->update();
   const Point2DVector &params = d->parameters(mesh_res);
@@ -211,9 +212,9 @@ int main(int argc, char **argv) {
   mesh2.resizePoints((rib_res + 1) * (rib_res + 1) * n);
   PointVector pv; pv.reserve((rib_res + 1) * (rib_res + 1) * n);
   size_t index = 0;
-  std::vector<std::shared_ptr<Ribbon>> ribbons;
+  std::vector<std::shared_ptr<Transfinite::Ribbon>> ribbons;
   for (size_t side = 0; side < n; ++side) {
-    ribbons.push_back(std::make_shared<RibbonCompatible>());
+    ribbons.push_back(std::make_shared<Transfinite::RibbonCompatible>());
     ribbons.back()->setCurve(cv[side]);
   }
   for (size_t side = 0; side < n; ++side) {
@@ -240,10 +241,10 @@ int main(int argc, char **argv) {
   }
 
   // Surface test
-  surfaceTest(std::make_shared<SurfaceSideBased>(), cv, "/tmp/surf-sb.obj", 15);
-  surfaceTest(std::make_shared<SurfaceCornerBased>(), cv, "/tmp/surf-cb.obj", 15);
-  surfaceTest(std::make_shared<SurfaceGeneralizedCoons>(), cv, "/tmp/surf-gc.obj", 15);
-  surfaceTest(std::make_shared<SurfaceCompositeRibbon>(), cv, "/tmp/surf-cr.obj", 15);
+  surfaceTest(std::make_shared<Transfinite::SurfaceSideBased>(), cv, "/tmp/surf-sb.obj", 15);
+  surfaceTest(std::make_shared<Transfinite::SurfaceCornerBased>(), cv, "/tmp/surf-cb.obj", 15);
+  surfaceTest(std::make_shared<Transfinite::SurfaceGeneralizedCoons>(), cv, "/tmp/surf-gc.obj", 15);
+  surfaceTest(std::make_shared<Transfinite::SurfaceCompositeRibbon>(), cv, "/tmp/surf-cr.obj", 15);
 
   return 0;
 }

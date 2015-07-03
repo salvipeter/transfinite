@@ -3,6 +3,8 @@
 #include "ribbon-compatible.hh"
 #include "surface-corner-based.hh"
 
+namespace Transfinite {
+
 using DomainType = DomainRegular;
 using ParamType = ParameterizationBilinear;
 using RibbonType = RibbonCompatible;
@@ -37,3 +39,5 @@ SurfaceCornerBased::cornerInterpolant(size_t i, const Point2DVector &sds) const 
   return sideInterpolant(i, si, si1) + sideInterpolant(next(i), si1, 1.0 - si)
     - cornerCorrection(i, 1.0 - si, si1);
 }
+
+} // namespace Transfinite

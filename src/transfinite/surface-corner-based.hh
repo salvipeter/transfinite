@@ -2,6 +2,8 @@
 
 #include "surface.hh"
 
+namespace Transfinite {
+
 class SurfaceCornerBased : public Surface {
 public:
   SurfaceCornerBased();
@@ -12,3 +14,5 @@ protected:
   virtual std::shared_ptr<Ribbon> newRibbon() const;
   Point3D cornerInterpolant(size_t i, const Point2DVector &sds) const;
 };
+
+} // namespace Transfinite

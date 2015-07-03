@@ -3,6 +3,8 @@
 #include "domain.hh"
 #include "parameterization-bilinear.hh"
 
+namespace Transfinite {
+
 ParameterizationBilinear::~ParameterizationBilinear() {
 }
 
@@ -56,3 +58,5 @@ ParameterizationBilinear::mapToRibbon(size_t i, const Point2D &uv) const {
   sd[1] = p[1] / (p1[1] * (1.0 - sd[0]) + p2[1] * sd[0]);
   return sd;
 }
+
+} // namespace Transfinite

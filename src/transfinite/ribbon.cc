@@ -1,5 +1,7 @@
 #include "ribbon.hh"
 
+namespace Transfinite {
+
 Ribbon::~Ribbon() {
 }
 
@@ -56,3 +58,5 @@ Vector3D
 Ribbon::normal(double s) const {
   return rmf_.eval(s);
 }
+
+} // namespace Transfinite

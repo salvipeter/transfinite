@@ -2,6 +2,8 @@
 
 #include "surface.hh"
 
+namespace Transfinite {
+
 class SurfaceSideBased : public Surface {
 public:
   SurfaceSideBased();
@@ -11,3 +13,5 @@ public:
 protected:
   virtual std::shared_ptr<Ribbon> newRibbon() const;
 };
+
+} // namespace Transfinite

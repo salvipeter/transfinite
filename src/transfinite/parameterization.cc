@@ -3,6 +3,8 @@
 #include "domain.hh"
 #include "parameterization.hh"
 
+namespace Transfinite {
+
 Parameterization::~Parameterization() {
 }
 
@@ -30,3 +32,5 @@ Parameterization::mapToRibbons(const Point2D &uv) const {
   cache_[uv] = result;
   return result;
 }
+
+} // namespace Transfinite

@@ -3,6 +3,8 @@
 #include "domain.hh"
 #include "parameterization-barycentric.hh"
 
+namespace Transfinite {
+
 ParameterizationBarycentric::~ParameterizationBarycentric() {
 }
 
@@ -96,3 +98,5 @@ ParameterizationBarycentric::barycentric(const Point2D &uv) const {
   cache_[uv] = l;
   return cache_[uv];
 }
+
+} // namespace Transfinite

@@ -2,6 +2,8 @@
 
 #include "parameterization.hh"
 
+namespace Transfinite {
+
 class ParameterizationBarycentric : public Parameterization {
 public:
   virtual ~ParameterizationBarycentric();
@@ -18,3 +20,5 @@ private:
   using CoordinateCache = std::map<Point2D, DoubleVector, PointComparator>;
   mutable CoordinateCache cache_;
 };
+
+} // namespace Transfinite

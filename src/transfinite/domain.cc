@@ -2,6 +2,8 @@
 
 #include "domain.hh"
 
+namespace Transfinite {
+
 Domain::Domain()
   : n_(0) {
 }
@@ -117,3 +119,5 @@ Domain::angle(size_t i) const {
   Vector2D v2 = vertices_[next(i)] - vertices_[i];
   return std::acos(std::min(std::max(v1.normalize() * v2.normalize(), -1.0), 1.0));
 }
+
+} // namespace Transfinite

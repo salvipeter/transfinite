@@ -2,6 +2,8 @@
 
 #include "geometry.hh"
 
+namespace Transfinite {
+
 class RMF {
 public:
   void setCurve(const std::shared_ptr<BSCurve> &c);
@@ -30,3 +32,5 @@ private:
   std::vector<Frame> frames_;
   double angleCorrection_;
 };
+
+} // namespace Transfinite

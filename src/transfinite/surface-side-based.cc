@@ -3,6 +3,8 @@
 #include "ribbon-compatible.hh"
 #include "surface-side-based.hh"
 
+namespace Transfinite {
+
 using DomainType = DomainRegular;
 using ParamType = ParameterizationBilinear;
 using RibbonType = RibbonCompatible;
@@ -30,3 +32,5 @@ std::shared_ptr<Ribbon>
 SurfaceSideBased::newRibbon() const {
   return std::make_shared<RibbonType>();
 }
+
+} // namespace Transfinite

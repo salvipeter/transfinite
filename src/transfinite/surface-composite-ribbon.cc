@@ -3,6 +3,8 @@
 #include "ribbon-compatible.hh"
 #include "surface-composite-ribbon.hh"
 
+namespace Transfinite {
+
 using DomainType = DomainRegular;
 using ParamType = ParameterizationBarycentric;
 using RibbonType = RibbonCompatible;
@@ -41,3 +43,5 @@ SurfaceCompositeRibbon::compositeRibbon(size_t i, const Point2DVector &sds) cons
     - cornerCorrection(prev(i), d, s) * Hs * Hd
     - cornerCorrection(i, s1, d) * Hs1 * Hd;
 }
+
+} // namespace Transfinite

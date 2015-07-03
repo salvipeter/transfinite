@@ -1,5 +1,7 @@
 #include "ribbon-compatible.hh"
 
+namespace Transfinite {
+
 RibbonCompatible::~RibbonCompatible() {
 }
 
@@ -21,3 +23,5 @@ RibbonCompatible::crossDerivative(double s) const {
   Vector3D nt = next_tangent_ - n * (next_tangent_ * n);
   return pt * (1.0 - s) + nt * s;
 }
+
+} // namespace Transfinite

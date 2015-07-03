@@ -2,6 +2,8 @@
 
 #include "surface.hh"
 
+namespace Transfinite {
+
 class SurfaceGeneralizedCoons : public Surface {
 public:
   SurfaceGeneralizedCoons();
@@ -11,3 +13,5 @@ public:
 protected:
   virtual std::shared_ptr<Ribbon> newRibbon() const;
 };
+
+} // namespace Transfinite
