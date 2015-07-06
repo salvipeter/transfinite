@@ -10,6 +10,8 @@
 
 #include "BSSF_FN_Curvature.hh"
 #include "BSSF_FN_LsqDistance.hh"
+#include "BSSF_FN_Oscillation.hh"
+#include "BSSF_KI_LargestSummedDev.hh"
 #include "BSS_Fitter.hh"
 
 class CurveFitter::CurveFitterImpl {
@@ -83,6 +85,7 @@ private:
 
 class SurfaceFitter::SurfaceFitterImpl {
 public:
+  SurfaceFitterImpl() : curvature_weight_(0.0), oscillation_weight_(0.0) {}
   void setTolerance(double tol) { tolerance_ = tol; }
   void setDegreeU(size_t deg_u) { f_.DegreeU() = deg_u; }
   void setDegreeV(size_t deg_v) { f_.DegreeV() = deg_v; }
@@ -94,6 +97,10 @@ public:
   void setKnotVectorV(const DoubleVector &knots_v) {
     f_.KnotVectorV().assign(knots_v.begin(), knots_v.end());
   }
+  void setMaxNrControlPointsU(size_t max_cpts_u) { f_.MaximalNrControlPointsU() = max_cpts_u; }
+  void setMaxNrControlPointsV(size_t max_cpts_v) { f_.MaximalNrControlPointsV() = max_cpts_v; }
+  void setCurvatureWeight(double weight) { curvature_weight_ = weight; }
+  void setOscillationWeight(double weight) { oscillation_weight_ = weight; }
   void addControlPoint(size_t i, size_t j, const Point3D &point) {
     cpts_.push_back(ControlPointConstraint(i, j, point));
   }
@@ -101,29 +108,16 @@ public:
     ppts_.push_back(ParameterPoint(param, point));
   }
   void fit() {
-    if (!ppts_.empty()) {
-      BSS_Fitter<Point<3, double>>::ParamPointSetReference point_set = f_.ParamPointSet();
-      point_set.push_back(BSS_Fitter<Point<3, double>>::ParamPointGroupType(tolerance_));
-      BSS_Fitter<Point<3, double>>::ParamPointGroupReference pg(point_set.front());
-      for (const auto &pp : ppts_) {
-        Point<2, double> param(pp.uv[0], pp.uv[1]);
-        Point<3, double> point(pp.p[0], pp.p[1], pp.p[2]);
-        pg.push_back(BSS_Fitter<Point<3, double>>::ParamPointType(point, param));
-      }
-    }
-    if (!cpts_.empty()) {
-      size_t nr_ctrl[2];
-      nr_ctrl[0] = f_.NrControlPointsU(); nr_ctrl[1] = f_.NrControlPointsV();
-      BSS_Fitter<Point<3, double>>::ConstraintsType cst(nr_ctrl);
-      for (const auto &cp : cpts_)
-        cst[cp.i][cp.j] = Point<3, double>(cp.p[0], cp.p[1], cp.p[2]);
-      std::swap(f_.CtrlConstraints(), cst);
-    }
+    finalizeSetup();
     f_.Enlargement() = 0.0;
-    f_.AddFunctional(new BSSF_FN_LsqDistance<Point<3, double>>());
-    // f_.AddFunctional(new BSSF_FN_Curvature<Point<3, double>>()); // kutykurutty
     f_.OptimizeParameters() = false;
     f_.Fit();
+  }
+  void fitWithCarrierSurface() {
+    finalizeSetup();
+    f_.LocalOutlierPercentages() = true;
+    f_.OptimizeParameters() = true;
+    f_.CarrierFit();
   }
   BSSurface surface() const {
     BSSurface result;
@@ -145,6 +139,35 @@ public:
     }
     return result;
   }
+protected:
+  void finalizeSetup() {
+    if (!ppts_.empty()) {
+      BSS_Fitter<Point<3, double>>::ParamPointSetReference point_set = f_.ParamPointSet();
+      point_set.push_back(BSS_Fitter<Point<3, double>>::ParamPointGroupType(tolerance_));
+      BSS_Fitter<Point<3, double>>::ParamPointGroupReference pg(point_set.front());
+      for (const auto &pp : ppts_) {
+        Point<2, double> param(pp.uv[0], pp.uv[1]);
+        Point<3, double> point(pp.p[0], pp.p[1], pp.p[2]);
+        pg.push_back(BSS_Fitter<Point<3, double>>::ParamPointType(point, param));
+      }
+    }
+    if (!cpts_.empty()) {
+      size_t nr_ctrl[2];
+      nr_ctrl[0] = f_.NrControlPointsU(); nr_ctrl[1] = f_.NrControlPointsV();
+      BSS_Fitter<Point<3, double>>::ConstraintsType cst(nr_ctrl);
+      for (const auto &cp : cpts_)
+        cst[cp.i][cp.j] = Point<3, double>(cp.p[0], cp.p[1], cp.p[2]);
+      std::swap(f_.CtrlConstraints(), cst);
+    }
+    f_.AddFunctional(new BSSF_FN_LsqDistance<Point<3, double>>());
+    if (curvature_weight_ > 0.0) {
+      using CurvatureFn = BSSF_FN_Curvature<Point<3, double>>;
+      f_.AddFunctional(new CurvatureFn(CurvatureFn::UV, 1.0, curvature_weight_));
+    }
+    if (oscillation_weight_ > 0.0)
+      f_.AddFunctional(new BSSF_FN_Oscillation<Point<3, double>>(1.0, oscillation_weight_));
+    f_.SetKnotInserter(new BSSF_KI_LargestSummedDev<Point<3, double>>());
+  }
 private:
   struct ParameterPoint {
     ParameterPoint(const Point2D &uv, const Point3D &p) : uv(uv), p(p) {}
@@ -157,7 +180,7 @@ private:
     Point3D p;
   };
   BSS_Fitter<Point<3, double>> f_;
-  double tolerance_;
+  double tolerance_, curvature_weight_, oscillation_weight_;
   std::list<ParameterPoint> ppts_;
   std::list<ControlPointConstraint> cpts_;
 };

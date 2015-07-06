@@ -120,6 +120,7 @@ public:
   Point3D eval(double u, size_t nr_der, VectorVector &der) const;
 
   // Parameterization
+  size_t degree() const;
   DoubleVector knotVector() const;
   void insertKnot(double k);
   void reverse();
@@ -207,11 +208,16 @@ public:
   void setNrControlPointsV(size_t nr_cpts_v);
   void setKnotVectorU(const DoubleVector &knots_u);
   void setKnotVectorV(const DoubleVector &knots_v);
+  void setMaxNrControlPointsU(size_t max_cpts_u);
+  void setMaxNrControlPointsV(size_t max_cpts_v);
+  void setCurvatureWeight(double weight);
+  void setOscillationWeight(double weight);
   void addControlPoint(size_t i, size_t j, const Point3D &point);
   void addParamPoint(const Point2D &param, const Point3D &point);
 
   // Fit
   void fit();
+  void fitWithCarrierSurface();
   BSSurface surface() const;
 
 private:

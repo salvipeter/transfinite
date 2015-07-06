@@ -492,7 +492,8 @@ Surface::fitCentralSplit(double fit_tol, double knot_snapping_tol, size_t sampli
 }
 
 BSSurface
-Surface::fitTrimmed(double fit_tol, size_t resolution) const {
+Surface::fitTrimmed(double fit_tol, size_t resolution, size_t max_cpts_u, size_t max_cpts_v,
+                    double curvature_weight, double oscillation_weight) const {
   SurfaceFitter fitter;
   fitter.setTolerance(fit_tol);
 
@@ -500,35 +501,15 @@ Surface::fitTrimmed(double fit_tol, size_t resolution) const {
   for (const auto &uv : uvs)
     fitter.addParamPoint(uv, eval(uv));
 
-  // TODO: add second point group (fit_tol) "border point group"
-  for (size_t i = 0; i < n_; ++i) {
-    for (int j = 0; j <= resolution; ++j) {
-      double s = (double)j / resolution;
-      Point2D param = domain_.edgePoint(i, s);
-
-      param[0] = std::round(1.0e5 * param[0]) * 1.0e-5;
-      param[1] = std::round(1.0e5 * param[1]) * 1.0e-5;
-
-      Point3D point = ribbons_[i]->curve()->eval(s);
-      fitter.addParamPoint(param, point); // border point group
-    }
-  }
-
   fitter.setDegreeU(3);
   fitter.setDegreeV(3);
   fitter.setNrControlPointsU(6);
   fitter.setNrControlPointsV(6);
-  fitter.setOutlierPercentage(0.0);
-  fitter.setLocalOutlierPercentages(true);
   fitter.setMaxNrControlPointsU(max_cpts_u);
   fitter.setMaxNrControlPointsV(max_cpts_v);
+  fitter.setCurvatureWeight(curvature_weight);
+  fitter.setOscillationWeight(oscillation_weight);
 
-  using CurvatureFn = BSSF_FN_Curvature<Point<3, double>>;
-  fitter.AddFunctional(new CurvatureFn(CurvatureFn::UV, 1.0, curvature_weight));
-  fitter.AddFunctional(new BSSF_FN_LsqDistance<Point<3, double>>());
-  fitter.AddFunctional(new BSSF_FN_Oscillation<Point<3, double>>(1.0, oscillation_weight));
-  fitter.SetKnotInserter(new BSSF_KI_LargestSummedDev<Point<3, double>>());
-  fitter.OptimizeParameters(true);
   fitter.fitWithCarrierSurface();
 
   return fitter.surface();

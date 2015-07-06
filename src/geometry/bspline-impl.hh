@@ -32,6 +32,7 @@ public:
     }
     return Point3D(p[0], p[1], p[2]);
   }
+  size_t degree() const { return c_.Degree(); }
   DoubleVector knotVector() const {
     return DoubleVector(c_.theKnotVector().begin(), c_.theKnotVector().end());
   }

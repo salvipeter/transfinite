@@ -264,6 +264,11 @@ BSCurve::eval(double u, size_t nr_der, VectorVector &der) const {
   return impl_->eval(u, nr_der, der);
 }
 
+size_t
+BSCurve::degree() const {
+  return impl_->degree();
+}
+
 DoubleVector
 BSCurve::knotVector() const {
   return impl_->knotVector();
@@ -438,6 +443,26 @@ SurfaceFitter::setKnotVectorV(const DoubleVector &knots_v) {
 }
 
 void
+SurfaceFitter::setMaxNrControlPointsU(size_t max_cpts_u) {
+  impl_->setMaxNrControlPointsU(max_cpts_u);
+}
+
+void
+SurfaceFitter::setMaxNrControlPointsV(size_t max_cpts_v) {
+  impl_->setMaxNrControlPointsV(max_cpts_v);
+}
+
+void
+SurfaceFitter::setCurvatureWeight(double weight) {
+  impl_->setCurvatureWeight(weight);
+}
+
+void
+SurfaceFitter::setOscillationWeight(double weight) {
+  impl_->setOscillationWeight(weight);
+}
+
+void
 SurfaceFitter::addControlPoint(size_t i, size_t j, const Point3D &point) {
   impl_->addControlPoint(i, j, point);
 }
@@ -450,6 +475,11 @@ SurfaceFitter::addParamPoint(const Point2D &param, const Point3D &point) {
 void
 SurfaceFitter::fit() {
   impl_->fit();
+}
+
+void
+SurfaceFitter::fitWithCarrierSurface() {
+  impl_->fitWithCarrierSurface();
 }
 
 BSSurface
