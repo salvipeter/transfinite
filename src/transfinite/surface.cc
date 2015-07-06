@@ -491,6 +491,228 @@ Surface::fitCentralSplit(double fit_tol, double knot_snapping_tol, size_t sampli
   return surfaces;
 }
 
+BSSurface
+Surface::fitTrimmed(...) const {
+  bool is_4_sided = n_ == 4;
+  bool smart_parametrization =
+    O("Smart Parametrization for All") || O("Smart Parametrization for 4 sided");
+  bool use_simple_rotation = O("Use Only Rotation");
+  double extra_rotation = O("Extra Rotation Angle") * M_PI / 180.0;
+
+  int max_ribbon_id = -1;
+  double ribbon_3D_ratio = 1.0;
+  if (smart_parametrization) {
+    // Find longest ribbon
+    double max_ribbon_length = -1.0;
+    for (size_t i = 0; i < n_; ++i) {
+      double ribbon_length = ribbons_[i]->curve()->arcLength(0.0, 1.0);
+      if (ribbon_length > max_ribbon_length) {
+        max_ribbon_length = ribbon_length;
+        max_ribbon_id = i;
+      }
+    }
+    if (max_ribbon_id == -1 || max_ribbon_length < epsilon) {
+      // Error - longest ribbon not found
+      smart_parametrization = false;
+    } else {
+      double ribbon_width =
+        (ribbons_[max_ribbon_id]->crossDerivative(0.0).norm()
+         + ribbons_[max_ribbon_id]->crossDerivative(1.0).norm())
+        / 2.0;
+      if (ribbon_width > epsilon)
+        ribbon_3D_ratio = ribbon_width / max_ribbon_length;
+    }
+  }
+
+  SurfaceFitter fitter;
+  fitter.setTolerance(tol);
+
+  Point2DVector uvs = domain_->parameters(resolution);
+  int size = uvs.size();
+  for (int i = 0; i < size; ++i) {
+    Point2D param = uvs[i];
+    if (use_simple_rotation)
+      param = param_.mapToRibbon(max_ribbon_id, param, extra_rotation);
+    else if (smart_parametrization) {
+      param = param_.mapToRibbon(max_ribbon_id, param);
+      if (O("Extra Smart Parametrization for All"))
+        param[1] *= ribbon_3D_ratio;
+    }
+    fitter.addParamPoint(param, eval(uvs[i]));
+  }
+
+  // TODO: add second point group (tol) "border point group"
+
+  int border_curve_sample_density = O("Border Curve Sample Density");
+  int mesh_resolution = O("Surface Triangles");
+  int num_inner_brd_points = O("Ratio of Boundary/Mesh Resolution");
+  border_curve_sample_density = mesh_resolution * num_inner_brd_points;
+  for (size_t i = 0; i < n_; ++i) {
+    for (int j = 0; j <= border_curve_sample_density; ++j) {
+      double u = (double)j / border_curve_sample_density;
+      Point2D ribbon_param(u, 0.0);
+      Point2D param = param_.mapToRibbon(i, ribbon_param);
+
+      param[0] = std::round(1.0e5 * param[0]) * 1.0e-5;
+      param[1] = std::round(1.0e5 * param[1]) * 1.0e-5;
+
+      Point3D point = ribbons_[i]->curve()->eval(ribbon_param[0]);
+      if (use_simple_rotation)
+        param = param_.mapToRibbon(max_ribbon_id, param, extra_rotation);
+      else if (smart_parametrization) {
+        param = param_.mapToRibbon(max_ribbon_id, param);
+        if (O("Extra Smart Parametrization for All")) {
+          param[1] *= ribbon_3D_ratio;
+        }
+      }
+      fitter.addParamPoint(param, point); // border point group
+    }
+  }
+
+  bool extend_ribbons = !smart_parametrization && O("Extend Ribbons");
+  if (extend_ribbons) {
+    // add third point group (tol * 5.0) "exterior point group"
+    double ribbon_extension = O("Ribbon Extension Ratio");
+    double u_step = 1.0 / O("Ribbon Sample Density");
+    double v_step = u_step;
+    double domain_size = 1.0 + O("Domain Enlargement");
+
+    for (size_t i = 0; i < n_; ++i) {
+      for (double u = 0.0; u <= 1.0; u += u_step) {
+        for (double v = 0.0; v >= -ribbon_extension; v -= v_step) {
+          Point2D ribbon_param(u,v);
+          Point2D param = param_.mapToRibbon(i, ribbon_param);
+          if (std::abs(param[0]) <= domain_size && std::abs(param[1]) <= domain_size) {
+            Point3D point = ribbons_[i]->eval(ribbon_param);
+            fitter.addParamPoint(param, point); // exterior point group
+          }
+        }
+      }
+    }
+
+    // points from triangles between ribbons
+    bool extend_triangles = O("Extend Triangles");
+    if (extend_triangles) {
+      int triangle_sample_density = O("Ribbon Triangle Sample Density");
+
+      for (size_t i = 0; i < n_; ++i) {
+        const Point2D &a_param = domain_.vertices()[i];
+        Point3D a = ribbons[i]->curve()->eval(0.0);
+
+        Point2D b_ribbon_param(0.0, -ribbon_extension);
+        Point2D b_param = param_.mapToRibbon(i, b_ribbon_param);
+        Point3D b = ribbons_[i]->eval(b_ribbon_param);
+
+        Point2D c_ribbon_param(1.0, -ribbon_extension);
+        Point2D c_param = param_.mapToRibbon(prev(i), c_ribbon_param);
+        Point3D c = ribbons_[prev(i)]->eval(c_ribbon_param);
+
+        for (int j = 1; j <= triangle_sample_density; ++j) {
+          double j_coeff = (double)j / triangle_sample_density;
+          Point2D ab_param = a_param * (1.0 - j_coeff) + b_param * j_coeff;
+          Point3D ab = a * (1.0 - j_coeff) + b * j_coeff;
+          Point2D ac_param = a_param * (1.0 - j_coeff) + c_param * j_coeff;
+          Point3D ac = a * (1.0 - j_coeff) + c * j_coeff;
+
+          for (int k = 0; k <= j; ++k) {
+            double k_coeff = (double)k / j;
+
+            Point2D abc_param = ab_param * (1.0 - k_coeff) + ac_param * k_coeff;
+
+            if (std::abs(abc_param[0]) <= domain_size && std::abs(abc_param[1]) <= domain_size) {
+              S::PointType abc = ab * (1.0 - k_coeff) + ac * k_coeff;
+              fitter.addParamPoint(abc_param, abc); // exterior point group
+            }
+          }
+        }
+      }
+    }
+  }
+
+  fitter.setDegreeU(3);
+  fitter.setDegreeV(3);
+  fitter.setNrControlPointsU(6);
+  fitter.setNrControlPointsV(6);
+  fitter.setOutlierPercentage(O("Fitting Outlier Percentage"));
+  fitter.setLocalOutlierPercentages(O("Fitting Local Outliers"));
+
+  int minNrControlPointsU = O("Minimum in U");
+  int minNrControlPointsV = O("Minimum in V");
+  int maxNrControlPointsU = O("Maximum in U");
+  int maxNrControlPointsV = O("Maximum in V");
+  if (minNrControlPointsU)
+    fitter.setNrControlPointsU(minNrControlPointsU);
+  if (minNrControlPointsV)
+    fitter.setNrControlPointsV(minNrControlPointsV);
+  if (maxNrControlPointsU)
+    fitter.setMaxNrControlPointsU(maxNrControlPointsU);
+  if (maxNrControlPointsV)
+    fitter.setMaxNrControlPointsV(maxNrControlPointsVb);
+  if (maxNrControlPointsU && maxNrControlPointsV)
+    fitter.setMaxNrControlPoints(maxNrControlPointsU * maxNrControlPointsV);
+
+  bool lsq_dist_method = O("Minimize Dist");
+  bool lsq_ctrl_dist_method = false;
+  if (lsq_dist_method || !lsq_ctrl_dist_method) {
+    double weight = O("Weight for Dist");
+    BSSF_FN_LsqDistance<S::PointType>* functional = new BSSF_FN_LsqDistance<S::PointType>();
+    functional->Weight() = weight;
+    fitter.AddFunctional(functional);
+  }
+  if (O("Minimize Curvature")) {
+    Real weight = O("Weight for Curvature");
+    fitter.AddFunctional(new BSSF_FN_Curvature<S::PointType>(1.0, weight));
+  }
+  if (O("Minimize Oscillation")) {
+    Real weight = O("Weight for Oscillation");
+    fitter.AddFunctional(new BSSF_FN_Oscillation<S::PointType>(1.0, weight));
+  }
+  if (O("Minimize Area")) {
+    Real weight = O("Weight for Area");
+    fitter.AddFunctional(new BSSF_FN_Area<S::PointType>(1.0, weight));
+  }
+
+  BSSF_SmoothnessFunctional<S::PointType>::DirectionType smoothness_direction =
+    (BSSF_SmoothnessFunctional<S::PointType>::DirectionType) (O("Smoothness Direction") - 1);
+  int smoothness_method = O("Smoothness Method");
+  switch (smoothness_method) {
+  case 2:
+    fitter.AddFunctional(new BSSF_FN_Curvature<S::PointType>(smoothness_direction));
+    break;
+  case 3:
+    fitter.AddFunctional(new BSSF_FN_Oscillation<S::PointType>(smoothness_direction));
+    break;
+  case 4:
+    fitter.AddFunctional(new BSSF_FN_Area<S::PointType>(smoothness_direction));
+    break;
+  default:
+    break;
+  }
+
+  int knot_insertion = O("Knot Insertion Strategy");
+  switch (knot_insertion) {
+  case 2:
+    fitter.SetKnotInserter(new BSSF_KI_LargestSummedDev<S::PointType>());
+    break;
+  case 3:
+    fitter.SetKnotInserter(new BSSF_KI_LargestSummedDevDir<S::PointType>());
+    break;
+  case 4:
+    fitter.SetKnotInserter(new BSSF_KI_Triangulation<S::PointType>());
+    break;
+  case 5:
+    fitter.SetKnotInserter(new BSSF_KI_FlippingTriangles<S::PointType>());
+    break;
+  default:
+    break;
+  }
+
+  fitter.OptimizeParameters() = O("Optimize Parameters");
+  fitter.fit();
+
+  return fitter.surface();
+}
+
 #endif  // NO_SURFACE_FIT
 
 } // namespace Transfinite

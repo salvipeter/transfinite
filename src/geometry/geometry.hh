@@ -227,6 +227,7 @@ public:
 
   // I/O
   void writeSurface(const BSSurface &surface);
+  void writeTrimmedSurface(const BSSurface &surface, const CurveVector &curves);
   void close();
 
 private:

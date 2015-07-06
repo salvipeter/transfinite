@@ -29,6 +29,9 @@ public:
                                        knots_u, knots_v, cnet);
     filter_ << s;
   }
+  void writeTrimmedSurface(const BSSurface &surface, const CurveVector &curves) {
+    // TODO
+  }
   void close() { filter_.close(); }
 private:
   IgesExport filter_;
