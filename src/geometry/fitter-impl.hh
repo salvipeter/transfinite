@@ -118,6 +118,7 @@ public:
     f_.LocalOutlierPercentages() = true;
     f_.OptimizeParameters() = true;
     f_.CarrierFit();
+    f_.Fit();
   }
   BSSurface surface() const {
     BSSurface result;
