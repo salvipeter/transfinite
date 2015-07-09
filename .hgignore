@@ -12,4 +12,5 @@ Makefile
 */.vs/*
 *.filters
 *.sdf
+*.opensdf
 *.user
