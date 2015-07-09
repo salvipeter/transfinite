@@ -99,15 +99,15 @@ void surfaceTest(std::shared_ptr<Transfinite::Surface> &&surf, const CurveVector
 
 #ifndef NO_SURFACE_FIT
 
-  std::vector<BSSurface> surfaces = surf->fitCentralSplit();
+  std::vector<BSSurface> surfaces = surf->fitCentralSplit(0.01);
   IGES iges(filename + "-split.igs");
   for (const auto &s : surfaces)
     iges.writeSurface(s);
   iges.close();
 
-  BSSurface trimmed = surf->fitTrimmed();
+  BSSurface trimmed = surf->fitTrimmed(0.01);
   IGES iges2(filename + "-trim.igs");
-  iges2.writeTrimmedSurface(trimmed, cv);
+  iges2.writeSurface(trimmed);
   iges2.close();
 
 #endif  // NO_SURFACE_FIT

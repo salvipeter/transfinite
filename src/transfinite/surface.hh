@@ -23,10 +23,10 @@ public:
   TriMesh eval(size_t resolution) const;
 
 #ifndef NO_SURFACE_FIT
-  std::vector<BSSurface> fitCentralSplit(double fit_tol = 1.0e-2,
+  std::vector<BSSurface> fitCentralSplit(double fit_tol,
                                          double knot_snapping_tol = 1.0e-2,
                                          size_t sampling_density = 30) const;
-  BSSurface fitTrimmed(double fit_tol = 1.0e-2,
+  BSSurface fitTrimmed(double fit_tol,
                        size_t resolution = 15,
                        size_t max_cpts_u = 12,
                        size_t max_cpts_v = 12,

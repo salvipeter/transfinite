@@ -143,6 +143,7 @@ struct BSSurface {
   size_t deg_u_, deg_v_;
   DoubleVector knots_u_, knots_v_;
   PointMatrix cnet_;
+  CurveVector curves_, param_curves_;
 };
 
 class TriMesh {
@@ -233,7 +234,6 @@ public:
 
   // I/O
   void writeSurface(const BSSurface &surface);
-  void writeTrimmedSurface(const BSSurface &surface, const CurveVector &curves);
   void close();
 
 private:

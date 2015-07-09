@@ -499,11 +499,6 @@ IGES::writeSurface(const BSSurface &surface) {
 }
 
 void
-IGES::writeTrimmedSurface(const BSSurface &surface, const CurveVector &curves) {
-  impl_->writeTrimmedSurface(surface, curves);
-}
-
-void
 IGES::close() {
   impl_->close();
 }

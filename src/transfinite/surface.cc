@@ -512,7 +512,11 @@ Surface::fitTrimmed(double fit_tol, size_t resolution, size_t max_cpts_u, size_t
 
   fitter.fitWithCarrierSurface();
 
-  return fitter.surface();
+  // Save trimming information with the surface
+  BSSurface s = fitter.surface();
+  std::transform(ribbons_.begin(), ribbons_.end(), std::back_inserter(s.curves_),
+                 [](const std::shared_ptr<Ribbon> &r) { return r->curve(); });
+  return s;
 }
 
 #endif  // NO_SURFACE_FIT

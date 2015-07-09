@@ -17,12 +17,13 @@ public:
                                  IgesGlobal::IGU_MILLIMETERS, IgesGlobal::IGDSTD_NONE, 1.0, 5.0),
               IgesExport::IGVERSION_5_2) {}
   void writeSurface(const BSSurface &surface) {
-    filter_ << convertToNURBS(surface);
-  }
-  void writeTrimmedSurface(const BSSurface &surface, const CurveVector &curves) {
     NURBSSurf s = convertToNURBS(surface);
+    if (surface.curves_.empty()) {
+      filter_ << s;
+      return;
+    }
     std::vector<NURBSCurv> cs;
-    std::transform(curves.begin(), curves.end(), std::back_inserter(cs),
+    std::transform(surface.curves_.begin(), surface.curves_.end(), std::back_inserter(cs),
                    [](const std::shared_ptr<BSCurve> &c) { return convertToNURBS(*c); });
 
     TrimmedBSplineSurface tsurf;

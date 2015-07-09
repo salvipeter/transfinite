@@ -4,5 +4,6 @@ debug/*
 release/*
 *~
 .\#*
+*\#
 *.o
 Makefile

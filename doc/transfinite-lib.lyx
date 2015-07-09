@@ -1,0 +1,557 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass article
+\use_default_options true
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_amsmath 1
+\use_esint 1
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+Transfinite Surface Library
+\end_layout
+
+\begin_layout Author
+ShapEx
+\end_layout
+
+\begin_layout Section
+Conventional Geometry
+\end_layout
+
+\begin_layout Standard
+Conventional geometric entities are provided by a shared library, and are
+ accessed through the header file 
+\family typewriter
+geometry.hh
+\family default
+.
+ The main classes defined there are as follows:
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+Vector2D
+\family default
+, 
+\family typewriter
+Vector3D
+\family default
+: 2- and 3-dimensional vectors, with the usual operators.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+Point2D
+\family default
+, 
+\family typewriter
+Point3D
+\family default
+: Aliases for 
+\family typewriter
+Vector2D
+\family default
+ and 
+\family typewriter
+Vector3D
+\family default
+.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+DoubleVector
+\family default
+, 
+\family typewriter
+Vector2DVector
+\family default
+, 
+\family typewriter
+Point2DVector
+\family default
+, etc.: Aliases for STL vectors containing the respective objects.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+BSCurve
+\family default
+: A (non-rational) B-spline curve.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+BSSurface
+\family default
+: A (non-rational) B-spline surface, with or without trimming.
+ This is a dummy class only for data transfer.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+TriMesh
+\family default
+: A triangle mesh, capable of writing Wavefront 
+\family typewriter
+.obj
+\family default
+ files via 
+\family typewriter
+writeOBJ
+\family default
+(
+\emph on
+filename
+\emph default
+).
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+IGES
+\family default
+: An IGES file writer, exporting the function 
+\family typewriter
+writeSurface
+\family default
+(
+\emph on
+surface
+\emph default
+).
+\end_layout
+
+\begin_layout Section
+Transfinite Surfaces
+\end_layout
+
+\begin_layout Standard
+The general interface for handling transfinite interpolation surfaces is
+ in the header file 
+\family typewriter
+surface.hh
+\family default
+.
+ It defines the abstract class 
+\family typewriter
+Transfinite::Surface
+\family default
+, which provides several functions (detailed below).
+ For actual use, one has to use a child class---presently there are four
+ options: 
+\family typewriter
+SurfaceSideBased
+\family default
+, 
+\family typewriter
+Surface\SpecialChar \-
+Corner\SpecialChar \-
+Based
+\family default
+, 
+\family typewriter
+SurfaceGeneralizedCoons
+\family default
+, 
+\family typewriter
+SurfaceCompositeRibbon
+\family default
+, corresponding to the patch types SB, CB, GC and CR in 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "cagd"
+
+\end_inset
+
+, respectively.
+ One- and two-sided surfaces are not supported.
+\end_layout
+
+\begin_layout Subsection
+Surface Creation
+\end_layout
+
+\begin_layout Standard
+After creating a surface object of the desired type, the following steps
+ finalize the surface:
+\end_layout
+
+\begin_layout Enumerate
+Set the boundary curves using 
+\family typewriter
+setCurves
+\family default
+(
+\emph on
+curves
+\emph default
+).
+ Alternatively curves can be set one by one, using 
+\family typewriter
+setCurve
+\family default
+(
+\emph on
+i
+\emph default
+, 
+\emph on
+curve
+\emph default
+) to set the 
+\begin_inset Formula $i$
+\end_inset
+
+-th curve.
+\end_layout
+
+\begin_layout Enumerate
+Call 
+\family typewriter
+setupLoop
+\family default
+() to normalize the curves and fill in adjacency information.
+ This function has to be called every time a new curve is assigned to the
+ surface.
+\end_layout
+
+\begin_layout Enumerate
+Call 
+\family typewriter
+update
+\family default
+() to generate ribbons and clear the cache.
+ This function has to be called every time the curves have been changed.
+ If only the 
+\begin_inset Formula $i$
+\end_inset
+
+-th curve has changed, it is sufficient to call 
+\family typewriter
+update
+\family default
+(
+\emph on
+i
+\emph default
+).
+\end_layout
+
+\begin_layout Enumerate
+Use of the 
+\begin_inset Formula $\gamma$
+\end_inset
+
+ function 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "cagd"
+
+\end_inset
+
+ can be turned off by 
+\family typewriter
+setGamma
+\family default
+(
+\family typewriter
+false
+\family default
+).
+ It is on by default.
+\end_layout
+
+\begin_layout Subsection
+Evaluation
+\end_layout
+
+\begin_layout Standard
+A point 
+\begin_inset Formula $p$
+\end_inset
+
+ in the 2D domain can be evaluated by calling 
+\family typewriter
+eval
+\family default
+(
+\emph on
+p
+\emph default
+).
+ For convenience, there is an overloaded function that evaluates the surface
+ using a given resolution, thereby creating a triangle mesh: 
+\family typewriter
+eval
+\family default
+(
+\emph on
+resolution
+\emph default
+).
+\end_layout
+
+\begin_layout Subsection
+Fitting
+\end_layout
+
+\begin_layout Standard
+There are two options for fitting quadrilateral B-spline surfaces.
+\end_layout
+
+\begin_layout Subsubsection*
+Central Split
+\end_layout
+
+\begin_layout Standard
+This method splits the 
+\begin_inset Formula $n$
+\end_inset
+
+-sided transfintie surface into 
+\begin_inset Formula $n$
+\end_inset
+
+ quadrilaterals, and fits a B-spline surface on each of them.
+ (Except in the 4-sided case, where only one B-spline surface is used.) The
+ function for this is 
+\family typewriter
+fitCentralSplit
+\family default
+(
+\emph on
+ftol
+\emph default
+, 
+\emph on
+ktol
+\emph default
+, 
+\emph on
+density
+\emph default
+).
+ The parameters are:
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+ftol
+\emph default
+ is the main fitting tolerance to be achieved.
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+ktol
+\emph default
+ is the knot snapping tolerance, which is the smallest allowed difference
+ between two knot values.
+ As very close knots can cause artefacts, we recommend setting this value
+ to at least 0.01 (curves are normalized to the interval [0,1]).
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+density
+\emph default
+ is the sampling density for the subdividing curves, the default is set
+ to 30.
+\end_layout
+
+\begin_layout Subsubsection*
+Trimming
+\end_layout
+
+\begin_layout Standard
+This method fits a larger B-spline surface on the 
+\begin_inset Formula $n$
+\end_inset
+
+-sided patch, and trims the sides with the original boundary curves.
+ The function for this is 
+\family typewriter
+fitTrimmed
+\family default
+(
+\emph on
+ftol
+\emph default
+, 
+\emph on
+resolution
+\emph default
+, 
+\emph on
+maxu
+\emph default
+, 
+\emph on
+maxv
+\emph default
+, 
+\emph on
+wcurv
+\emph default
+, 
+\emph on
+wosc
+\emph default
+).
+ The parameters are:
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+ftol
+\emph default
+ is the main fitting tolerance to be achieved.
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+resolution
+\emph default
+ is the surface's sampling resolution, as in 
+\family typewriter
+eval
+\family default
+.
+ Defaults to 15.
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+maxu
+\emph default
+ and 
+\emph on
+maxv
+\emph default
+ are the maximum number of control points in the 
+\emph on
+u
+\emph default
+ and 
+\emph on
+v
+\emph default
+ directions, respectively.
+ These are needed because of the idiosyncrasies of the fitting algorithm.
+ The default is 12 in both directions.
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+wcurv
+\emph default
+ and 
+\emph on
+wosc
+\emph default
+ are the curvature and oscilliation minimization weights, respectively.
+ The default is 1e-6 for both.
+\end_layout
+
+\begin_layout Bibliography
+\begin_inset CommandInset bibitem
+LatexCommand bibitem
+key "cagd"
+
+\end_inset
+
+P.
+\begin_inset space ~
+\end_inset
+
+Salvi, T.
+\begin_inset space ~
+\end_inset
+
+Várady, A.
+\begin_inset space ~
+\end_inset
+
+Rockwood, 
+\emph on
+Ribbon-based Transfinite Surfaces
+\emph default
+.
+ Computer Aided Geometric Design, Vol.
+ 31(9), pp.
+\begin_inset space ~
+\end_inset
+
+613--630, 2014.
+\end_layout
+
+\end_body
+\end_document
