@@ -2,6 +2,7 @@
 #include <fstream>
 #include <iomanip>
 #include <iostream>
+#include <string>
 
 #include "rmf.hh"
 #include "domain-regular.hh"
