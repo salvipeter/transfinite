@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <fstream>
+#include <string>
 
 void
 TriMesh::resizePoints(size_t n) {

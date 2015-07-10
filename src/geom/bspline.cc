@@ -71,7 +71,7 @@ BSCurve::basisFunctionsAll(size_t i, double u, std::vector<DoubleVector> &coeff)
 
 Point3D
 BSCurve::eval(double u) const {
-  double const span = findSpan(u);
+  size_t span = findSpan(u);
   DoubleVector coeff; basisFunctions(span, u, coeff);
   Point3D point(0.0, 0.0, 0.0);
   for(size_t i = 0; i <= p_; ++i)
@@ -81,7 +81,7 @@ BSCurve::eval(double u) const {
 
 Point3D
 BSCurve::eval(double u, size_t nr_der, VectorVector &der) const {
-  size_t const du = std::min(nr_der, p_);
+  size_t du = std::min(nr_der, p_);
   der.clear();
   size_t span = findSpan(u);
   std::vector<DoubleVector> coeff; basisFunctionsAll(span, u, coeff);
