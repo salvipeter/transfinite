@@ -7,6 +7,7 @@
 #include "IgesExport.hh"
 
 class IGES::IGESImpl {
+  using NURBSCurv2D = BSplineCurve<Point<2, double>>;
   using NURBSCurv = BSplineCurve<Point<3, double>>;
   using NURBSSurf = BSplineSurface<Point<3, double>>;
 public:
@@ -22,15 +23,29 @@ public:
       filter_ << s;
       return;
     }
+
     std::vector<NURBSCurv> cs; cs.reserve(surface.curves_.size());
     std::transform(surface.curves_.begin(), surface.curves_.end(), std::back_inserter(cs),
                    [](const std::shared_ptr<BSCurve> &c) { return convertToNURBS(*c); });
 
+    size_t n = surface.vertices_.size();
+    NURBSCurv2D::KnotVectorType knots;
+    knots.insert(2, 0.0); knots.insert(2, 1.0);
+    std::vector<NURBSCurv2D> pcs; pcs.reserve(n);
+    for (size_t i = 0; i < n; ++i) {
+      size_t im = (i + n - 1) % n;
+      NURBSCurv2D::ControlVectorType cv(2);
+      cv[0] = Point<2, double>(surface.vertices_[im][0], surface.vertices_[im][1]);
+      cv[1] = Point<2, double>(surface.vertices_[i][0], surface.vertices_[i][1]);
+      NURBSCurv2D pc(1, knots, cv);
+      pcs.push_back(pc);
+    }
+
     TrimmedBSplineSurface tsurf;
     tsurf.surface = &s;
-    // tsurf.domain_loop_sets.push_back(TrimmedBSplineSurface::DC_LoopType());
-    // for (size_t i = 0; i < size; i++)
-    //   tsurf.domain_loop_sets.back().push_back(&domain_trim_curves[i]);
+    tsurf.domain_loop_sets.push_back(TrimmedBSplineSurface::DC_LoopType());
+    for (const auto &pc : pcs)
+      tsurf.domain_loop_sets.back().push_back(&pc);
     tsurf.space_loop_sets.push_back(TrimmedBSplineSurface::C_LoopType());
     for (const auto &c : cs)
       tsurf.space_loop_sets.back().push_back(&c);

@@ -143,7 +143,8 @@ struct BSSurface {
   size_t deg_u_, deg_v_;
   DoubleVector knots_u_, knots_v_;
   PointMatrix cnet_;
-  CurveVector curves_, param_curves_;
+  CurveVector curves_;
+  Point2DVector vertices_;
 };
 
 class TriMesh {
