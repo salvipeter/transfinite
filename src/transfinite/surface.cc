@@ -99,6 +99,11 @@ Surface::update() {
   updateCorners();
 }
 
+std::shared_ptr<const Domain>
+Surface::domain() const {
+  return domain_;
+}
+
 std::shared_ptr<const Ribbon>
 Surface::ribbon(size_t i) const {
   return ribbons_[i];

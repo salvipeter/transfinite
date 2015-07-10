@@ -6,6 +6,8 @@ release/*
 .\#*
 *\#
 *.o
+*.obj
+*.igs
 Makefile
 */Debug/*
 */Release/*

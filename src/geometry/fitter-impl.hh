@@ -117,6 +117,7 @@ public:
     finalizeSetup();
     f_.LocalOutlierPercentages() = true;
     f_.OptimizeParameters() = true;
+    f_.SetKnotInserter(new BSSF_KI_LargestSummedDev<Point<3, double>>());
     f_.CarrierFit();
     f_.Fit();
   }
@@ -167,7 +168,6 @@ protected:
     }
     if (oscillation_weight_ > 0.0)
       f_.AddFunctional(new BSSF_FN_Oscillation<Point<3, double>>(1.0, oscillation_weight_));
-    f_.SetKnotInserter(new BSSF_KI_LargestSummedDev<Point<3, double>>());
   }
 private:
   struct ParameterPoint {
