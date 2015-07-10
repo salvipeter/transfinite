@@ -148,6 +148,8 @@ struct BSSurface {
 
 class TriMesh {
 public:
+  using Triangle = std::array<size_t, 3>;
+
   // Constructors & destructor
   TriMesh();
   TriMesh(const TriMesh &c);
@@ -165,6 +167,8 @@ public:
   void addTriangle(size_t a, size_t b, size_t c);
 
   // I/O
+  PointVector points() const;
+  std::list<Triangle> triangles() const;
   void writeOBJ(std::string filename) const;
 
 private:

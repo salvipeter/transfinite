@@ -22,7 +22,7 @@ public:
       filter_ << s;
       return;
     }
-    std::vector<NURBSCurv> cs;
+    std::vector<NURBSCurv> cs; cs.reserve(surface.curves_.size());
     std::transform(surface.curves_.begin(), surface.curves_.end(), std::back_inserter(cs),
                    [](const std::shared_ptr<BSCurve> &c) { return convertToNURBS(*c); });
 

@@ -350,6 +350,16 @@ TriMesh::addTriangle(size_t a, size_t b, size_t c) {
   impl_->addTriangle(a, b, c);
 }
 
+PointVector
+TriMesh::points() const {
+  return impl_->points();
+}
+
+std::list<TriMesh::Triangle>
+TriMesh::triangles() const {
+  return impl_->triangles();
+}
+
 void
 TriMesh::writeOBJ(std::string filename) const {
   impl_->writeOBJ(filename);

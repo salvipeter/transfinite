@@ -23,6 +23,16 @@ TriMesh::addTriangle(size_t a, size_t b, size_t c) {
   triangles_.push_back({a, b, c});
 }
 
+PointVector
+TriMesh::points() const {
+  return points_;
+}
+
+std::list<TriMesh::Triangle>
+TriMesh::triangles() const {
+  return triangles_;
+}
+
 void
 TriMesh::writeOBJ(std::string filename) const {
   std::ofstream f(filename);

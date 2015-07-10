@@ -118,6 +118,8 @@ private:
 
 class TriMesh {
 public:
+  using Triangle = std::array<size_t, 3>;
+
   // Mesh building
   void resizePoints(size_t n);
   void setPoint(size_t i, const Point3D &p);
@@ -125,10 +127,11 @@ public:
   void addTriangle(size_t a, size_t b, size_t c);
 
   // I/O
+  PointVector points() const;
+  std::list<Triangle> triangles() const;
   void writeOBJ(std::string filename) const;
 
 private:
-  using Triangle = std::array<size_t, 3>;
   PointVector points_;
   std::list<Triangle> triangles_;
 };
