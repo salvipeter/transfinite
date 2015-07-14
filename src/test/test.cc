@@ -118,9 +118,14 @@ int main(int argc, char **argv) {
 #endif  // DEBUG
 
   size_t res = 15;
-  std::string filename = "cagd86";
-  if (argc > 1)
-    filename = argv[1];
+  std::string filename;
+  if (argc < 2 || argc > 3) {
+    std::cerr << "Usage: " << argv[0] << " model-name [resolution]" << std::endl;
+    return 1;
+  }
+  filename = argv[1];
+  if (argc == 3)
+    res = atoi(argv[2]);
 
   surfaceTest(filename, "sb", res, std::make_shared<Transfinite::SurfaceSideBased>());
   surfaceTest(filename, "cb", res, std::make_shared<Transfinite::SurfaceCornerBased>());
