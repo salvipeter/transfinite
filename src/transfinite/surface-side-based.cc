@@ -1,12 +1,12 @@
 #include "domain-angular.hh"
-#include "parameterization-bilinear.hh"
+#include "parameterization-parallel.hh"
 #include "ribbon-compatible.hh"
 #include "surface-side-based.hh"
 
 namespace Transfinite {
 
 using DomainType = DomainAngular;
-using ParamType = ParameterizationBilinear;
+using ParamType = ParameterizationParallel;
 using RibbonType = RibbonCompatible;
 
 SurfaceSideBased::SurfaceSideBased() {

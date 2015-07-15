@@ -364,11 +364,20 @@ SB patches use parallel parameterization (
 \family typewriter
 ParameterizationParallel
 \family default
-), which is 
-\begin_inset Formula $\dots$
+): 
+\begin_inset Formula $s$
 \end_inset
 
+ is linear, as in the bilinear parameterization, and 
+\begin_inset Formula $d$
+\end_inset
 
+ is proportional to the perpendicular distance to the base side, with the
+ farthest vertex set to 
+\begin_inset Formula $d=1$
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Itemize
@@ -377,7 +386,8 @@ CB patches use bilinear parameterization (
 Parameterization\SpecialChar \-
 Bilinear
 \family default
-).
+), or more correctly, linear parameterization, since this representation
+ uses only side parameters.
 \end_layout
 
 \begin_layout Itemize

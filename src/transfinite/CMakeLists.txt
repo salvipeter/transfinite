@@ -14,6 +14,7 @@ add_library(transfinite
     parameterization-bilinear.cc
     parameterization-barycentric.cc
     parameterization-interconnected.cc
+    parameterization-parallel.cc
   ribbon.cc
     ribbon-compatible.cc
   surface.cc
