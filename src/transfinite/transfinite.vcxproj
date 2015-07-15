@@ -79,12 +79,14 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="domain-angular.hh" />
     <ClInclude Include="domain-circular.hh" />
     <ClInclude Include="domain-regular.hh" />
     <ClInclude Include="domain.hh" />
     <ClInclude Include="parameterization-barycentric.hh" />
     <ClInclude Include="parameterization-bilinear.hh" />
     <ClInclude Include="parameterization-interconnected.hh" />
+    <ClInclude Include="parameterization-parallel.hh" />
     <ClInclude Include="parameterization.hh" />
     <ClInclude Include="ribbon-compatible.hh" />
     <ClInclude Include="ribbon.hh" />
@@ -96,12 +98,14 @@
     <ClInclude Include="surface.hh" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="domain-angular.cc" />
     <ClCompile Include="domain-circular.cc" />
     <ClCompile Include="domain-regular.cc" />
     <ClCompile Include="domain.cc" />
     <ClCompile Include="parameterization-barycentric.cc" />
     <ClCompile Include="parameterization-bilinear.cc" />
     <ClCompile Include="parameterization-interconnected.cc" />
+    <ClCompile Include="parameterization-parallel.cc" />
     <ClCompile Include="parameterization.cc" />
     <ClCompile Include="ribbon-compatible.cc" />
     <ClCompile Include="ribbon.cc" />
