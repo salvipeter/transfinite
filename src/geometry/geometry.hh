@@ -143,8 +143,7 @@ struct BSSurface {
   size_t deg_u_, deg_v_;
   DoubleVector knots_u_, knots_v_;
   PointMatrix cnet_;
-  CurveVector curves_;
-  Point2DVector vertices_;
+  CurveVector curves_, param_curves_;
 };
 
 class TriMesh {
@@ -184,16 +183,17 @@ public:
   ~CurveFitter();
 
   // Fitting constraints
-  void setTolerance(double tol);
   void setDegree(size_t deg);
   void setNrControlPoints(size_t nr_cpts);
   void setKnotVector(const DoubleVector &knots);
   void addControlPoint(size_t i, const Point3D &point);
+  void newPointGroup(double tolerance);
   void addParamPoint(double param, const Point3D &point);
 
   // Fit
   void fit();
   BSCurve curve() const;
+  DoubleVector parameters(size_t group) const;
 
 private:
   class CurveFitterImpl;
@@ -207,7 +207,6 @@ public:
   ~SurfaceFitter();
 
   // Fitting constraints
-  void setTolerance(double tol);
   void setDegreeU(size_t deg_u);
   void setDegreeV(size_t deg_v);
   void setNrControlPointsU(size_t nr_cpts_u);
@@ -219,12 +218,14 @@ public:
   void setCurvatureWeight(double weight);
   void setOscillationWeight(double weight);
   void addControlPoint(size_t i, size_t j, const Point3D &point);
+  void newPointGroup(double tolerance);
   void addParamPoint(const Point2D &param, const Point3D &point);
 
   // Fit
   void fit();
   void fitWithCarrierSurface();
   BSSurface surface() const;
+  Point2DVector parameters(size_t group) const;
 
 private:
   class SurfaceFitterImpl;

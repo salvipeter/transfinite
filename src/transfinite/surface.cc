@@ -326,7 +326,6 @@ Surface::fitCentralSplit(double fit_tol, double knot_snapping_tol, size_t sampli
 
     // 3. Fit
     SurfaceFitter fitter;
-    fitter.setTolerance(fit_tol);
     fitter.setDegreeU(3);
     fitter.setDegreeV(3);
 
@@ -341,6 +340,7 @@ Surface::fitCentralSplit(double fit_tol, double knot_snapping_tol, size_t sampli
     Point2D center = domain_->center();
     Point3D point = eval(center);
     Point2D bilinear = param_bilinear.mapToRibbon(0, center);
+    fitter.newPointGroup(fit_tol);
     fitter.addParamPoint(bilinear, point);
 
     for (size_t j = 1; j <= u_step; ++j) {
@@ -389,9 +389,8 @@ Surface::fitCentralSplit(double fit_tol, double knot_snapping_tol, size_t sampli
     Point2DVector edge_mid_u; edge_mid_u.resize(n_);
     for (size_t i = 0; i < n_; ++i) {
       CurveFitter bf;
-      bf.setTolerance(fit_tol);
       bf.setDegree(3);
-
+      bf.newPointGroup(fit_tol);
       double edge_half;
       {
         std::shared_ptr<Ribbon> r = ribbons_[i];
@@ -446,9 +445,9 @@ Surface::fitCentralSplit(double fit_tol, double knot_snapping_tol, size_t sampli
 
       // 3. Fit
       SurfaceFitter fitter;
-      fitter.setTolerance(fit_tol);
       fitter.setDegreeU(3);
       fitter.setDegreeV(3);
+      fitter.newPointGroup(fit_tol);
 
       Point2D u1 = edge_mid_u[i];
       Point2D v1 = edge_mid_u[next(i)];
@@ -499,12 +498,24 @@ Surface::fitCentralSplit(double fit_tol, double knot_snapping_tol, size_t sampli
 BSSurface
 Surface::fitTrimmed(double fit_tol, size_t resolution, size_t max_cpts_u, size_t max_cpts_v,
                     double curvature_weight, double oscillation_weight) const {
-  SurfaceFitter fitter;
-  fitter.setTolerance(fit_tol);
-
   Point2DVector uvs = domain_->parameters(resolution);
+
+  SurfaceFitter fitter;
+
+  // Add all points
+  fitter.newPointGroup(fit_tol);
   for (const auto &uv : uvs)
     fitter.addParamPoint(uv, eval(uv));
+
+  // Add boundary points as separate point groups
+  for (size_t i = 0; i < n_; ++i) {
+    fitter.newPointGroup(fit_tol);
+    for (size_t j = 0; j < resolution; ++j) {
+      double t = (double)j / resolution;
+      Point2D uv = domain_->edgePoint(i, t);
+      fitter.addParamPoint(uv, eval(uv));
+    }
+  }
 
   fitter.setDegreeU(3);
   fitter.setDegreeV(3);
@@ -521,7 +532,28 @@ Surface::fitTrimmed(double fit_tol, size_t resolution, size_t max_cpts_u, size_t
   BSSurface s = fitter.surface(); s.curves_.reserve(n_);
   std::transform(ribbons_.begin(), ribbons_.end(), std::back_inserter(s.curves_),
                  [](const std::shared_ptr<Ribbon> &r) { return r->curve(); });
-  s.vertices_ = domain_->vertices();
+
+  // Fit curves on the trim parameters
+  for (size_t i = 1; i <= n_; ++i) {
+    Point2DVector params = fitter.parameters(i);
+    PointVector params3d; params3d.reserve(params.size());
+    std::transform(params.begin(), params.end(), std::back_inserter(params3d),
+                   [](const Point2D &p) { return Point3D(p[0], p[1], 0.0); });
+    CurveFitter bf;
+    bf.setDegree(3);
+    bf.newPointGroup(fit_tol);
+    for (size_t j = 0; j < resolution; ++j) {
+      double t = (double)j / resolution;
+      bf.addParamPoint(t, params3d[j]);
+    }
+    size_t nr_cpts = 5;       // kutykurutty
+    bf.setNrControlPoints(nr_cpts);
+    bf.addControlPoint(0, params3d[0]);
+    bf.addControlPoint(nr_cpts - 1, params3d[resolution-1]);
+    bf.fit();
+    s.param_curves_.push_back(std::make_shared<BSCurve>(bf.curve()));
+  }
+
   return s;
 }
 

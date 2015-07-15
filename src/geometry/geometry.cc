@@ -372,11 +372,6 @@ CurveFitter::CurveFitter()
 CurveFitter::~CurveFitter() = default;
 
 void
-CurveFitter::setTolerance(double tol) {
-  impl_->setTolerance(tol);
-}
-
-void
 CurveFitter::setDegree(size_t deg) {
   impl_->setDegree(deg);
 }
@@ -397,6 +392,11 @@ CurveFitter::addControlPoint(size_t i, const Point3D &point) {
 }
 
 void
+CurveFitter::newPointGroup(double tolerance) {
+  impl_->newPointGroup(tolerance);
+}
+
+void
 CurveFitter::addParamPoint(double param, const Point3D &point) {
   impl_->addParamPoint(param, point);
 }
@@ -411,16 +411,16 @@ CurveFitter::curve() const {
   return impl_->curve();
 }
 
+DoubleVector
+CurveFitter::parameters(size_t group) const {
+  return impl_->parameters(group);
+}
+
 SurfaceFitter::SurfaceFitter()
   : impl_(std::make_unique<SurfaceFitterImpl>()) {
 }
 
 SurfaceFitter::~SurfaceFitter() = default;
-
-void
-SurfaceFitter::setTolerance(double tol) {
-  impl_->setTolerance(tol);
-}
 
 void
 SurfaceFitter::setDegreeU(size_t deg_u) {
@@ -478,6 +478,11 @@ SurfaceFitter::addControlPoint(size_t i, size_t j, const Point3D &point) {
 }
 
 void
+SurfaceFitter::newPointGroup(double tolerance) {
+  impl_->newPointGroup(tolerance);
+}
+
+void
 SurfaceFitter::addParamPoint(const Point2D &param, const Point3D &point) {
   impl_->addParamPoint(param, point);
 }
@@ -495,6 +500,11 @@ SurfaceFitter::fitWithCarrierSurface() {
 BSSurface
 SurfaceFitter::surface() const {
   return impl_->surface();
+}
+
+Point2DVector
+SurfaceFitter::parameters(size_t group) const {
+  return impl_->parameters(group);
 }
 
 IGES::IGES(std::string filename)

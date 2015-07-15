@@ -16,7 +16,6 @@
 
 class CurveFitter::CurveFitterImpl {
 public:
-  void setTolerance(double tol) { tolerance_ = tol; }
   void setDegree(size_t deg) { f_.Degree() = deg; }
   void setNrControlPoints(size_t nr_cpts) { f_.NrControlPoints() = nr_cpts; }
   void setKnotVector(const DoubleVector &knots) {
@@ -25,20 +24,16 @@ public:
   void addControlPoint(size_t i, const Point3D &point) {
     cpts_.push_back(ControlPointConstraint(i, point));
   }
+  void newPointGroup(double tolerance) {
+    f_.ParamPointSet().push_front(BSC_Fitter<Point<3, double>>::ParamPointGroupType(tolerance));
+  }
   void addParamPoint(double param, const Point3D &point) {
-    ppts_.push_back(ParameterPoint(param, point));
+    Point<1, double> param_impl(param);
+    Point<3, double> point_impl(point[0], point[1], point[2]);
+    BSC_Fitter<Point<3, double>>::ParamPointGroupReference ppts = f_.ParamPointSet().front();
+    ppts.push_back(BSC_Fitter<Point<3, double>>::ParamPointType(point_impl, param_impl));
   }
   void fit() {
-    if (!ppts_.empty()) {
-      BSC_Fitter<Point<3, double>>::ParamPointSetReference point_set = f_.ParamPointSet();
-      point_set.push_back(BSC_Fitter<Point<3, double>>::ParamPointGroupType(tolerance_));
-      BSC_Fitter<Point<3, double>>::ParamPointGroupReference pg(point_set.front());
-      for (const auto &pp : ppts_) {
-        Point<1, double> param(pp.u);
-        Point<3, double> point(pp.p[0], pp.p[1], pp.p[2]);
-        pg.push_back(BSC_Fitter<Point<3, double>>::ParamPointType(point, param));
-      }
-    }
     if (!cpts_.empty()) {
       size_t nr_ctrl = f_.NrControlPoints();
       BSC_Fitter<Point<3, double>>::ConstraintsType cst(nr_ctrl);
@@ -66,27 +61,28 @@ public:
     }
     return BSCurve(deg, knots, cpts);
   }
+  DoubleVector parameters(size_t group) const {
+    DoubleVector result;
+    auto ppts = f_.ParamPointSet().rbegin();
+    for (size_t i = 0; i != group; ++i, ++ppts)
+      continue;
+    for (const auto &pp : *ppts)
+      result.push_back(pp.Param()[0]);
+    return result;
+  }
 private:
-  struct ParameterPoint {
-    ParameterPoint(double u, const Point3D &p) : u(u), p(p) {}
-    double u;
-    Point3D p;
-  };
   struct ControlPointConstraint {
     ControlPointConstraint(size_t i, const Point3D &p) : i(i), p(p) {}
     size_t i;
     Point3D p;
   };
   BSC_Fitter<Point<3, double>> f_;
-  double tolerance_;
-  std::list<ParameterPoint> ppts_;
   std::list<ControlPointConstraint> cpts_;
 };
 
 class SurfaceFitter::SurfaceFitterImpl {
 public:
   SurfaceFitterImpl() : curvature_weight_(0.0), oscillation_weight_(0.0) {}
-  void setTolerance(double tol) { tolerance_ = tol; }
   void setDegreeU(size_t deg_u) { f_.DegreeU() = deg_u; }
   void setDegreeV(size_t deg_v) { f_.DegreeV() = deg_v; }
   void setNrControlPointsU(size_t nr_cpts_u) { f_.NrControlPointsU() = nr_cpts_u; }
@@ -104,8 +100,14 @@ public:
   void addControlPoint(size_t i, size_t j, const Point3D &point) {
     cpts_.push_back(ControlPointConstraint(i, j, point));
   }
+  void newPointGroup(double tolerance) {
+    f_.ParamPointSet().push_front(BSS_Fitter<Point<3, double>>::ParamPointGroupType(tolerance));
+  }
   void addParamPoint(const Point2D &param, const Point3D &point) {
-    ppts_.push_back(ParameterPoint(param, point));
+    Point<2, double> param_impl(param[0], param[1]);
+    Point<3, double> point_impl(point[0], point[1], point[2]);
+    BSS_Fitter<Point<3, double>>::ParamPointGroupReference ppts = f_.ParamPointSet().front();
+    ppts.push_back(BSS_Fitter<Point<3, double>>::ParamPointType(point_impl, param_impl));
   }
   void fit() {
     finalizeSetup();
@@ -141,18 +143,19 @@ public:
     }
     return result;
   }
+  Point2DVector parameters(size_t group) const {
+    Point2DVector result;
+    auto ppts = f_.ParamPointSet().rbegin();
+    for (size_t i = 0; i != group; ++i, ++ppts)
+      continue;
+    for (const auto &pp : *ppts) {
+      auto p = pp.Param();
+      result.push_back(Point2D(p[0], p[1]));
+    }
+    return result;
+  }
 protected:
   void finalizeSetup() {
-    if (!ppts_.empty()) {
-      BSS_Fitter<Point<3, double>>::ParamPointSetReference point_set = f_.ParamPointSet();
-      point_set.push_back(BSS_Fitter<Point<3, double>>::ParamPointGroupType(tolerance_));
-      BSS_Fitter<Point<3, double>>::ParamPointGroupReference pg(point_set.front());
-      for (const auto &pp : ppts_) {
-        Point<2, double> param(pp.uv[0], pp.uv[1]);
-        Point<3, double> point(pp.p[0], pp.p[1], pp.p[2]);
-        pg.push_back(BSS_Fitter<Point<3, double>>::ParamPointType(point, param));
-      }
-    }
     if (!cpts_.empty()) {
       size_t nr_ctrl[2];
       nr_ctrl[0] = f_.NrControlPointsU(); nr_ctrl[1] = f_.NrControlPointsV();
@@ -170,18 +173,12 @@ protected:
       f_.AddFunctional(new BSSF_FN_Oscillation<Point<3, double>>(1.0, oscillation_weight_));
   }
 private:
-  struct ParameterPoint {
-    ParameterPoint(const Point2D &uv, const Point3D &p) : uv(uv), p(p) {}
-    Point2D uv;
-    Point3D p;
-  };
   struct ControlPointConstraint {
     ControlPointConstraint(size_t i, size_t j, const Point3D &p) : i(i), j(j), p(p) {}
     size_t i, j;
     Point3D p;
   };
   BSS_Fitter<Point<3, double>> f_;
-  double tolerance_, curvature_weight_, oscillation_weight_;
-  std::list<ParameterPoint> ppts_;
+  double curvature_weight_, oscillation_weight_;
   std::list<ControlPointConstraint> cpts_;
 };

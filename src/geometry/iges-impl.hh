@@ -28,18 +28,10 @@ public:
     std::transform(surface.curves_.begin(), surface.curves_.end(), std::back_inserter(cs),
                    [](const std::shared_ptr<BSCurve> &c) { return convertToNURBS(*c); });
 
-    size_t n = surface.vertices_.size();
-    NURBSCurv2D::KnotVectorType knots;
-    knots.insert(2, 0.0); knots.insert(2, 1.0);
-    std::vector<NURBSCurv2D> pcs; pcs.reserve(n);
-    for (size_t i = 0; i < n; ++i) {
-      size_t im = (i + n - 1) % n;
-      NURBSCurv2D::ControlVectorType cv(2);
-      cv[0] = Point<2, double>(surface.vertices_[im][0], surface.vertices_[im][1]);
-      cv[1] = Point<2, double>(surface.vertices_[i][0], surface.vertices_[i][1]);
-      NURBSCurv2D pc(1, knots, cv);
-      pcs.push_back(pc);
-    }
+    std::vector<NURBSCurv2D> pcs; pcs.reserve(surface.param_curves_.size());
+    std::transform(surface.param_curves_.begin(), surface.param_curves_.end(),
+                   std::back_inserter(pcs),
+                   [](const std::shared_ptr<BSCurve> &c) { return convertToNURBS2D(*c); });
 
     TrimmedBSplineSurface tsurf;
     tsurf.surface = &s;
@@ -53,6 +45,18 @@ public:
   }
   void close() { filter_.close(); }
 private:
+  static NURBSCurv2D convertToNURBS2D(const BSCurve &curve) {
+    NURBSCurv2D::KnotVectorType knots;
+    DoubleVector knots_orig = curve.knotVector();
+    knots.assign(knots_orig.begin(), knots_orig.end());
+    size_t n = curve.nrControlPoints();
+    NURBSCurv2D::ControlVectorType cv(n);
+    for (size_t i = 0; i < n; ++i) {
+      const Point3D &p = curve.controlPoint(i);
+      cv[i] = Point<2, double>(p[0], p[1]);
+    }
+    return NURBSCurv2D(curve.degree(), knots, cv);
+  }
   static NURBSCurv convertToNURBS(const BSCurve &curve) {
     NURBSCurv::KnotVectorType knots;
     DoubleVector knots_orig = curve.knotVector();
