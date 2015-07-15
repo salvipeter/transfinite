@@ -239,6 +239,10 @@ Transfinite interpolation patches have several constituents, such as ribbon
  are several choices in all of the other parameters.
 \end_layout
 
+\begin_layout Subsubsection*
+Ribbons
+\end_layout
+
 \begin_layout Standard
 In this library, we have only one ribbon type, implemented in 
 \family typewriter
@@ -290,8 +294,12 @@ key "rmf"
  between the normals of the end vertices.
 \end_layout
 
+\begin_layout Subsubsection*
+Domain Polygons
+\end_layout
+
 \begin_layout Standard
-There are two domain polygon computations implemented in the library.
+There are three domain polygon computations implemented in the library.
  The simplest is 
 \family typewriter
 DomainRegular
@@ -301,8 +309,7 @@ DomainRegular
 \end_inset
 
 -sided polygon as the domain.
- Currently all surface types employ this method.
- The other one is 
+ There is also 
 \family typewriter
 DomainCircular
 \family default
@@ -310,8 +317,17 @@ DomainCircular
 \begin_inset Formula $n$
 \end_inset
 
--sided cyclic polygon is constructed in such a way, that the central angles
- and the arc lengths of the boundary curves have a constant ratio 
+-sided cyclic polygon is constructed in such a way that the central angles
+ and the arc lengths of the boundary curves have a constant ratio, and 
+\family typewriter
+DomainAngular
+\family default
+, that takes both arc lengths and angles into consideration.
+ For a detailed description of these methods, see
+\begin_inset space ~
+\end_inset
+
+
 \begin_inset CommandInset citation
 LatexCommand cite
 key "cad"
@@ -319,22 +335,62 @@ key "cad"
 \end_inset
 
 .
+ SP patches use the angular domain, and all other surface types employ the
+ regular domain.
+\end_layout
+
+\begin_layout Subsubsection*
+Parameterization
 \end_layout
 
 \begin_layout Standard
-The SB and CB patches use bilinear parameterization (
+Each of the patches has its own parameterization.
+ For details on these mappings, see
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset CommandInset citation
+LatexCommand cite
+key "cagd"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Itemize
+SB patches use parallel parameterization (
+\family typewriter
+ParameterizationParallel
+\family default
+), which is 
+\begin_inset Formula $\dots$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+CB patches use bilinear parameterization (
 \family typewriter
 Parameterization\SpecialChar \-
 Bilinear
 \family default
-), and GC uses bilinear-based interconnected parameterization (
+).
+\end_layout
+
+\begin_layout Itemize
+GC patches use bilinear-based interconnected parameterization (
 \family typewriter
 Para\SpecialChar \-
 meterizationInterconnected
 \family default
 ).
- For CR patches, the parameterization is based on Wachspress coordinates
- 
+\end_layout
+
+\begin_layout Itemize
+CR patches use a parameterization based on Wachspress coordinates 
 \begin_inset Formula $\lambda_{i}$
 \end_inset
 
@@ -360,23 +416,11 @@ implemented in
 ParameterizationBarycentric
 \family default
 .
- This computation of the 
+ (This computation of the 
 \begin_inset Formula $s$
 \end_inset
 
- parameter is not published yet.
- Otherwise, for details on these mappings, see
-\begin_inset space ~
-\end_inset
-
-
-\begin_inset CommandInset citation
-LatexCommand cite
-key "cagd"
-
-\end_inset
-
-.
+ parameter is not published yet.)
 \end_layout
 
 \begin_layout Subsection
@@ -670,6 +714,40 @@ wosc
 \emph default
  are the curvature and oscilliation minimization weights, respectively.
  The default is 1e-6 for both.
+\end_layout
+
+\begin_layout Section
+GeoDuck Interface
+\end_layout
+
+\begin_layout Standard
+In GeoDuck, we have supplied one command, 
+\family typewriter
+transfiniteSurface
+\family default
+(
+\emph on
+curve_list
+\emph default
+), that creates a B-spline surface from a list of boundary curves.
+ There are a few assumptions about the curve list:
+\end_layout
+
+\begin_layout Itemize
+There are at least 3 curves in the list.
+ Two-sided surfaces are not supported.
+\end_layout
+
+\begin_layout Itemize
+The curves are given in sequence, i.e., they represent the boundary edges
+ of the surface in a clockwise or anti-clockwise manner.
+ The parameterization of the curves can be arbitrary.
+\end_layout
+
+\begin_layout Itemize
+Adjacent curves should enclose an angle between (around) 10 and 170 degrees.
+ Angles outside this range can cause the surface to twist out of its boundary
+ loop.
 \end_layout
 
 \begin_layout Bibliography

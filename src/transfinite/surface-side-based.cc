@@ -1,11 +1,11 @@
-#include "domain-regular.hh"
+#include "domain-angular.hh"
 #include "parameterization-bilinear.hh"
 #include "ribbon-compatible.hh"
 #include "surface-side-based.hh"
 
 namespace Transfinite {
 
-using DomainType = DomainRegular;
+using DomainType = DomainAngular;
 using ParamType = ParameterizationBilinear;
 using RibbonType = RibbonCompatible;
 

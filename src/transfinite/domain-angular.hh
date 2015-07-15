@@ -1,12 +1,12 @@
 #pragma once
 
-#include "domain.hh"
+#include "domain-circular.hh"
 
 namespace Transfinite {
 
-class DomainCircular : public Domain {
+class DomainAngular : public DomainCircular {
 public:
-  virtual ~DomainCircular();
+  virtual ~DomainAngular();
   virtual bool update();
 };
 

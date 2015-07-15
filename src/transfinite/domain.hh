@@ -27,7 +27,7 @@ public:
 protected:
   size_t next(size_t i, size_t j = 1) const { return (i + j) % n_; }
   size_t prev(size_t i, size_t j = 1) const { return (i + n_ - j) % n_; }
-  virtual void computeCenter() = 0;
+  virtual void computeCenter();
 
   CurveVector curves_;
   size_t n_;

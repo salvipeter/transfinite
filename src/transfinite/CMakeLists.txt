@@ -9,6 +9,7 @@ add_library(transfinite
   domain.cc
     domain-regular.cc
     domain-circular.cc
+    domain-angular.cc
   parameterization.cc
     parameterization-bilinear.cc
     parameterization-barycentric.cc

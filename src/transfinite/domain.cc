@@ -1,4 +1,6 @@
+#include <algorithm>
 #include <cmath>
+#include <numeric>
 
 #include "domain.hh"
 
@@ -118,6 +120,18 @@ Domain::angle(size_t i) const {
   Vector2D v1 = vertices_[prev(i)] - vertices_[i];
   Vector2D v2 = vertices_[next(i)] - vertices_[i];
   return std::acos(std::min(std::max(v1.normalize() * v2.normalize(), -1.0), 1.0));
+}
+
+void
+Domain::computeCenter() {
+  DoubleVector lengths;
+  lengths.reserve(n_);
+  for (size_t i = 0; i < n_; ++i)
+    lengths.push_back((vertices_[i] - vertices_[prev(i)]).norm());
+  center_ = Point2D(0, 0);
+  for (size_t i = 0; i < n_; ++i)
+    center_ += vertices_[i] * (lengths[i] + lengths[next(i)]);
+  center_ /= std::accumulate(lengths.begin(), lengths.end(), 0.0) * 2.0;
 }
 
 } // namespace Transfinite
