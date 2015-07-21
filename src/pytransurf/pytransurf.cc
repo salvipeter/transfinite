@@ -213,9 +213,24 @@ static PyMethodDef pyTranSurfMethods[] = {
   {NULL, NULL, 0, NULL}
 };
 
+#if PY_MAJOR_VERSION >= 3
+
+static struct PyModuleDef moduledef = {
+  PyModuleDef_HEAD_INIT, "pytransurf", NULL, -1, pyTranSurfMethods, NULL, NULL, NULL, NULL
+};
+
+PyObject *
+PyInit_pytransurf() {
+  return PyModule_Create(&moduledef);
+}
+
+#else  // PY_MAJOR_VERSION < 3
+
 PyMODINIT_FUNC
-initpytransurf(void) {
+initpytransurf() {
   (void) Py_InitModule("pytransurf", pyTranSurfMethods);
 }
+
+#endif  // PY_MAJOR_VERSION
 
 }
