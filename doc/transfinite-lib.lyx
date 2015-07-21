@@ -183,6 +183,12 @@ surface
 \end_layout
 
 \begin_layout Section
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Transfinite-Surfaces"
+
+\end_inset
+
 Transfinite Surfaces
 \end_layout
 
@@ -676,6 +682,12 @@ resolution
 \end_layout
 
 \begin_layout Subsection
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Fitting"
+
+\end_inset
+
 Fitting
 \end_layout
 
@@ -845,11 +857,11 @@ wosc
 \end_layout
 
 \begin_layout Section
-GeoDuck Interface
+Python Interface
 \end_layout
 
 \begin_layout Standard
-In GeoDuck, we have supplied one command, 
+In Python, we have supplied one command, 
 \family typewriter
 transfiniteSurface
 \family default
@@ -857,8 +869,58 @@ transfiniteSurface
 \emph on
 curve_list
 \emph default
+, 
+\emph on
+surface_type
+\emph default
+, 
+\emph on
+split_or_trim
+\emph default
+, 
+\emph on
+tolerance
+\emph default
 ), that creates a B-spline surface from a list of boundary curves.
- There are a few assumptions about the curve list:
+ The following sections explain the arguments one by one.
+\end_layout
+
+\begin_layout Subsection
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Curve-List"
+
+\end_inset
+
+Curve List
+\end_layout
+
+\begin_layout Standard
+This is a Python list of curves: [
+\emph on
+curves
+\emph default
+].
+ Each curve is represented as a tuple: (
+\emph on
+degree
+\emph default
+, [
+\emph on
+knots
+\emph default
+], [
+\emph on
+points
+\emph default
+]).
+ Knots are float values, points are lists of three floats.
+ An example curve looks like this: (3,[0,0,0,0,1,1,1,1],[[0,0,0],[1,1,0],[2,1,1]
+,[3,0,1]]).
+\end_layout
+
+\begin_layout Standard
+There are a few assumptions about the curve list:
 \end_layout
 
 \begin_layout Itemize
@@ -876,6 +938,147 @@ The curves are given in sequence, i.e., they represent the boundary edges
 Adjacent curves should enclose an angle between (around) 10 and 170 degrees.
  Angles outside this range can cause the surface to twist out of its boundary
  loop.
+\end_layout
+
+\begin_layout Subsection
+Surface Type
+\end_layout
+
+\begin_layout Standard
+This determines the representation to use.
+ It can be one of the following strings: 'SB', 'CB', 'GC', or 'CR', as explained
+ in Section
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:Transfinite-Surfaces"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Subsection
+Split or Trim
+\end_layout
+
+\begin_layout Standard
+This option chooses the fitting method (see Section
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Fitting"
+
+\end_inset
+
+).
+ It can be one of the following strings: 'split' or 'trim'.
+\end_layout
+
+\begin_layout Subsection
+Tolerance
+\end_layout
+
+\begin_layout Standard
+This is the fitting tolerance (
+\emph on
+ftol
+\emph default
+ in Section
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Fitting"
+
+\end_inset
+
+).
+\end_layout
+
+\begin_layout Subsection
+Return Value
+\end_layout
+
+\begin_layout Standard
+The type of the return value depends on the fitting method.
+\end_layout
+
+\begin_layout Subsubsection*
+Split
+\end_layout
+
+\begin_layout Standard
+The central split method always returns with a list of surfaces.
+ For four-sided surfaces, this will be a one-element list, but for 
+\begin_inset Formula $n$
+\end_inset
+
+-sided patches it will have 
+\begin_inset Formula $n$
+\end_inset
+
+ elements.
+ Each surface is represented as a tuple: (
+\emph on
+deg_u
+\emph default
+, 
+\emph on
+deg_v
+\emph default
+, [
+\emph on
+knots_u
+\emph default
+], [
+\emph on
+knots_v
+\emph default
+], [
+\emph on
+points
+\emph default
+]).
+ The control points are stored in row-major order.
+\end_layout
+
+\begin_layout Subsubsection*
+Trim
+\end_layout
+
+\begin_layout Standard
+With this option, the return value is a single trimmed surface, represented
+ as a tuple: (
+\emph on
+surface
+\emph default
+, [
+\emph on
+param_curves
+\emph default
+]).
+ Here the second item of the tuple is a list of trimming curves in the parameter
+ domain---their definition is the same as in Section
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Curve-List"
+
+\end_inset
+
+, but using two-dimensional points.
 \end_layout
 
 \begin_layout Bibliography
@@ -990,6 +1193,770 @@ Computation of Rotation Minimizing Frames
 \end_inset
 
 2, 2008.
+\end_layout
+
+\begin_layout Section*
+\start_of_appendix
+Appendix -- Example Session
+\end_layout
+
+\begin_layout Standard
+This is a transcript of a demo session.
+ The output is formatted and commented.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{verbatim}
+\end_layout
+
+\begin_layout Plain Layout
+
+$ python
+\end_layout
+
+\begin_layout Plain Layout
+
+python Python 2.7.6 (default, Jun 22 2015, 18:00:18)
+\end_layout
+
+\begin_layout Plain Layout
+
+[GCC 4.8.2] on linux2
+\end_layout
+
+\begin_layout Plain Layout
+
+Type "help", "copyright", "credits" or "license" for more information.
+ 
+\end_layout
+
+\begin_layout Plain Layout
+
+>>> import pytransurf
+\end_layout
+
+\begin_layout Plain Layout
+
+>>> curve1 = (3, [0,0,0,0,0.267,0.694,1,1,1,1],
+\end_layout
+
+\begin_layout Plain Layout
+
+              [[53.918,-100,      8.475],
+\end_layout
+
+\begin_layout Plain Layout
+
+               [56.646, -92.446,  9.017],
+\end_layout
+
+\begin_layout Plain Layout
+
+               [59.028, -71.846,  7.977],
+\end_layout
+
+\begin_layout Plain Layout
+
+               [44.362,   7.722,  8.555],
+\end_layout
+
+\begin_layout Plain Layout
+
+               [12.857,  11.697,  8.492],
+\end_layout
+
+\begin_layout Plain Layout
+
+               [ 0.019,  11.841,  8.485]])
+\end_layout
+
+\begin_layout Plain Layout
+
+>>> curve2 = (3, [0,0,0,0,0.538,1,1,1,1],
+\end_layout
+
+\begin_layout Plain Layout
+
+              [[ 0.019,  11.841,  8.485],
+\end_layout
+
+\begin_layout Plain Layout
+
+               [ 0.846,  -8.867, -2.257],
+\end_layout
+
+\begin_layout Plain Layout
+
+               [ 0.145, -52.128,-28.903],
+\end_layout
+
+\begin_layout Plain Layout
+
+               [ 0.602, -89.791,-24.169],
+\end_layout
+
+\begin_layout Plain Layout
+
+               [ 0.414,-107.179,-23.856]])
+\end_layout
+
+\begin_layout Plain Layout
+
+>>> curve3 = (3, [0,0,0,0,0.594,1,1,1,1],
+\end_layout
+
+\begin_layout Plain Layout
+
+              [[ 0.414,-107.179,-23.856],
+\end_layout
+
+\begin_layout Plain Layout
+
+               [12.999,-107.324,-24.444],
+\end_layout
+
+\begin_layout Plain Layout
+
+               [36.495,-101.455,  0.997],
+\end_layout
+
+\begin_layout Plain Layout
+
+               [47.675,-100.196,  6.224],
+\end_layout
+
+\begin_layout Plain Layout
+
+               [53.918,-100,      8.475]])
+\end_layout
+
+\begin_layout Plain Layout
+
+>>> pytransurf.transfiniteSurface([curve1,curve2,curve3],'SB','trim',0.01)
+\end_layout
+
+\begin_layout Plain Layout
+
+((3, 3, # surface - deg_u, deg_v
+\end_layout
+
+\begin_layout Plain Layout
+
+  # knots_u:
+\end_layout
+
+\begin_layout Plain Layout
+
+  [-0.856, -0.856, -0.856, -0.856, -0.626, -0.512,
+\end_layout
+
+\begin_layout Plain Layout
+
+   -0.397, -0.282, -0.167, -0.053,  0.062,  0.177,
+\end_layout
+
+\begin_layout Plain Layout
+
+    0.292,  0.406,  0.521,  0.980,  0.980,  0.980, 0.980],
+\end_layout
+
+\begin_layout Plain Layout
+
+  # knots_v:
+\end_layout
+
+\begin_layout Plain Layout
+
+  [-0.986, -0.986, -0.986, -0.986, -0.820, -0.654,
+\end_layout
+
+\begin_layout Plain Layout
+
+   -0.570, -0.487, -0.404, -0.321, -0.155,  0.012,
+\end_layout
+
+\begin_layout Plain Layout
+
+    0.344,  0.344,  0.344,  0.344],
+\end_layout
+
+\begin_layout Plain Layout
+
+  # control points:
+\end_layout
+
+\begin_layout Plain Layout
+
+  [[  84.221,  -81.681,   8.833], [  79.594,  -84.601,   9.797],
+\end_layout
+
+\begin_layout Plain Layout
+
+   [  70.826,  -90.341,  10.946], [  61.096,  -96.390,  10.579],
+\end_layout
+
+\begin_layout Plain Layout
+
+   [  54.125, -100.002,   8.618], [  49.261, -102.273,   6.817],
+\end_layout
+
+\begin_layout Plain Layout
+
+   [  44.919, -104.295,   4.602], [  39.783, -106.875,   1.050],
+\end_layout
+
+\begin_layout Plain Layout
+
+   [  34.187, -110.240,  -4.026], [  27.163, -116.394, -12.416],
+\end_layout
+
+\begin_layout Plain Layout
+
+   [  20.900, -121.984, -14.580], [  15.589, -126.348, -13.819],
+\end_layout
+
+\begin_layout Plain Layout
+
+   [  82.869,  -76.954,  11.017], [  78.053,  -79.545,  11.684],
+\end_layout
+
+\begin_layout Plain Layout
+
+   [  69.266,  -84.781,  12.036], [  59.956,  -90.511,  10.026],
+\end_layout
+
+\begin_layout Plain Layout
+
+   [  53.024,  -94.337,   7.893], [  48.051,  -96.851,   6.209],
+\end_layout
+
+\begin_layout Plain Layout
+
+   [  43.526,  -99.161,   4.096], [  38.212, -102.149,   0.506],
+\end_layout
+
+\begin_layout Plain Layout
+
+   [  32.493, -105.918,  -4.775], [  24.253, -112.326, -12.991],
+\end_layout
+
+\begin_layout Plain Layout
+
+   [  18.193, -117.888, -17.039], [  13.193, -122.077, -18.750],
+\end_layout
+
+\begin_layout Plain Layout
+
+   [  80.793,  -68.950,  12.166], [  75.906,  -71.442,  12.459],
+\end_layout
+
+\begin_layout Plain Layout
+
+   [  67.127,  -76.464,  11.905], [  57.936,  -82.179,   9.104],
+\end_layout
+
+\begin_layout Plain Layout
+
+   [  51.156,  -86.213,   6.373], [  46.289,  -89.011,   4.264],
+\end_layout
+
+\begin_layout Plain Layout
+
+   [  41.711,  -91.662,   1.983], [  36.114,  -95.112,  -1.607],
+\end_layout
+
+\begin_layout Plain Layout
+
+   [  29.830,  -99.406,  -6.881], [  20.522, -106.291, -15.354],
+\end_layout
+
+\begin_layout Plain Layout
+
+   [  13.775, -111.927, -20.317], [   8.701, -115.912, -23.022],
+\end_layout
+
+\begin_layout Plain Layout
+
+   [  77.300,  -57.536,  11.890], [  72.274,  -60.117,  12.124],
+\end_layout
+
+\begin_layout Plain Layout
+
+   [  63.370,  -65.216,  11.125], [  54.231,  -71.168,   7.678],
+\end_layout
+
+\begin_layout Plain Layout
+
+   [  47.736,  -75.637,   4.142], [  43.147,  -78.862,   1.270],
+\end_layout
+
+\begin_layout Plain Layout
+
+   [  38.754,  -81.991,  -1.706], [  33.116,  -86.069,  -5.836],
+\end_layout
+
+\begin_layout Plain Layout
+
+   [  26.328,  -91.035, -11.274], [  15.471,  -98.824, -19.387],
+\end_layout
+
+\begin_layout Plain Layout
+
+   [   7.377, -104.824, -23.864], [   1.059, -108.926, -24.207],
+\end_layout
+
+\begin_layout Plain Layout
+
+   [  74.123,  -48.858,  11.391], [  69.050,  -51.569,  11.629],
+\end_layout
+
+\begin_layout Plain Layout
+
+   [  60.050,  -56.860,  10.569], [  51.055,  -63.104,   6.526],
+\end_layout
+
+\begin_layout Plain Layout
+
+   [  44.756,  -67.903,   2.288], [  40.242,  -71.425,  -1.012],
+\end_layout
+
+\begin_layout Plain Layout
+
+   [  35.890,  -74.880,  -4.384], [  30.257,  -79.407,  -8.990],
+\end_layout
+
+\begin_layout Plain Layout
+
+   [  23.237,  -84.917, -14.641], [  11.668,  -93.530, -22.783],
+\end_layout
+
+\begin_layout Plain Layout
+
+   [   2.616,  -99.991, -25.803], [  -5.026, -104.151, -23.221],
+\end_layout
+
+\begin_layout Plain Layout
+
+   [  70.195,  -40.319,  11.215], [  65.215,  -43.165,  11.299],
+\end_layout
+
+\begin_layout Plain Layout
+
+   [  56.310,  -48.723,  10.022], [  47.604,  -55.293,   5.092],
+\end_layout
+
+\begin_layout Plain Layout
+
+   [  41.404,  -60.416,   0.245], [  36.921,  -64.218,  -3.455],
+\end_layout
+
+\begin_layout Plain Layout
+
+   [  32.580,  -67.976,  -7.190], [  26.863,  -72.925, -12.132],
+\end_layout
+
+\begin_layout Plain Layout
+
+   [  19.565,  -78.988, -17.866], [   7.657,  -88.545, -25.700],
+\end_layout
+
+\begin_layout Plain Layout
+
+   [  -2.771,  -95.579, -25.506], [ -11.304,  -99.890, -20.507],
+\end_layout
+
+\begin_layout Plain Layout
+
+   [  65.659,  -32.053,  11.273], [  60.870,  -35.050,  11.084],
+\end_layout
+
+\begin_layout Plain Layout
+
+   [  52.263,  -40.880,   9.250], [  43.841,  -47.787,   3.433],
+\end_layout
+
+\begin_layout Plain Layout
+
+   [  37.669,  -53.235,  -1.918], [  33.184,  -57.304,  -5.976],
+\end_layout
+
+\begin_layout Plain Layout
+
+   [  28.801,  -61.348,  -9.998], [  22.935,  -66.706, -15.128],
+\end_layout
+
+\begin_layout Plain Layout
+
+   [  15.517,  -73.336, -21.023], [   3.063,  -83.901, -27.229],
+\end_layout
+
+\begin_layout Plain Layout
+
+   [  -9.275,  -91.624, -23.159], [ -18.457,  -96.306, -16.687],
+\end_layout
+
+\begin_layout Plain Layout
+
+   [  60.651,  -24.196,  11.463], [  56.140,  -27.328,  10.793],
+\end_layout
+
+\begin_layout Plain Layout
+
+   [  47.931,  -33.444,   8.197], [  39.756,  -40.688,   1.611],
+\end_layout
+
+\begin_layout Plain Layout
+
+   [  33.565,  -46.447,  -4.148], [  29.018,  -50.762,  -8.490],
+\end_layout
+
+\begin_layout Plain Layout
+
+   [  24.533,  -55.072, -12.709], [  18.560,  -60.833, -17.935],
+\end_layout
+
+\begin_layout Plain Layout
+
+   [  11.138,  -68.047, -23.669], [  -2.728,  -79.677, -26.698],
+\end_layout
+
+\begin_layout Plain Layout
+
+   [ -16.959,  -88.189, -19.296], [ -27.410,  -93.442, -10.821],
+\end_layout
+
+\begin_layout Plain Layout
+
+   [  55.339,  -16.799,  11.520], [  51.124,  -20.071,  10.299],
+\end_layout
+
+\begin_layout Plain Layout
+
+   [  43.319,  -26.476,   6.898], [  35.322,  -34.076,  -0.274],
+\end_layout
+
+\begin_layout Plain Layout
+
+   [  29.114,  -40.159,  -6.285], [  24.504,  -44.724, -10.773],
+\end_layout
+
+\begin_layout Plain Layout
+
+   [  19.928,  -49.298, -15.074], [  13.859,  -55.416, -20.339],
+\end_layout
+
+\begin_layout Plain Layout
+
+   [   5.917,  -63.244, -24.772], [  -9.881,  -75.901, -24.373],
+\end_layout
+
+\begin_layout Plain Layout
+
+   [ -26.135,  -85.327, -13.554], [ -38.239,  -91.311,  -2.773],
+\end_layout
+
+\begin_layout Plain Layout
+
+   [  49.927,   -9.890,  11.100], [  45.864,  -13.352,   9.574],
+\end_layout
+
+\begin_layout Plain Layout
+
+   [  38.389,  -20.054,   5.466], [  30.514,  -28.033,  -2.097],
+\end_layout
+
+\begin_layout Plain Layout
+
+   [  24.340,  -34.462,  -8.191], [  19.724,  -39.290, -12.656],
+\end_layout
+
+\begin_layout Plain Layout
+
+   [  15.041,  -44.120, -16.810], [   8.511,  -50.651, -21.292],
+\end_layout
+
+\begin_layout Plain Layout
+
+   [  -0.531,  -58.987, -24.116], [ -18.445,  -72.592, -20.230],
+\end_layout
+
+\begin_layout Plain Layout
+
+   [ -36.938,  -83.061,  -5.997], [ -50.982,  -89.928,   7.579],
+\end_layout
+
+\begin_layout Plain Layout
+
+   [  44.222,   -3.634,  10.564], [  40.320,   -7.289,   8.717],
+\end_layout
+
+\begin_layout Plain Layout
+
+   [  33.134,  -14.279,   4.004], [  25.315,  -22.624,  -3.728],
+\end_layout
+
+\begin_layout Plain Layout
+
+   [  19.081,  -29.380,  -9.648], [  14.334,  -34.468, -13.787],
+\end_layout
+
+\begin_layout Plain Layout
+
+   [   9.333,  -39.623, -17.216], [   2.118,  -46.528, -20.559],
+\end_layout
+
+\begin_layout Plain Layout
+
+   [  -8.180,  -55.231, -21.787], [ -28.492,  -69.822, -14.069],
+\end_layout
+
+\begin_layout Plain Layout
+
+   [ -49.321,  -81.339,   3.408], [ -65.509,  -89.201,  20.140],
+\end_layout
+
+\begin_layout Plain Layout
+
+   [  38.116,    1.824,  10.084], [  34.448,   -1.976,   7.827],
+\end_layout
+
+\begin_layout Plain Layout
+
+   [  27.457,   -9.267,   2.757], [  19.504,  -17.971,  -4.732],
+\end_layout
+
+\begin_layout Plain Layout
+
+   [  12.993,  -25.026, -10.094], [   7.887,  -30.360, -13.543],
+\end_layout
+
+\begin_layout Plain Layout
+
+   [   2.407,  -35.695, -16.238], [  -5.578,  -42.841, -18.426],
+\end_layout
+
+\begin_layout Plain Layout
+
+   [ -17.141,  -52.086, -17.316], [ -40.013,  -67.524,  -6.072],
+\end_layout
+
+\begin_layout Plain Layout
+
+   [ -63.213,  -80.106,  14.656], [ -81.690,  -89.037,  34.815],
+\end_layout
+
+\begin_layout Plain Layout
+
+   [  25.115,   11.079,   9.140], [  21.706,    6.864,   6.687],
+\end_layout
+
+\begin_layout Plain Layout
+
+   [  14.876,   -1.000,   1.466], [   6.234,  -10.204,  -4.992],
+\end_layout
+
+\begin_layout Plain Layout
+
+   [  -1.301,  -17.614,  -8.770], [  -7.425,  -23.159, -10.752],
+\end_layout
+
+\begin_layout Plain Layout
+
+   [ -14.150,  -28.843, -11.370], [ -23.957,  -36.703, -10.021],
+\end_layout
+
+\begin_layout Plain Layout
+
+   [ -38.011,  -46.810,  -4.638], [ -66.057,  -63.932,  14.030],
+\end_layout
+
+\begin_layout Plain Layout
+
+   [ -93.982,  -78.556,  41.159], [-116.997,  -89.649,  68.060],
+\end_layout
+
+\begin_layout Plain Layout
+
+   [  12.013,   14.621,   9.891], [   8.686,   10.196,   7.648],
+\end_layout
+
+\begin_layout Plain Layout
+
+   [   1.459,    2.396,   2.913], [  -8.988,   -6.389,  -1.617],
+\end_layout
+
+\begin_layout Plain Layout
+
+   [ -18.344,  -13.729,  -2.759], [ -25.897,  -19.493,  -2.134],
+\end_layout
+
+\begin_layout Plain Layout
+
+   [ -34.029,  -25.496,  -0.019], [ -45.793,  -33.773,   4.812],
+\end_layout
+
+\begin_layout Plain Layout
+
+   [ -62.354,  -44.517,  14.587], [ -94.182,  -63.074,  40.038],
+\end_layout
+
+\begin_layout Plain Layout
+
+   [-125.765,  -79.044,  72.266], [-151.802,  -91.722, 103.183],
+\end_layout
+
+\begin_layout Plain Layout
+
+   [   0.187,   14.508,   9.950], [  -3.101,   10.453,   7.719],
+\end_layout
+
+\begin_layout Plain Layout
+
+   [ -10.398,    3.199,   3.765], [ -22.063,   -5.136,   2.182],
+\end_layout
+
+\begin_layout Plain Layout
+
+   [ -33.255,  -12.755,   5.415], [ -42.543,  -18.987,  10.056],
+\end_layout
+
+\begin_layout Plain Layout
+
+   [ -52.586,  -25.537,  16.319], [ -66.785,  -34.427,  26.019],
+\end_layout
+
+\begin_layout Plain Layout
+
+   [ -85.675,  -45.327,  39.141], [-120.641,  -63.682,  67.047],
+\end_layout
+
+\begin_layout Plain Layout
+
+   [-154.789,  -80.013, 101.132], [-183.194,  -93.497, 134.500]]
+\end_layout
+
+\begin_layout Plain Layout
+
+ # parameter curves follow
+\end_layout
+
+\begin_layout Plain Layout
+
+ [(3, # param_curve 1 - degree
+\end_layout
+
+\begin_layout Plain Layout
+
+   # knots:
+\end_layout
+
+\begin_layout Plain Layout
+
+   [0, 0, 0, 0, 0.233, 0.467, 0.7, 0.933, 0.933, 0.933, 0.933],
+\end_layout
+
+\begin_layout Plain Layout
+
+   # control points:
+\end_layout
+
+\begin_layout Plain Layout
+
+   [[-0.855, -0.566], [-0.783, -0.612], [-0.623, -0.690],
+\end_layout
+
+\begin_layout Plain Layout
+
+    [-0.121, -0.832], [ 0.435, -0.966], [ 0.711, -0.961],
+\end_layout
+
+\begin_layout Plain Layout
+
+    [ 0.844, -0.954]]),
+\end_layout
+
+\begin_layout Plain Layout
+
+  (3, # param_curve 2 - degree
+\end_layout
+
+\begin_layout Plain Layout
+
+   # knots:
+\end_layout
+
+\begin_layout Plain Layout
+
+   [0, 0, 0, 0, 0.467, 0.933, 0.933, 0.933, 0.933],
+\end_layout
+
+\begin_layout Plain Layout
+
+   # control points:
+\end_layout
+
+\begin_layout Plain Layout
+
+   [[ 0.953, -0.950], [ 0.731, -0.713], [ 0.335, -0.279],
+\end_layout
+
+\begin_layout Plain Layout
+
+    [-0.123,  0.061], [-0.377,  0.245]]),
+\end_layout
+
+\begin_layout Plain Layout
+
+  (3, # param_curve 3 - degree
+\end_layout
+
+\begin_layout Plain Layout
+
+   # knots:
+\end_layout
+
+\begin_layout Plain Layout
+
+   [0, 0, 0, 0, 0.467, 0.933, 0.933, 0.933, 0.933],
+\end_layout
+
+\begin_layout Plain Layout
+
+   # control points:
+\end_layout
+
+\begin_layout Plain Layout
+
+   [[-0.483,  0.329], [-0.566,  0.230], [-0.744, -0.142],
+\end_layout
+
+\begin_layout Plain Layout
+
+    [-0.808, -0.429], [-0.839, -0.520]])])
+\end_layout
+
+\begin_layout Plain Layout
+
+>>>
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{verbatim}
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \end_body
