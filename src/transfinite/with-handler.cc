@@ -16,6 +16,7 @@ WithHandler::setMultiplier(double m) {
 void
 WithHandler::setHandler(const Vector3D &h) {
   handler_ = h;
+  handler_.normalize();
   handler_initialized_ = true;
 }
 

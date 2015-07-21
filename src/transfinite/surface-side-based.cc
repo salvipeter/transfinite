@@ -1,13 +1,13 @@
 #include "domain-angular.hh"
 #include "parameterization-parallel.hh"
-#include "ribbon-compatible-with-handler.hh"
+#include "ribbon-compatible.hh"
 #include "surface-side-based.hh"
 
 namespace Transfinite {
 
 using DomainType = DomainAngular;
 using ParamType = ParameterizationParallel;
-using RibbonType = RibbonCompatibleWithHandler;
+using RibbonType = RibbonCompatible;
 
 SurfaceSideBased::SurfaceSideBased() {
   domain_ = std::make_shared<DomainType>();

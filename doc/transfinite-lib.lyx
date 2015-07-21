@@ -311,7 +311,7 @@ RibbonCompatibleWithHandler
 , which uses the following equation:
 \begin_inset Formula 
 \[
-R_{i}(s,d)=P_{i}(s)+\left[-P_{i-1}^{\prime}(1)^{\perp}\cdot\alpha_{0}(s)+T_{i}(0.5)\cdot\alpha_{1}(s)+P_{i+1}^{\prime}(0)^{\perp}\cdot\alpha_{2}(s)\right]\cdot d,
+R_{i}(s,d)=P_{i}(s)+\left[-P_{i-1}^{\prime}(1)^{\perp}\cdot\alpha_{0}(s)+T_{i}^{\perp}(0.5)\cdot\alpha_{1}(s)+P_{i+1}^{\prime}(0)^{\perp}\cdot\alpha_{2}(s)\right]\cdot d,
 \]
 
 \end_inset
@@ -319,7 +319,7 @@ R_{i}(s,d)=P_{i}(s)+\left[-P_{i-1}^{\prime}(1)^{\perp}\cdot\alpha_{0}(s)+T_{i}(0
 where
 \begin_inset Formula 
 \[
-\alpha_{0}(s)=2s^{2}-3s+1,\quad\alpha_{1}(s)=4(s-s^{2}),\quad\alpha_{2}(s)=2s^{2}-s,
+\alpha_{0}(s)=2(s-1)(s-0.5),\quad\alpha_{1}(s)=-4(s-1)s,\quad\alpha_{2}(s)=2(s-0.5)s,
 \]
 
 \end_inset
