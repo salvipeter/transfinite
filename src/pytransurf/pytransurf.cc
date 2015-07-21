@@ -9,6 +9,12 @@
 #include "surface-generalized-coons.hh"
 #include "surface-composite-ribbon.hh"
 
+#ifdef WIN32
+#define DLL_EXPORT __declspec(dllexport)
+#else // !WIN32
+#define DLL_EXPORT
+#endif // WIN32
+
 class ParseException : public std::runtime_error {
 public:
   ParseException(const std::string &message) : std::runtime_error(message) { }
@@ -219,14 +225,14 @@ static struct PyModuleDef moduledef = {
   PyModuleDef_HEAD_INIT, "pytransurf", NULL, -1, pyTranSurfMethods, NULL, NULL, NULL, NULL
 };
 
-PyObject *
+DLL_EXPORT PyObject *
 PyInit_pytransurf() {
   return PyModule_Create(&moduledef);
 }
 
 #else  // PY_MAJOR_VERSION < 3
 
-PyMODINIT_FUNC
+DLL_EXPORT PyMODINIT_FUNC
 initpytransurf() {
   (void) Py_InitModule("pytransurf", pyTranSurfMethods);
 }
