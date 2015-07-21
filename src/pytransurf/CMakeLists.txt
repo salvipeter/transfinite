@@ -13,4 +13,4 @@ include_directories(../transfinite ${PYTHON_INCLUDE_DIRS})
 add_library(pytransurf SHARED pytransurf.cc)
 
 set_target_properties(pytransurf PROPERTIES PREFIX "")
-target_link_libraries(pytransurf ${GEOM_LIB} transfinite) # ${PYTHON_LIBRARIES}
+target_link_libraries(pytransurf ${GEOM_LIB} transfinite)
