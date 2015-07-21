@@ -311,7 +311,7 @@ RibbonCompatibleWithHandler
 , which uses the following equation:
 \begin_inset Formula 
 \[
-R_{i}(s,d)=P_{i}(s)+\left[-P_{i-1}^{\prime}(1)^{\perp}\cdot\alpha_{0}(s)+T_{i}^{\perp}(0.5)\cdot\alpha_{1}(s)+P_{i+1}^{\prime}(0)^{\perp}\cdot\alpha_{2}(s)\right]\cdot d,
+R_{i}(s,d)=P_{i}(s)+\left[-P_{i-1}^{\prime}(1)^{\perp}\cdot\alpha_{0}(s)+T_{i}(0.5)^{\perp}\cdot\alpha_{1}(s)+P_{i+1}^{\prime}(0)^{\perp}\cdot\alpha_{2}(s)\right]\cdot d,
 \]
 
 \end_inset
@@ -563,10 +563,44 @@ setupLoop
 \begin_layout Enumerate
 Call 
 \family typewriter
+setRibbonMultiplier
+\family default
+(
+\emph on
+i
+\emph default
+, 
+\emph on
+multiplier
+\emph default
+) and 
+\family typewriter
+setRibbonHandler
+\family default
+(
+\emph on
+i
+\emph default
+, 
+\emph on
+handler
+\emph default
+) to set the central behavior of the 
+\emph on
+i
+\emph default
+-th ribbon.
+ (Only applicable when using ribbons with handlers.)
+\end_layout
+
+\begin_layout Enumerate
+Call 
+\family typewriter
 update
 \family default
 () to generate ribbons and clear the cache.
- This function has to be called every time the curves have been changed.
+ This function has to be called every time the edges (or their ribbon handlers
+ / multipliers) have been changed.
  If only the 
 \begin_inset Formula $i$
 \end_inset

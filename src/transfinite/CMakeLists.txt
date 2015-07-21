@@ -17,7 +17,6 @@ add_library(transfinite
     parameterization-parallel.cc
   ribbon.cc
     ribbon-compatible.cc
-    with-handler.cc
     ribbon-compatible-with-handler.cc
   surface.cc
     surface-side-based.cc

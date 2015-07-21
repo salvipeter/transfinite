@@ -2,6 +2,9 @@
 
 namespace Transfinite {
 
+Ribbon::Ribbon() : multiplier_(1.0), handler_initialized_(false) {
+}
+
 Ribbon::~Ribbon() {
 }
 
@@ -24,6 +27,24 @@ void
 Ribbon::setNeighbors(const std::shared_ptr<Ribbon> &prev, const std::shared_ptr<Ribbon> &next) {
   prev_ = prev;
   next_ = next;
+}
+
+void
+Ribbon::setMultiplier(double m) {
+  multiplier_ = m;
+}
+
+void
+Ribbon::setHandler(const Vector3D &h) {
+  handler_ = h;
+  handler_.normalize();
+  handler_initialized_ = true;
+}
+
+void
+Ribbon::reset() {
+  multiplier_ = 1.0;
+  handler_initialized_ = false;
 }
 
 void

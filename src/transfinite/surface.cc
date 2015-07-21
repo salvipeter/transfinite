@@ -82,6 +82,21 @@ Surface::setupLoop() {
 }
 
 void
+Surface::setRibbonHandler(size_t i, const Vector3D &h) {
+  ribbons_[i]->setHandler(h);
+}
+
+void
+Surface::setRibbonMultiplier(size_t i, double m) {
+  ribbons_[i]->setMultiplier(m);
+}
+
+void
+Surface::resetRibbon(size_t i) {
+  ribbons_[i]->reset();
+}
+
+void
 Surface::update(size_t i) {
   if (domain_->update())
     param_->update();

@@ -16,6 +16,9 @@ public:
   void setCurve(size_t i, const std::shared_ptr<BSCurve> &curve);
   void setCurves(const CurveVector &curves);
   void setupLoop();
+  void setRibbonMultiplier(size_t i, double m);
+  void setRibbonHandler(size_t i, const Vector3D &h);
+  void resetRibbon(size_t i);
   virtual void update(size_t i);
   virtual void update();
   std::shared_ptr<const Domain> domain() const;
