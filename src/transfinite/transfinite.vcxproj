@@ -88,6 +88,7 @@
     <ClInclude Include="parameterization-interconnected.hh" />
     <ClInclude Include="parameterization-parallel.hh" />
     <ClInclude Include="parameterization.hh" />
+    <ClInclude Include="ribbon-compatible-with-handler.hh" />
     <ClInclude Include="ribbon-compatible.hh" />
     <ClInclude Include="ribbon.hh" />
     <ClInclude Include="rmf.hh" />
@@ -96,6 +97,7 @@
     <ClInclude Include="surface-generalized-coons.hh" />
     <ClInclude Include="surface-side-based.hh" />
     <ClInclude Include="surface.hh" />
+    <ClInclude Include="with-handler.hh" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="domain-angular.cc" />
@@ -107,6 +109,7 @@
     <ClCompile Include="parameterization-interconnected.cc" />
     <ClCompile Include="parameterization-parallel.cc" />
     <ClCompile Include="parameterization.cc" />
+    <ClCompile Include="ribbon-compatible-with-handler.cc" />
     <ClCompile Include="ribbon-compatible.cc" />
     <ClCompile Include="ribbon.cc" />
     <ClCompile Include="rmf.cc" />
@@ -115,6 +118,7 @@
     <ClCompile Include="surface-generalized-coons.cc" />
     <ClCompile Include="surface-side-based.cc" />
     <ClCompile Include="surface.cc" />
+    <ClCompile Include="with-handler.cc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
