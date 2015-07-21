@@ -294,6 +294,85 @@ key "rmf"
  between the normals of the end vertices.
 \end_layout
 
+\begin_layout Standard
+Ribbons can also have 
+\emph on
+ribbon handlers
+\emph default
+ (unit vectors defining the central direction) and 
+\emph on
+multipliers
+\emph default
+ (a quantity that pulls or pushes the center of the ribbon).
+ This variation is implemented in 
+\family typewriter
+RibbonCompatibleWithHandler
+\family default
+, which uses the following equation:
+\begin_inset Formula 
+\[
+R_{i}(s,d)=P_{i}(s)+\left[-P_{i-1}^{\prime}(1)^{\perp}\cdot\alpha_{0}(s)+T_{i}(0.5)\cdot\alpha_{1}(s)+P_{i+1}^{\prime}(0)^{\perp}\cdot\alpha_{2}(s)\right]\cdot d,
+\]
+
+\end_inset
+
+where
+\begin_inset Formula 
+\[
+\alpha_{0}(s)=2s^{2}-3s+1,\quad\alpha_{1}(s)=4(s-s^{2}),\quad\alpha_{2}(s)=2s^{2}-s,
+\]
+
+\end_inset
+
+and 
+\begin_inset Formula $T_{i}(0.5)$
+\end_inset
+
+ can be computed as
+\begin_inset Formula 
+\[
+T_{i}(0.5)=H_{i}^{\perp}\cdot\frac{\left\Vert -P_{i-1}^{\prime}(1)^{\perp}+P_{i+1}^{\prime}(0)^{\perp}\right\Vert }{2}\cdot m_{i},
+\]
+
+\end_inset
+
+with 
+\begin_inset Formula $H_{i}$
+\end_inset
+
+ and 
+\begin_inset Formula $m_{i}$
+\end_inset
+
+ being the ribbon handler and multiplier of the ribbon, respectively.
+ Note, that this is constant w.r.t.
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset Formula $s$
+\end_inset
+
+ and 
+\begin_inset Formula $d$
+\end_inset
+
+, so it is precomputed.
+ The default direction is computed such that
+\begin_inset Formula 
+\[
+T_{i}(0.5)=-\frac{1}{2}P_{i-1}^{\prime}(1)^{\perp}+\frac{1}{2}P_{i+1}^{\prime}(0)^{\perp},
+\]
+
+\end_inset
+
+when 
+\begin_inset Formula $m_{i}=1$
+\end_inset
+
+.
+\end_layout
+
 \begin_layout Subsubsection*
 Domain Polygons
 \end_layout
@@ -501,6 +580,11 @@ update
 i
 \emph default
 ).
+ (But if the end tangent of the curve changes, 
+\family typewriter
+update
+\family default
+ should be called for the adjacent side, as well.)
 \end_layout
 
 \begin_layout Enumerate
