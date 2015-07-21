@@ -67,6 +67,16 @@ Transfinite Surface Library
 ShapEx
 \end_layout
 
+\begin_layout Standard
+This library has been developed for The Boeing Company, within the framework
+ of the project 
+\emph on
+3D Model Compression Using Multi-sided Patches
+\emph default
+.
+ 
+\end_layout
+
 \begin_layout Section
 Conventional Geometry
 \end_layout
@@ -896,11 +906,11 @@ Curve List
 \end_layout
 
 \begin_layout Standard
-This is a Python list of curves: [
+Boundary curves are given as [
 \emph on
 curves
 \emph default
-].
+], i.e., a python list of curves.
  Each curve is represented as a tuple: (
 \emph on
 degree
@@ -915,8 +925,8 @@ points
 \emph default
 ]).
  Knots are float values, points are lists of three floats.
- An example curve looks like this: (3,[0,0,0,0,1,1,1,1],[[0,0,0],[1,1,0],[2,1,1]
-,[3,0,1]]).
+ An example curve looks like this: (3,[0,0,0,0,1,1,1,1], [[0,0,0],[1,1,0],[2,1,1
+],[3,0,1]]).
 \end_layout
 
 \begin_layout Standard
@@ -1223,7 +1233,7 @@ $ python
 
 \begin_layout Plain Layout
 
-python Python 2.7.6 (default, Jun 22 2015, 18:00:18)
+Python 2.7.6 (default, Jun 22 2015, 18:00:18)
 \end_layout
 
 \begin_layout Plain Layout
