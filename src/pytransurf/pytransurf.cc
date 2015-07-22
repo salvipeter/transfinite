@@ -42,6 +42,8 @@ parseDoubleList(PyObject *py_list) {
 Point3D
 parsePoint(PyObject *py_point) {
   DoubleVector p = parseDoubleList(py_point);
+  if (p.size() != 3)
+    throw ParseException("not a 3D point");
   return Point3D(p[0], p[1], p[2]);
 }
 
