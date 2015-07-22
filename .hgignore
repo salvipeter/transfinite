@@ -7,7 +7,9 @@ release/*
 *\#
 *.o
 *.obj
+*.so
 *.igs
+*.bss
 Makefile
 */Debug/*
 */Release/*
