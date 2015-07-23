@@ -1,13 +1,13 @@
 #include "domain-regular.hh"
 #include "parameterization-interconnected.hh"
-#include "ribbon-compatible.hh"
+#include "ribbon-compatible-with-handler.hh"
 #include "surface-generalized-coons.hh"
 
 namespace Transfinite {
 
 using DomainType = DomainRegular;
 using ParamType = ParameterizationInterconnected;
-using RibbonType = RibbonCompatible;
+using RibbonType = RibbonCompatibleWithHandler;
 
 SurfaceGeneralizedCoons::SurfaceGeneralizedCoons() {
   domain_ = std::make_shared<DomainType>();

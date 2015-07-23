@@ -41,6 +41,38 @@ CurveVector readLOP(std::string filename) {
   return result;
 }
 
+void fenceTest(std::string filename, size_t resolution, double scaling) {
+  CurveVector cv = readLOP("../../models/" + filename + ".lop");
+  Transfinite::SurfaceSideBased surf;
+  surf.setCurves(cv);
+  surf.setupLoop();
+  surf.update();
+  TriMesh mesh;
+  size_t n = cv.size();
+  size_t size = n * resolution * 2;
+  PointVector pv; pv.reserve(size);
+  for (size_t i = 0; i < n; ++i) {
+    for (size_t j = 0; j < resolution; ++j) {
+      double u = (double)j / resolution;
+      Point3D p = surf.ribbon(i)->curve()->eval(u);
+      pv.push_back(p);
+      p += surf.ribbon(i)->normal(u) * scaling;
+      pv.push_back(p);
+    }
+  }
+  mesh.setPoints(pv);
+  size_t index = 0;
+  while (index < size - 2) {
+    mesh.addTriangle(index, index+1, index+2);
+    ++index;
+    mesh.addTriangle(index, index+2, index+1);
+    ++index;
+  }
+  mesh.addTriangle(index, index+1, 0);
+  mesh.addTriangle(index+1, 1, 0);
+  mesh.writeOBJ("../../models/" + filename + "-fence.obj");  
+}
+
 void surfaceTest(std::string filename, std::string type, size_t resolution,
                  std::shared_ptr<Transfinite::Surface> &&surf) {
   CurveVector cv = readLOP("../../models/" + filename + ".lop");
@@ -118,14 +150,20 @@ int main(int argc, char **argv) {
 #endif  // DEBUG
 
   size_t res = 15;
+  double scaling = 5.0;
   std::string filename;
-  if (argc < 2 || argc > 3) {
-    std::cerr << "Usage: " << argv[0] << " model-name [resolution]" << std::endl;
+  if (argc < 2 || argc > 4) {
+    std::cerr << "Usage: " << argv[0]
+	      << " model-name [resolution] [fence-scaling]" << std::endl;
     return 1;
   }
   filename = argv[1];
-  if (argc == 3)
+  if (argc >= 3)
     res = atoi(argv[2]);
+  if (argc >= 4)
+    scaling = strtod(argv[3], nullptr);
+
+  fenceTest(filename, res, scaling);
 
   surfaceTest(filename, "sb", res, std::make_shared<Transfinite::SurfaceSideBased>());
   surfaceTest(filename, "cb", res, std::make_shared<Transfinite::SurfaceCornerBased>());

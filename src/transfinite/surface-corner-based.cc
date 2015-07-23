@@ -1,13 +1,13 @@
 #include "domain-regular.hh"
 #include "parameterization-bilinear.hh"
-#include "ribbon-compatible.hh"
+#include "ribbon-compatible-with-handler.hh"
 #include "surface-corner-based.hh"
 
 namespace Transfinite {
 
 using DomainType = DomainRegular;
 using ParamType = ParameterizationBilinear;
-using RibbonType = RibbonCompatible;
+using RibbonType = RibbonCompatibleWithHandler;
 
 SurfaceCornerBased::SurfaceCornerBased() {
   domain_ = std::make_shared<DomainType>();

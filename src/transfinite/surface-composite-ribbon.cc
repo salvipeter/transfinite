@@ -1,13 +1,13 @@
 #include "domain-regular.hh"
 #include "parameterization-barycentric.hh"
-#include "ribbon-compatible.hh"
+#include "ribbon-compatible-with-handler.hh"
 #include "surface-composite-ribbon.hh"
 
 namespace Transfinite {
 
 using DomainType = DomainRegular;
 using ParamType = ParameterizationBarycentric;
-using RibbonType = RibbonCompatible;
+using RibbonType = RibbonCompatibleWithHandler;
 
 SurfaceCompositeRibbon::SurfaceCompositeRibbon() {
   domain_ = std::make_shared<DomainType>();

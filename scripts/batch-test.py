@@ -67,7 +67,7 @@ def main():
     if len(sys.argv) > 4:
         tolerance = double(sys.argv[4])
     result = pytransurf.transfiniteSurface(curves, surface_type, fit_type, tolerance)
-    f = open(filename + '-' + fit_type + '.bss', 'w')
+    f = open(filename + '-' + surface_type + ' ' + fit_type + '.bss', 'w')
     if fit_type == 'trim':
         f.write('1\n')
         writeTrimmedSurface(f, result)
