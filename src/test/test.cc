@@ -41,13 +41,16 @@ CurveVector readLOP(std::string filename) {
   return result;
 }
 
-void fenceTest(std::string filename, size_t resolution, double scaling) {
+void ribbonTest(std::string filename, size_t resolution, 
+		double scaling, double ribbon_length) {
   CurveVector cv = readLOP("../../models/" + filename + ".lop");
   Transfinite::SurfaceSideBased surf;
   surf.setCurves(cv);
   surf.setupLoop();
   surf.update();
-  TriMesh mesh;
+
+  // Fence
+  TriMesh fence_mesh;
   size_t n = cv.size();
   size_t size = n * resolution * 2;
   PointVector pv; pv.reserve(size);
@@ -60,17 +63,40 @@ void fenceTest(std::string filename, size_t resolution, double scaling) {
       pv.push_back(p);
     }
   }
-  mesh.setPoints(pv);
+  fence_mesh.setPoints(pv);
   size_t index = 0;
   while (index < size - 2) {
-    mesh.addTriangle(index, index+1, index+2);
+    fence_mesh.addTriangle(index, index+1, index+2);
     ++index;
-    mesh.addTriangle(index, index+2, index+1);
+    fence_mesh.addTriangle(index, index+2, index+1);
     ++index;
   }
-  mesh.addTriangle(index, index+1, 0);
-  mesh.addTriangle(index+1, 1, 0);
-  mesh.writeOBJ("../../models/" + filename + "-fence.obj");  
+  fence_mesh.addTriangle(index, index+1, 0);
+  fence_mesh.addTriangle(index+1, 1, 0);
+  fence_mesh.writeOBJ("../../models/" + filename + "-fence.obj");
+
+  // Ribbons
+  TriMesh ribbon_mesh;
+  pv.clear(); pv.reserve(n * (resolution + 1) * 2);
+  for (size_t i = 0; i < n; ++i) {
+    for (size_t j = 0; j <= resolution; ++j) {
+      double u = (double)j / resolution;
+      pv.push_back(surf.ribbon(i)->curve()->eval(u));
+      pv.push_back(surf.ribbon(i)->eval(Point2D(u, ribbon_length)));
+    }
+  }
+  ribbon_mesh.setPoints(pv);
+  index = 0;
+  for (size_t i = 0; i < n; ++i) {
+    for (size_t j = 0; j < resolution; ++j) {
+      ribbon_mesh.addTriangle(index, index+1, index+2);
+      ++index;
+      ribbon_mesh.addTriangle(index, index+2, index+1);
+      ++index;
+    }
+    index += 2;
+  }
+  ribbon_mesh.writeOBJ("../../models/" + filename + "-ribbons.obj");  
 }
 
 void surfaceTest(std::string filename, std::string type, size_t resolution,
@@ -150,11 +176,12 @@ int main(int argc, char **argv) {
 #endif  // DEBUG
 
   size_t res = 15;
-  double scaling = 5.0;
+  double scaling = 20.0;
+  double ribbon_length = 0.25;
   std::string filename;
-  if (argc < 2 || argc > 4) {
+  if (argc < 2 || argc > 5) {
     std::cerr << "Usage: " << argv[0]
-	      << " model-name [resolution] [fence-scaling]" << std::endl;
+	      << " model-name [resolution] [fence-scaling] [ribbon-length]" << std::endl;
     return 1;
   }
   filename = argv[1];
@@ -162,8 +189,10 @@ int main(int argc, char **argv) {
     res = atoi(argv[2]);
   if (argc >= 4)
     scaling = strtod(argv[3], nullptr);
+  if (argc >= 5)
+    ribbon_length = strtod(argv[4], nullptr);
 
-  fenceTest(filename, res, scaling);
+  ribbonTest(filename, res, scaling, ribbon_length);
 
   surfaceTest(filename, "sb", res, std::make_shared<Transfinite::SurfaceSideBased>());
   surfaceTest(filename, "cb", res, std::make_shared<Transfinite::SurfaceCornerBased>());
