@@ -1,5 +1,5 @@
-#LyX 2.0 created this file. For more info see http://www.lyx.org/
-\lyxformat 413
+#LyX 2.1 created this file. For more info see http://www.lyx.org/
+\lyxformat 474
 \begin_document
 \begin_header
 \textclass article
@@ -12,13 +12,13 @@
 \font_roman default
 \font_sans default
 \font_typewriter default
+\font_math auto
 \font_default_family default
 \use_non_tex_fonts false
 \font_sc false
 \font_osf false
 \font_sf_scale 100
 \font_tt_scale 100
-
 \graphics default
 \default_output_format default
 \output_sync 0
@@ -28,15 +28,24 @@
 \use_hyperref false
 \papersize default
 \use_geometry false
-\use_amsmath 1
-\use_esint 1
-\use_mhchem 1
-\use_mathdots 1
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
 \cite_engine basic
+\cite_engine_type default
+\biblio_style plain
 \use_bibtopic false
 \use_indices false
 \paperorientation portrait
 \suppress_date false
+\justification true
 \use_refstyle 1
 \index Index
 \shortcut idx
@@ -347,7 +356,7 @@ and
  can be computed as
 \begin_inset Formula 
 \[
-T_{i}(0.5)=H_{i}^{\perp}\cdot\frac{\left\Vert -P_{i-1}^{\prime}(1)^{\perp}+P_{i+1}^{\prime}(0)^{\perp}\right\Vert }{2}\cdot m_{i},
+T_{i}(0.5)=H_{i}\cdot\frac{\left\Vert P_{i-1}^{\prime}(1)\right\Vert +\left\Vert P_{i+1}^{\prime}(0)\right\Vert }{2}\cdot m_{i},
 \]
 
 \end_inset
@@ -374,15 +383,24 @@ with
 \end_inset
 
 , so it is precomputed.
- The default direction is computed such that
+ The default direction is computed as
 \begin_inset Formula 
 \[
-T_{i}(0.5)=-\frac{1}{2}P_{i-1}^{\prime}(1)^{\perp}+\frac{1}{2}P_{i+1}^{\prime}(0)^{\perp},
+H_{i}=\left(P_{i-1}^{\prime}(1)^{0}+P_{i+1}^{\prime}(0)^{0}\right)^{\perp^{0}},
 \]
 
 \end_inset
 
-when 
+where 
+\begin_inset Formula $v^{0}=v/\left\Vert v\right\Vert $
+\end_inset
+
+ is the unit vector in the direction of 
+\begin_inset Formula $v$
+\end_inset
+
+.
+ The default multiplier is 
 \begin_inset Formula $m_{i}=1$
 \end_inset
 
@@ -606,7 +624,8 @@ handler
 i
 \emph default
 -th ribbon.
- (Only applicable when using ribbons with handlers.)
+ (Only applicable when using ribbons with handlers, which should be perpendicula
+r to the normal.)
 \end_layout
 
 \begin_layout Enumerate

@@ -49,8 +49,7 @@ Domain::vertices() const {
 
 Point2D
 Domain::toLocal(size_t i, const Vector2D &v) const {
-  double len2 = (vertices_[i] - vertices_[prev(i)]).normSqr();
-  return Point2D(v * du_[i], v * dv_[i]) / len2;
+  return Point2D(v * du_[i], v * dv_[i]) / du_[i].normSqr();
 }
 
 const Point2DVector &

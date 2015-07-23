@@ -9,11 +9,12 @@ void
 RibbonCompatibleWithHandler::update() {
   RibbonCompatible::update();
   Vector3D n = rmf_.eval(0.5);
-  Vector3D pt = prev_tangent_ - n * (prev_tangent_ * n);
-  Vector3D nt = next_tangent_ - n * (next_tangent_ * n);
-  if (!handler_initialized_)
-    handler_ = (pt + nt).normalize();
-  central_ = (handler_ - n * (handler_ * n)) * (pt + nt).norm() / 2.0 * multiplier_;
+  if (!handler_initialized_) {
+    handler_ = prev_tangent_ / prev_tangent_.norm() + next_tangent_ / next_tangent_.norm();
+    handler_ = handler_ - n * (handler_ * n);
+    handler_.normalize();
+  }
+  central_ = handler_ * (prev_tangent_.norm() + next_tangent_.norm()) / 2.0 * multiplier_;
 }
 
 Vector3D
