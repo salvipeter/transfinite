@@ -90,6 +90,11 @@ ParameterizationBarycentric::barycentric(const Point2D &uv) const {
       ri1 = vectors[i1].normSqr();
       break;
     };
+    if (ri < epsilon) {         // at a vertex of the domain (mean/harmonic)
+      l.assign(n_, 0.0);
+      l[i] = 1.0;
+      break;
+    }
     l.push_back(ri_1 * Ai_1 + ri1 * Ai - ri * Bi * Ai_1i);
   }
 
