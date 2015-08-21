@@ -1,1 +1,1 @@
-add_library(geom SHARED vector.cc bspline.cc trimesh.cc)
+add_library(geom vector.cc bspline.cc trimesh.cc)

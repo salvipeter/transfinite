@@ -10,4 +10,10 @@ include_directories(../transfinite)
 
 add_executable(test test.cc)
 
+if(USE_OWN_GEOMETRY_LIB)
+  add_dependencies(test geom)
+else()
+  add_dependencies(test geometry)
+endif()
+
 target_link_libraries(test ${GEOM_LIB} transfinite)

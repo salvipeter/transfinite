@@ -1,7 +1,6 @@
 #include "domain-circular.hh"
 
 #include <algorithm>
-#include <cmath>
 #include <numeric>
 
 namespace Transfinite {

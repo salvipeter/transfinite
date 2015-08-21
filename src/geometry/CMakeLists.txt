@@ -56,7 +56,7 @@ link_directories(
   ${SKETCHLIB}/Surfaces
   )
 
-add_library(geometry SHARED geometry.cc)
+add_library(geometry geometry.cc)
 
 target_link_libraries(geometry
   IGES

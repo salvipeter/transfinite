@@ -1,7 +1,5 @@
 #include "domain-regular.hh"
 
-#include <cmath>
-
 namespace Transfinite {
 
 DomainRegular::~DomainRegular() {
