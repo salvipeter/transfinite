@@ -1,0 +1,124 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{D2794688-F7FE-49DD-8A50-973F1395ABB0}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>transfinite</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup />
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_USE_MATH_DEFINES;DEBUG;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\geom;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;_USE_MATH_DEFINES;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\geom;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <Text Include="ReadMe.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="domain-angular.hh" />
+    <ClInclude Include="domain-circular.hh" />
+    <ClInclude Include="domain-regular.hh" />
+    <ClInclude Include="domain.hh" />
+    <ClInclude Include="parameterization-barycentric.hh" />
+    <ClInclude Include="parameterization-bilinear.hh" />
+    <ClInclude Include="parameterization-interconnected.hh" />
+    <ClInclude Include="parameterization-parallel.hh" />
+    <ClInclude Include="parameterization.hh" />
+    <ClInclude Include="ribbon-compatible-with-handler.hh" />
+    <ClInclude Include="ribbon-compatible.hh" />
+    <ClInclude Include="ribbon.hh" />
+    <ClInclude Include="rmf.hh" />
+    <ClInclude Include="surface-composite-ribbon.hh" />
+    <ClInclude Include="surface-corner-based.hh" />
+    <ClInclude Include="surface-generalized-coons.hh" />
+    <ClInclude Include="surface-side-based.hh" />
+    <ClInclude Include="surface.hh" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="domain-angular.cc" />
+    <ClCompile Include="domain-circular.cc" />
+    <ClCompile Include="domain-regular.cc" />
+    <ClCompile Include="domain.cc" />
+    <ClCompile Include="parameterization-barycentric.cc" />
+    <ClCompile Include="parameterization-bilinear.cc" />
+    <ClCompile Include="parameterization-interconnected.cc" />
+    <ClCompile Include="parameterization-parallel.cc" />
+    <ClCompile Include="parameterization.cc" />
+    <ClCompile Include="ribbon-compatible-with-handler.cc" />
+    <ClCompile Include="ribbon-compatible.cc" />
+    <ClCompile Include="ribbon.cc" />
+    <ClCompile Include="rmf.cc" />
+    <ClCompile Include="surface-composite-ribbon.cc" />
+    <ClCompile Include="surface-corner-based.cc" />
+    <ClCompile Include="surface-generalized-coons.cc" />
+    <ClCompile Include="surface-side-based.cc" />
+    <ClCompile Include="surface.cc" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
