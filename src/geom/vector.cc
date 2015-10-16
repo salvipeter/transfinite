@@ -193,4 +193,4 @@ Vector3D::normalize() {
   return operator*=(1.0 / norm());
 }
 
-}
+} // namespace Geometry

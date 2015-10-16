@@ -50,4 +50,4 @@ TriMesh::writeOBJ(std::string filename) const {
   f.close();
 }
 
-}
+} // namespace Geometry

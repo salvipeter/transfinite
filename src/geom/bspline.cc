@@ -155,4 +155,4 @@ BSCurve::arcLength(double from, double to) const {
   return sum + arcLength(next, to);
 }
 
-}
+} // namespace Geometry

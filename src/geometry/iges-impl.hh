@@ -88,4 +88,4 @@ private:
   IgesExport filter_;
 };
 
-}
+} // namespace Geometry

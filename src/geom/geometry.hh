@@ -141,4 +141,4 @@ private:
   std::list<Triangle> triangles_;
 };
 
-}
+} // namespace Geometry

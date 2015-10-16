@@ -250,4 +250,4 @@ private:
   std::unique_ptr<IGESImpl> impl_;
 };
 
-}
+} // namespace Geometry

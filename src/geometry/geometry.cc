@@ -529,4 +529,4 @@ IGES::close() {
   impl_->close();
 }
 
-}
+} // namespace Geometry

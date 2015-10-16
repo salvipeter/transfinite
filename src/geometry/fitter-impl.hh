@@ -185,4 +185,4 @@ private:
   std::list<ControlPointConstraint> cpts_;
 };
 
-}
+} // namespace Geometry

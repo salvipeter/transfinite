@@ -55,4 +55,4 @@ private:
   Vector<3, double> v_;
 };
 
-}
+} // namespace Geometry

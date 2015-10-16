@@ -50,4 +50,4 @@ private:
   Triangulation<Point<3, double>> m_;
 };
 
-}
+} // namespace Geometry

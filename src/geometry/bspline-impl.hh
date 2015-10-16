@@ -71,4 +71,4 @@ private:
   BSplineCurve<Point<3, double>> c_;
 };
 
-}
+} // namespace Geometry
