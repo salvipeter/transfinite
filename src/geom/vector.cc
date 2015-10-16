@@ -2,6 +2,8 @@
 
 #include "geometry.hh"
 
+namespace Geometry {
+
 Vector2D::Vector2D() {
 }
 
@@ -189,4 +191,6 @@ Vector3D::normSqr() const {
 Vector3D &
 Vector3D::normalize() {
   return operator*=(1.0 / norm());
+}
+
 }

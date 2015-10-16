@@ -14,6 +14,8 @@
 
 namespace Transfinite {
 
+using namespace Geometry;
+
 class Domain {
 public:
   Domain();

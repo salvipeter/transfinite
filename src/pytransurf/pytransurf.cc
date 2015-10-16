@@ -15,6 +15,13 @@
 #define DLL_EXPORT
 #endif // WIN32
 
+using Transfinite::DoubleVector;
+using Transfinite::Point3D;
+using Transfinite::PointVector;
+using Transfinite::BSCurve;
+using Transfinite::CurveVector;
+using Transfinite::BSSurface;
+
 class ParseException : public std::runtime_error {
 public:
   ParseException(const std::string &message) : std::runtime_error(message) { }

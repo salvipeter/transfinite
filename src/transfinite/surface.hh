@@ -4,6 +4,8 @@
 
 namespace Transfinite {
 
+using namespace Geometry;
+
 class Domain;
 class Parameterization;
 class Ribbon;

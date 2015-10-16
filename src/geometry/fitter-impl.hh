@@ -14,6 +14,8 @@
 #include "BSSF_KI_LargestSummedDev.hh"
 #include "BSS_Fitter.hh"
 
+namespace Geometry {
+
 class CurveFitter::CurveFitterImpl {
 public:
   void setDegree(size_t deg) { f_.Degree() = deg; }
@@ -182,3 +184,5 @@ private:
   double curvature_weight_, oscillation_weight_;
   std::list<ControlPointConstraint> cpts_;
 };
+
+}

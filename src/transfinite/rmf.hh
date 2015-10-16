@@ -4,6 +4,8 @@
 
 namespace Transfinite {
 
+using namespace Geometry;
+
 class RMF {
 public:
   void setCurve(const std::shared_ptr<BSCurve> &c);

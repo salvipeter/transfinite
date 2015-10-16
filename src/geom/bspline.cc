@@ -2,6 +2,8 @@
 
 #include "geometry.hh"
 
+namespace Geometry {
+
 BSCurve::BSCurve() {
 }
 
@@ -151,4 +153,6 @@ BSCurve::arcLength(double from, double to) const {
   }
 
   return sum + arcLength(next, to);
+}
+
 }

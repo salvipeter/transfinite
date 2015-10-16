@@ -4,6 +4,8 @@
 #include <fstream>
 #include <string>
 
+namespace Geometry {
+
 void
 TriMesh::resizePoints(size_t n) {
   points_.resize(n);
@@ -46,4 +48,6 @@ TriMesh::writeOBJ(std::string filename) const {
   for (const auto &t : triangles_)
     f << "f " << t[0] + 1 << ' ' << t[1] + 1 << ' ' << t[2] + 1 << std::endl;
   f.close();
+}
+
 }

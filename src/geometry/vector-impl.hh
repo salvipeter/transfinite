@@ -4,6 +4,8 @@
 
 #include "Vector.hh"
 
+namespace Geometry {
+
 class Vector2D::Vector2DImpl {
 public:
   Vector2DImpl() {}
@@ -52,3 +54,5 @@ private:
   Vector3DImpl(Vector<3, double> v) : v_(v) {}
   Vector<3, double> v_;
 };
+
+}

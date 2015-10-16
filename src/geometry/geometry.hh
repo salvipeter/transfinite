@@ -5,6 +5,8 @@
 #include <memory>
 #include <vector>
 
+namespace Geometry {
+
 const double epsilon = 1.0e-8;
 
 class Vector2D;
@@ -247,3 +249,5 @@ private:
   class IGESImpl;
   std::unique_ptr<IGESImpl> impl_;
 };
+
+}

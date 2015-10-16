@@ -3,7 +3,9 @@
 #include "geometry.hh"
 
 #include "BSplineCurve.hh"
-#include "KnotVector.hh"
+#include "KnotVector.tcc"       // for KnotVector<double>::assign(...) functions
+
+namespace Geometry {
 
 class BSCurve::BSCurveImpl {
 public:
@@ -68,3 +70,5 @@ public:
 private:
   BSplineCurve<Point<3, double>> c_;
 };
+
+}

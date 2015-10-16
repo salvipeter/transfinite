@@ -11,6 +11,8 @@
 #include "surface-generalized-coons.hh"
 #include "surface-composite-ribbon.hh"
 
+using namespace Transfinite;
+
 CurveVector readLOP(std::string filename) {
   std::ifstream f(filename);
   if (!f.is_open()) {
@@ -44,7 +46,7 @@ CurveVector readLOP(std::string filename) {
 void ribbonTest(std::string filename, size_t resolution, 
 		double scaling, double ribbon_length) {
   CurveVector cv = readLOP("../../models/" + filename + ".lop");
-  Transfinite::SurfaceSideBased surf;
+  SurfaceSideBased surf;
   surf.setCurves(cv);
   surf.setupLoop();
   surf.update();
@@ -100,7 +102,7 @@ void ribbonTest(std::string filename, size_t resolution,
 }
 
 void surfaceTest(std::string filename, std::string type, size_t resolution,
-                 std::shared_ptr<Transfinite::Surface> &&surf) {
+                 std::shared_ptr<Surface> &&surf) {
   CurveVector cv = readLOP("../../models/" + filename + ".lop");
 
   surf->setCurves(cv);
@@ -108,7 +110,7 @@ void surfaceTest(std::string filename, std::string type, size_t resolution,
   surf->update();                // should be called after curves changed
   surf->eval(resolution).writeOBJ("../../models/" + filename + "-" + type + ".obj");
 
-  std::shared_ptr<const Transfinite::Domain> domain = surf->domain();
+  std::shared_ptr<const Domain> domain = surf->domain();
   const Point2DVector &v = domain->vertices();
 
   size_t n = cv.size();
@@ -194,10 +196,10 @@ int main(int argc, char **argv) {
 
   ribbonTest(filename, res, scaling, ribbon_length);
 
-  surfaceTest(filename, "sb", res, std::make_shared<Transfinite::SurfaceSideBased>());
-  surfaceTest(filename, "cb", res, std::make_shared<Transfinite::SurfaceCornerBased>());
-  surfaceTest(filename, "gc", res, std::make_shared<Transfinite::SurfaceGeneralizedCoons>());
-  surfaceTest(filename, "cr", res, std::make_shared<Transfinite::SurfaceCompositeRibbon>());
+  surfaceTest(filename, "sb", res, std::make_shared<SurfaceSideBased>());
+  surfaceTest(filename, "cb", res, std::make_shared<SurfaceCornerBased>());
+  surfaceTest(filename, "gc", res, std::make_shared<SurfaceGeneralizedCoons>());
+  surfaceTest(filename, "cr", res, std::make_shared<SurfaceCompositeRibbon>());
 
   return 0;
 }

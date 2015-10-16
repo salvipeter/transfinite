@@ -6,6 +6,8 @@
 #include "fitter-impl.hh"
 #include "iges-impl.hh"
 
+namespace Geometry {
+
 Vector2D::Vector2D()
   : impl_(std::make_unique<Vector2DImpl>()) {
 }
@@ -525,4 +527,6 @@ IGES::writeSurface(const BSSurface &surface) {
 void
 IGES::close() {
   impl_->close();
+}
+
 }

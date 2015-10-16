@@ -6,6 +6,8 @@
 
 #include "IgesExport.hh"
 
+namespace Geometry {
+
 class IGES::IGESImpl {
   using NURBSCurv2D = BSplineCurve<Point<2, double>>;
   using NURBSCurv = BSplineCurve<Point<3, double>>;
@@ -85,3 +87,5 @@ private:
 
   IgesExport filter_;
 };
+
+}

@@ -7,6 +7,8 @@
 
 #include "Triangulation.hh"
 
+namespace Geometry {
+
 class TriMesh::TriMeshImpl {
 public:
   void resizePoints(size_t n) { m_.Points().resize(n); }
@@ -47,3 +49,5 @@ public:
 private:
   Triangulation<Point<3, double>> m_;
 };
+
+}
