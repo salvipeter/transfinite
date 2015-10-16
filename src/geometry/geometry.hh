@@ -106,7 +106,8 @@ class BSCurve {
 public:
   // Constructors & destructor
   BSCurve();
-  BSCurve(size_t degree, DoubleVector knots, PointVector cpts);
+  BSCurve(const PointVector &cpts);
+  BSCurve(size_t degree, const DoubleVector &knots, const PointVector &cpts);
   BSCurve(const BSCurve &c);
   BSCurve(BSCurve &&c);
   ~BSCurve();

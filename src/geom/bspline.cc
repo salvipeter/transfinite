@@ -5,7 +5,15 @@
 BSCurve::BSCurve() {
 }
 
-BSCurve::BSCurve(size_t degree, DoubleVector knots, PointVector cpts)
+BSCurve::BSCurve(const PointVector &cpts)
+  : p_(cpts.size() - 1), n_(cpts.size() - 1), cp_(cpts) {
+  size_t order = cpts.size();
+  knots_.reserve(2 * order);
+  knots_.insert(knots_.end(), order, 0.0);
+  knots_.insert(knots_.end(), order, 1.0);
+}
+
+BSCurve::BSCurve(size_t degree, const DoubleVector &knots, const PointVector &cpts)
   : p_(degree), n_(cpts.size() - 1), knots_(knots), cp_(cpts) {
 }
 

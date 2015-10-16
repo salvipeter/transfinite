@@ -3,11 +3,24 @@
 #include "geometry.hh"
 
 #include "BSplineCurve.hh"
+#include "KnotVector.hh"
 
 class BSCurve::BSCurveImpl {
 public:
   BSCurveImpl() {}
-  BSCurveImpl(size_t degree, DoubleVector knots, PointVector cpts) {
+  BSCurveImpl(const PointVector &cpts) {
+    BSplineCurve<Point<3, double>>::KnotVectorType bsp_knots;
+    BSplineCurve<Point<3, double>>::ControlVectorType bsp_cpts;
+    size_t order = cpts.size();
+    bsp_knots.reserve(2 * order);
+    bsp_knots.insert(order, 0.0);
+    bsp_knots.insert(order, 1.0);
+    for (const auto &cp : cpts) {
+      bsp_cpts.push_back(Point<3, double>(cp[0], cp[1], cp[2]));
+    }
+    c_ = BSplineCurve<Point<3, double>>(order - 1, bsp_knots, bsp_cpts);
+  }
+  BSCurveImpl(size_t degree, const DoubleVector &knots, const PointVector &cpts) {
     BSplineCurve<Point<3, double>>::KnotVectorType bsp_knots;
     BSplineCurve<Point<3, double>>::ControlVectorType bsp_cpts;
     bsp_knots.insert(knots.begin(), knots.end());

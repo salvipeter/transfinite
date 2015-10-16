@@ -93,7 +93,8 @@ class BSCurve {
 public:
   // Constructors
   BSCurve();
-  BSCurve(size_t degree, DoubleVector knots, PointVector cpts);
+  BSCurve(const PointVector &cpts);
+  BSCurve(size_t degree, const DoubleVector &knots, const PointVector &cpts);
 
   // Evaluation
   Point3D eval(double u) const;

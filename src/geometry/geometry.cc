@@ -233,7 +233,11 @@ BSCurve::BSCurve()
   : impl_(std::make_unique<BSCurveImpl>()) {
 }
 
-BSCurve::BSCurve(size_t degree, DoubleVector knots, PointVector cpts)
+BSCurve::BSCurve(const PointVector &cpts)
+  : impl_(std::make_unique<BSCurveImpl>(cpts)) {
+}
+
+BSCurve::BSCurve(size_t degree, const DoubleVector &knots, const PointVector &cpts)
   : impl_(std::make_unique<BSCurveImpl>(degree, knots, cpts)) {
 }
 
