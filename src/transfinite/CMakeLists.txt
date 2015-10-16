@@ -21,6 +21,7 @@ add_library(transfinite
   surface.cc
     surface-side-based.cc
     surface-corner-based.cc
+    surface-generalized-bezier.cc
     surface-generalized-coons.cc
     surface-composite-ribbon.cc
 )
