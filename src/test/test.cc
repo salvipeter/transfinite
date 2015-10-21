@@ -275,7 +275,7 @@ void bezierTest() {
   surf.setControlPoint(4,5,2,Point3D(109.87, 58.9153, 54.4686)); 
 
   // Generate mesh output
-  dynamic_cast<Surface*>(&surf)->eval(15).writeOBJ("../../models/bezier.obj");
+  surf.eval(15).writeOBJ("../../models/bezier.obj");
 }
 
 int main(int argc, char **argv) {

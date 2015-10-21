@@ -9,6 +9,7 @@ public:
   SurfaceGeneralizedBezier();
   virtual ~SurfaceGeneralizedBezier();
   virtual Point3D eval(const Point2D &uv) const;
+  using Surface::eval;
   size_t degree() const;
   size_t layers() const;
   void initNetwork(size_t degree);
