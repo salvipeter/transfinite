@@ -91,6 +91,33 @@ private:
   std::array<double, 3> v_;
 };
 
+class BCurve {
+public:
+  // Constructors
+  BCurve();
+  BCurve(const PointVector &cpts);
+
+  // Evaluation
+  Point3D eval(double u) const;
+  Point3D eval(double u, size_t nr_der, VectorVector &der) const;
+
+  // Parameterization
+  void reverse();
+  void normalize();
+
+  // Other
+  double arcLength(double from, double to) const;
+
+private:
+  size_t findSpan(double u) const;
+  static void bernstein(size_t n, double u, DoubleVector &coeff);
+  static void bernsteinAll(size_t n, double u, std::vector<DoubleVector> &coeff);
+  void derivativeControlPoints(size_t d, std::vector<PointVector> &dcp) const;
+
+  size_t n_;
+  PointVector cp_;
+};
+
 class BSCurve {
 public:
   // Constructors
