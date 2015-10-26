@@ -278,6 +278,33 @@ void bezierTest() {
   surf.eval(15).writeOBJ("../../models/bezier.obj");
 }
 
+void classATest() {
+  CurveVector cv = readLOP("../../models/pocket6sided.lop");
+
+  CurveVector normal, class_a;
+  for (const auto &c : cv) {
+    VectorVector der;
+    Point3D pa = c->eval(0.0, 1, der);
+    Vector3D va = der[1];
+    Point3D pb = c->eval(1.0, 1, der);
+    Vector3D vb = der[1];
+    PointVector pv = {pa, pa + va / 3.0, pb - vb / 3.0, pb};
+    normal.push_back(std::make_shared<BSCurve>(pv));
+    BCurve bc; bc.fitClassA(14, pa, va, pb, vb);
+    class_a.push_back(std::make_shared<BSCurve>(bc.controlPoints()));
+  }
+
+  SurfaceCornerBased surf;
+  surf.setCurves(normal);
+  surf.setupLoop();
+  surf.update();
+  surf.eval(30).writeOBJ("../../models/bezier-normal.obj");
+  surf.setCurves(class_a);
+  surf.setupLoop();
+  surf.update();
+  surf.eval(30).writeOBJ("../../models/bezier-class-a.obj");
+}
+
 int main(int argc, char **argv) {
 #ifdef DEBUG
   std::cout << "Compiled in DEBUG mode" << std::endl;
@@ -304,6 +331,9 @@ int main(int argc, char **argv) {
 
   if (filename == "bezier") {
     bezierTest();
+    return 0;
+  } else if (filename == "class-a") {
+    classATest();
     return 0;
   }
 
