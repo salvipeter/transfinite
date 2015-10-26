@@ -91,6 +91,25 @@ private:
   std::array<double, 3> v_;
 };
 
+class Matrix3x3 {
+public:
+  // Special matrices
+  static Matrix3x3 identity();
+  static Matrix3x3 rotation(const Vector3D &axis, double angle);
+
+  // Arithmetic
+  Matrix3x3 operator+(const Matrix3x3 &m) const;
+  Matrix3x3 &operator+=(const Matrix3x3 &m);
+  Matrix3x3 operator*(double x) const;
+  Matrix3x3 &operator*=(double x);
+  Vector3D operator*(const Vector3D &v) const;
+  Matrix3x3 operator*(const Matrix3x3 &m) const;
+  Matrix3x3 &operator*=(const Matrix3x3 &m);
+
+private:
+  std::array<double, 9> m_;
+};
+
 class BCurve {
 public:
   // Constructors
@@ -106,6 +125,9 @@ public:
   void normalize();
 
   // Other
+  void fitClassA(size_t degree,
+                 const Point3D &pa, const Vector3D &va,
+                 const Point3D &pb, const Vector3D &vb);
   double arcLength(double from, double to) const;
 
 private:
