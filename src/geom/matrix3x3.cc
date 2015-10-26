@@ -9,18 +9,21 @@ Matrix3x3::identity() {
   Matrix3x3 I;
   I.m_.fill(0.0);
   I.m_[0] = 1.0;
-  I.m_[3] = 1.0;
-  I.m_[6] = 1.0;
+  I.m_[4] = 1.0;
+  I.m_[8] = 1.0;
   return I;
 }
 
 Matrix3x3
 Matrix3x3::rotation(const Vector3D &axis, double angle) {
-  Matrix3x3 A;
-  A.m_[0] = 0.0;      A.m_[1] = axis[2];  A.m_[2] = -axis[1];
-  A.m_[3] = -axis[2]; A.m_[4] = 0.0;      A.m_[5] = axis[0];
-  A.m_[6] = axis[1];  A.m_[7] = -axis[0]; A.m_[8] = 0.0;
-  return identity() + A * std::sin(angle) + (A * A) * (1.0 - std::cos(angle));
+  Matrix3x3 A, B;
+  A.m_[0] = 0.0;      A.m_[1] = -axis[2]; A.m_[2] = axis[1];
+  A.m_[3] = axis[2];  A.m_[4] = 0.0;      A.m_[5] = -axis[0];
+  A.m_[6] = -axis[1]; A.m_[7] = axis[0];  A.m_[8] = 0.0;
+  for (size_t i = 0; i < 3; ++i)
+    for (size_t j = 0; j < 3; ++j)
+      B.m_[3*i+j] = axis[i] * axis[j];
+  return identity() * std::cos(angle) + A * std::sin(angle) + B * (1.0 - std::cos(angle));
 }
 
 Matrix3x3

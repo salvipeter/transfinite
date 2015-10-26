@@ -120,6 +120,9 @@ public:
   Point3D eval(double u) const;
   Point3D eval(double u, size_t nr_der, VectorVector &der) const;
 
+  // Coordinates
+  const PointVector &controlPoints() const;
+
   // Parameterization
   void reverse();
   void normalize();
@@ -131,7 +134,6 @@ public:
   double arcLength(double from, double to) const;
 
 private:
-  size_t findSpan(double u) const;
   static void bernstein(size_t n, double u, DoubleVector &coeff);
   static void bernsteinAll(size_t n, double u, std::vector<DoubleVector> &coeff);
   void derivativeControlPoints(size_t d, std::vector<PointVector> &dcp) const;

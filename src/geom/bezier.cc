@@ -37,6 +37,11 @@ BCurve::eval(double u, size_t nr_der, VectorVector &der) const {
   return der[0];
 }
 
+const PointVector &
+BCurve::controlPoints() const {
+  return cp_;
+}
+
 void
 BCurve::reverse() {
   std::reverse(cp_.begin(), cp_.end());
@@ -88,17 +93,17 @@ BCurve::fitClassA(size_t degree,
     }
   };
   auto setupMatrix = [v0, v1, degree] (double phi, double s, Matrix3x3 &M) {
-    Vector3D axis = Matrix3x3::rotation(v0 - v1, phi) * (v1 ^ v0);
-    Vector3D dir = axis; dir.normalize();
-    Vector3D w0 = v0 - dir * (v0 * dir);
-    Vector3D w1 = v1 - dir * (v1 * dir);
+    // TODO: corner case - when v0 and v1 are parallel directions
+    Vector3D axis = (Matrix3x3::rotation((v1 - v0).normalize(), phi) * (v0 ^ v1)).normalize();
+    Vector3D w0 = (v0 - axis * (v0 * axis)).normalize();
+    Vector3D w1 = (v1 - axis * (v1 * axis)).normalize();
     double theta = acos(std::min(std::max(w0 * w1, -1.0), 1.0)) / (degree - 1);
-    M = Matrix3x3::rotation(axis, theta) * (Matrix3x3::identity() * s);
+    M = Matrix3x3::rotation(axis, theta) * s;
   };
   auto evalMatrix = [this, generateClassA, pa, pb, v0] (const Matrix3x3 &M) -> double {
     generateClassA(pa, v0, M);
-    Vector3D u1 = cp_[n_] - cp_[0]; u1.normalize();
-    Vector3D u2 = pb - pa; u2.normalize();
+    Vector3D u1 = (cp_[n_] - cp_[0]).normalize();
+    Vector3D u2 = (pb - pa).normalize();
     return u1 * u2 - 1.0;
   };
 
@@ -106,13 +111,18 @@ BCurve::fitClassA(size_t degree,
   Matrix3x3 M;
   auto targetFunction = [setupMatrix, evalMatrix, &M] (const std::vector<double> &phi_s) -> double {
     setupMatrix(phi_s[0], phi_s[1], M);
-    return evalMatrix(M);
+    return std::abs(evalMatrix(M));
   };
   std::vector<double> start;
   start.push_back(0.0);
   start.push_back(1.0);
   DownhillSimplex ds;
   ds.minimize(start, 100, targetFunction);
+  double err = targetFunction(start);        // update to the best value found so far
+  if (err > 0.001 && degree < 50) {
+    fitClassA(degree * 2, pa, va, pb, vb);
+    return;
+  }
 
   // Postprocessing
   v0 *= (pb - pa).norm() / (cp_[n_] - cp_[0]).norm();
