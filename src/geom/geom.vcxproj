@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -74,10 +74,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="downhill.hh" />
     <ClInclude Include="geometry.hh" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="bezier.cc" />
     <ClCompile Include="bspline.cc" />
+    <ClCompile Include="downhill.cc" />
+    <ClCompile Include="matrix3x3.cc" />
     <ClCompile Include="trimesh.cc" />
     <ClCompile Include="vector.cc" />
   </ItemGroup>

@@ -11,9 +11,12 @@ endif(CMAKE_COMPILER_IS_GNUCXX)
 
 set(USE_OWN_GEOMETRY_LIB ON)
 
-add_subdirectory(geom)
 add_subdirectory(transfinite)
 add_subdirectory(test)
+
+if(USE_OWN_GEOMETRY_LIB)
+  add_subdirectory(geom)
+endif()
 
 if(NOT USE_OWN_GEOMETRY_LIB)
   add_subdirectory(geometry)

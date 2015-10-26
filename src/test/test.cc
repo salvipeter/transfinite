@@ -279,6 +279,7 @@ void bezierTest() {
 }
 
 void classATest() {
+#ifdef NO_SURFACE_FIT
   CurveVector cv = readLOP("../../models/pocket6sided.lop");
 
   CurveVector normal, class_a;
@@ -303,6 +304,7 @@ void classATest() {
   surf.setupLoop();
   surf.update();
   surf.eval(30).writeOBJ("../../models/bezier-class-a.obj");
+#endif  // NO_SURFACE_FIT
 }
 
 int main(int argc, char **argv) {
