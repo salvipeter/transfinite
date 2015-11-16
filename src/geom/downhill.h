@@ -18,16 +18,14 @@ private:
   static double amotry(std::vector<std::vector<double> > &p, std::vector<double> &y,
 		       std::vector<double> &psum,
                        std::function<double(const std::vector<double> &)> funk,
-                       int ihi, double fac);
+                       size_t ihi, double fac);
   static void amoeba(std::vector<std::vector<double> > &p, std::vector<double> &y, double tol,
-		     unsigned int nmax,
-                     std::function<double(const std::vector<double> &)> funk);
+		     size_t nmax, std::function<double(const std::vector<double> &)> funk);
 
   // Parameters
   static double const TINY;
   double step;
   double tolerance;
-  size_t iterations;
 };
 
 #endif // DOWNHILL_H

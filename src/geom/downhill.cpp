@@ -11,7 +11,7 @@ amotry(std::vector<std::vector<double> > &p,
        std::vector<double> &y,
        std::vector<double> &psum,
        std::function<double(const std::vector<double> &)> funk,
-       int ihi, double fac)
+       size_t ihi, double fac)
 {
   size_t const ndim = y.size() - 1;
   double ytry;
@@ -38,7 +38,7 @@ amotry(std::vector<std::vector<double> > &p,
 void DownhillSimplex::
 amoeba(std::vector<std::vector<double> > &p,
        std::vector<double> &y,
-       double tol, unsigned int nmax,
+       double tol, size_t nmax,
        std::function<double(const std::vector<double> &)> funk)
 {
   size_t const mpts = y.size();

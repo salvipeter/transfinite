@@ -9,6 +9,12 @@ if(CMAKE_COMPILER_IS_GNUCXX)
   set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 endif(CMAKE_COMPILER_IS_GNUCXX)
 
+if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+  set(CMAKE_CXX_FLAGS "-Weverything -pedantic -std=c++11 -fPIC -Wno-c++98-compat -Wno-c++98-compat-pedantic -Wno-padded -Wno-missing-prototypes")
+  set(CMAKE_CXX_FLAGS_DEBUG "-O0 -g -DDEBUG")
+  set(CMAKE_CXX_FLAGS_RELEASE "-O3")
+endif()
+
 set(USE_OWN_GEOMETRY_LIB ON)
 
 add_subdirectory(transfinite)
