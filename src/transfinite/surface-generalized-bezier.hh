@@ -12,7 +12,8 @@ public:
   using Surface::eval;
   size_t degree() const;
   size_t layers() const;
-  void initNetwork(size_t degree);
+  void initNetwork(size_t n, size_t degree);
+  virtual void setupLoop();
   Point3D centralControlPoint() const;
   void setCentralControlPoint(const Point3D &p);
   Point3D controlPoint(size_t i, size_t j, size_t k) const;

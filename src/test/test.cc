@@ -172,14 +172,8 @@ void surfaceTest(std::string filename, std::string type, size_t resolution,
 }
 
 void bezierTest() {
-  // Generate 5 dummy curves
-  CurveVector cv = readLOP("../../models/cagd86.lop");
-
   SurfaceGeneralizedBezier surf;
-  surf.setCurves(cv);
-  surf.setupLoop();
-  surf.update();
-  surf.initNetwork(5);
+  surf.initNetwork(5, 5);
   surf.setCentralControlPoint(Point3D(62.6431, 9.65198, 22.5239));
 
   // Auto-generated data, contains redundancies
@@ -273,6 +267,8 @@ void bezierTest() {
   surf.setControlPoint(4,3,2,Point3D(74.2388, 25.4256, 50.9729)); 
   surf.setControlPoint(4,4,2,Point3D(98.5855, 44.1235, 55.9962)); 
   surf.setControlPoint(4,5,2,Point3D(109.87, 58.9153, 54.4686)); 
+
+  surf.setupLoop();
 
   // Generate mesh output
   surf.eval(15).writeOBJ("../../models/bezier.obj");

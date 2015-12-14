@@ -1,5 +1,5 @@
-#LyX 2.1 created this file. For more info see http://www.lyx.org/
-\lyxformat 474
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
 \begin_document
 \begin_header
 \textclass article
@@ -12,13 +12,13 @@
 \font_roman default
 \font_sans default
 \font_typewriter default
-\font_math auto
 \font_default_family default
 \use_non_tex_fonts false
 \font_sc false
 \font_osf false
 \font_sf_scale 100
 \font_tt_scale 100
+
 \graphics default
 \default_output_format default
 \output_sync 0
@@ -28,24 +28,15 @@
 \use_hyperref false
 \papersize default
 \use_geometry false
-\use_package amsmath 1
-\use_package amssymb 1
-\use_package cancel 1
-\use_package esint 1
-\use_package mathdots 1
-\use_package mathtools 1
-\use_package mhchem 1
-\use_package stackrel 1
-\use_package stmaryrd 1
-\use_package undertilde 1
+\use_amsmath 1
+\use_esint 1
+\use_mhchem 1
+\use_mathdots 1
 \cite_engine basic
-\cite_engine_type default
-\biblio_style plain
 \use_bibtopic false
 \use_indices false
 \paperorientation portrait
 \suppress_date false
-\justification true
 \use_refstyle 1
 \index Index
 \shortcut idx
@@ -69,7 +60,7 @@
 \begin_body
 
 \begin_layout Title
-Transfinite Surface Library
+Transfinite Surface Library (v1.1)
 \end_layout
 
 \begin_layout Author
@@ -223,7 +214,7 @@ surface.hh
 Transfinite::Surface
 \family default
 , which provides several functions (detailed below).
- For actual use, one has to use a child class---presently there are four
+ For actual use, one has to use a child class---presently there are five
  options: 
 \family typewriter
 SurfaceSideBased
@@ -249,7 +240,18 @@ key "cagd"
 
 \end_inset
 
-, respectively.
+, respectively, as well as 
+\family typewriter
+SurfaceGeneralizedBezier
+\family default
+, implementing the new GB patch 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "bezier"
+
+\end_inset
+
+.
  One- and two-sided surfaces are not supported.
 \end_layout
 
@@ -274,7 +276,12 @@ In this library, we have only one ribbon type, implemented in
 Ribbon\SpecialChar \-
 Compatible
 \family default
-, which can be formulated as follows (using the notations of 
+ (GB patches do not need ribbons, so they have a dummy type 
+\family typewriter
+RibbonDummy
+\family default
+).
+ This can be formulated as follows (using the notations of 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "cagd"
@@ -513,7 +520,8 @@ meterizationInterconnected
 \end_layout
 
 \begin_layout Itemize
-CR patches use a parameterization based on Wachspress coordinates 
+CR and GB patches use a parameterization based on Wachspress coordinates
+ 
 \begin_inset Formula $\lambda_{i}$
 \end_inset
 
@@ -678,6 +686,108 @@ false
 \family default
 ).
  It is on by default.
+\end_layout
+
+\begin_layout Standard
+The mechanics of GB patches are a little different, as they depend on a
+ control network:
+\end_layout
+
+\begin_layout Enumerate
+Initialize the network by calling 
+\family typewriter
+initNetwork
+\family default
+(
+\emph on
+n
+\emph default
+, 
+\emph on
+d
+\emph default
+), where 
+\emph on
+n
+\emph default
+ is the number of sides, and 
+\emph on
+d
+\emph default
+ is the degree.
+\end_layout
+
+\begin_layout Enumerate
+Set all control points, using 
+\family typewriter
+setCentralControlPoint
+\family default
+(
+\emph on
+p
+\emph default
+) for the center point, and 
+\family typewriter
+setControlPoint
+\family default
+(
+\emph on
+i
+\emph default
+, 
+\emph on
+j
+\emph default
+, 
+\emph on
+k
+\emph default
+, 
+\emph on
+p
+\emph default
+) for all other points.
+ The latter function sets 
+\begin_inset Formula $C_{j,k}^{d,i}$
+\end_inset
+
+ in the notation of 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "bezier"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Enumerate
+Call 
+\family typewriter
+setupLoop
+\family default
+() to extract the curves and fill in adjacency information.
+\end_layout
+
+\begin_layout Standard
+Note, that you do not have to call 
+\family typewriter
+update
+\family default
+().
+ (Actually, you 
+\emph on
+should not
+\emph default
+.) Unless the number of sides or the degree (i.e., the topology of the control
+ network) changes, changing control points do not need any special administratio
+n.
+ Also, in step 3, 
+\family typewriter
+setupLoop
+\family default
+ only assumes that boundary control points are set.
+ Any other control points can be set later.
 \end_layout
 
 \begin_layout Subsection
@@ -1183,6 +1293,33 @@ Transfinite Surface Interpolation over Irregular
 \end_inset
 
 1330--1340, 2011.
+\end_layout
+
+\begin_layout Bibliography
+\begin_inset CommandInset bibitem
+LatexCommand bibitem
+key "bezier"
+
+\end_inset
+
+T.
+\begin_inset space ~
+\end_inset
+
+Várady, P.
+\begin_inset space ~
+\end_inset
+
+Salvi, Gy.
+\begin_inset space ~
+\end_inset
+
+Karikó, 
+\emph on
+A Multi-sided Bézier Patch with a Simple Control Structure
+\emph default
+.
+ Computer Graphics Forum (under revision), 2016.
 \end_layout
 
 \begin_layout Bibliography

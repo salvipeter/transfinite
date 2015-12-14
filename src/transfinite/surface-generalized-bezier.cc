@@ -95,10 +95,11 @@ SurfaceGeneralizedBezier::layers() const {
 }
 
 void
-SurfaceGeneralizedBezier::initNetwork(size_t degree) {
-  if (degree == degree_)
+SurfaceGeneralizedBezier::initNetwork(size_t n, size_t degree) {
+  if (n == n_ && degree == degree_)
     return;
 
+  n_ = n;
   degree_ = degree;
   layers_ = (degree_ + 1) / 2;
 
@@ -112,6 +113,26 @@ SurfaceGeneralizedBezier::initNetwork(size_t degree) {
     }
     nets_.push_back(cn);
   }
+}
+
+void
+SurfaceGeneralizedBezier::setupLoop() {
+  CurveVector curves;
+  DoubleVector knots;
+  PointVector cpts(degree_ + 1);
+  knots.insert(knots.end(), degree_ + 1, 0.0);
+  knots.insert(knots.end(), degree_ + 1, 1.0);
+  for (size_t i = 0; i < n_; ++i) {
+    for (size_t j = 0; j <= degree_; ++j)
+      cpts[j] = nets_[i][j][0];
+    curves.push_back(std::make_shared<BSCurve>(degree_, knots, cpts));
+  }
+  setCurves(curves);
+
+  Surface::setupLoop();
+
+  if (domain_->update())
+    param_->update();
 }
 
 Point3D
