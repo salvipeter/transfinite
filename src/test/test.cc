@@ -4,6 +4,8 @@
 #include <iostream>
 #include <string>
 
+#include "../Eigen/LU"
+
 #include "domain.hh"
 #include "ribbon.hh"
 #include "surface-side-based.hh"
@@ -171,6 +173,61 @@ void surfaceTest(std::string filename, std::string type, size_t resolution,
 #endif  // NO_SURFACE_FIT
 }
 
+void writeBezierControlPoints(const SurfaceGeneralizedBezier &surf, const std::string &filename) {
+  size_t n = surf.domain()->vertices().size();
+  size_t d = surf.degree();
+  size_t l = surf.layers();
+
+  std::ofstream f(filename);
+  for (size_t i = 0; i < n; ++i)
+    for (size_t j = 0; j <= d; ++j)
+      for (size_t k = 0; k < l; ++k) {
+        Point3D p = surf.controlPoint(i, j, k);
+        f << "v " << p[0] << " " << p[1] << " " << p[2] << std::endl;
+      }
+  for (size_t i = 0; i < n; ++i)
+    for (size_t j = 0; j < d; ++j)
+      for (size_t k = 0; k < l - 1; ++k) {
+        size_t index = i * (d + 1) * l + 1;
+        size_t a = index + l * j + k;
+        size_t b = index + l * (j + 1) + k;
+        size_t c = index + l * (j + 1) + k + 1;
+        size_t d = index + l * j + k + 1;
+        f << "f " << a << " " << b << " " << c << " " << d << std::endl;
+      }
+  size_t base = n * (d + 1) * l + 1;
+  if (d % 2 == 0) {
+    for (size_t i = 0; i < n; ++i)
+      for (size_t j = l - 1; j <= l; ++j) {
+        Point3D p = surf.controlPoint(i, j, l - 1);
+        f << "v " << p[0] << " " << p[1] << " " << p[2] << std::endl;
+      }
+    Point3D p = surf.centralControlPoint();
+    f << "v " << p[0] << " " << p[1] << " " << p[2] << std::endl;
+    for (size_t i = 0; i < n; ++i) {
+      size_t a = base + 2 * i;
+      size_t b = base + 2 * i + 1;
+      size_t c = base + 2 * n;
+      size_t d = base + 2 * (i == 0 ? n - 1 : i - 1) + 1;
+      f << "f " << a << " " << b << " " << c << " " << d << std::endl;
+    }
+  } else {
+    for (size_t i = 0; i < n; ++i) {
+      Point3D p = surf.controlPoint(i, l - 1, l - 1);
+      f << "v " << p[0] << " " << p[1] << " " << p[2] << std::endl;
+    }
+    Point3D p = surf.centralControlPoint();
+    f << "v " << p[0] << " " << p[1] << " " << p[2] << std::endl;
+    for (size_t i = 0; i < n; ++i) {
+      size_t a = base + i;
+      size_t b = base + i + 1;
+      size_t c = base + n;
+      f << "f " << a << " " << b << " " << c << std::endl;
+    }
+  }
+  f.close();
+}
+
 void bezierTest() {
   SurfaceGeneralizedBezier surf;
   surf.initNetwork(5, 5);
@@ -271,7 +328,75 @@ void bezierTest() {
   surf.setupLoop();
 
   // Generate mesh output
-  surf.eval(15).writeOBJ("../../models/bezier.obj");
+  TriMesh mesh = surf.eval(15);
+  mesh.writeOBJ("../../models/bezier.obj");
+  writeBezierControlPoints(surf, "../../models/bezier-cpts.obj");
+
+  // Fit a sextic surface on this mesh
+
+  // Input data
+  PointVector points = mesh.points();
+  Point2DVector params = surf.domain()->parameters(15);
+
+  size_t n = 5;                 // # of sides
+  size_t d = 6;                 // degree
+  size_t l = (d + 1) / 2;       // # of layers
+  size_t cp = 1 + d / 2;
+  cp = n * cp * l + 1;          // # of control points
+  size_t m = points.size();     // # of samples
+
+  surf.initNetwork(n, d);
+  // Hack: we use the domain of the previous surface
+  // (cannot call setupLoop() yet, but weight() needs the domain...)
+  // This is just a temporary problem, because eventually we will fix
+  // the first two layers on each side, and if we have the boundaries,
+  // we can call setupLoop(). But for now, it is a completely free fit.
+  Eigen::MatrixXd A(m, cp);
+  Eigen::MatrixXd b(m, 3);
+
+  // Fill the matrices
+  for (size_t j = 0; j < m; ++j) {
+    double blend_sum = 0.0;
+    for (size_t i = 1, side = 0, col = 0, row = 0; i < cp; ++i, ++col) {
+      if (col >= d - row) {
+        if (++side >= n) {
+          side = 0;
+          ++row;
+        }
+        col = row;
+      }
+      double blend = surf.weight(side, col, row, params[j]);
+      if (col < l)
+        blend += surf.weight((side + n - 1) % n, d - row, col, params[j]);
+      if (col > d - l)
+        blend += surf.weight((side + 1) % n, row, d - col, params[j]);
+      A(j, i) = blend;
+      blend_sum += blend;
+    }
+    A(j, 0) = 1.0 - blend_sum;
+    b(j, 0) = points[j][0]; b(j, 1) = points[j][1]; b(j, 2) = points[j][2];
+  }
+
+  // LSQ Fit
+  Eigen::MatrixXd x = A.fullPivLu().solve(b);
+
+  // Fill control points
+  surf.setCentralControlPoint(Point3D(x(0, 0), x(0, 1), x(0, 2)));
+  for (size_t i = 1, side = 0, col = 0, row = 0; i < cp; ++i, ++col) {
+    if (col >= d - row) {
+      if (++side >= n) {
+        side = 0;
+        ++row;
+      }
+      col = row;
+    }
+    surf.setControlPoint(side, col, row, Point3D(x(i, 0), x(i, 1), x(i, 2)));
+  }
+
+  // Export mesh
+  surf.setupLoop();
+  surf.eval(15).writeOBJ("../../models/bezier-sextic.obj");
+  writeBezierControlPoints(surf, "../../models/bezier-sextic-cpts.obj");
 }
 
 void classATest() {
