@@ -53,7 +53,7 @@ Ribbon::update() {
   VectorVector der;
   rmf_.setCurve(curve_);
 
-  prev_->curve_->eval(1.0, 1, der);
+  prev_.lock()->curve_->eval(1.0, 1, der);
   normal = der[1];
   curve_->eval(0.0, 1, der);
   normal = normal ^ der[1];
@@ -62,7 +62,7 @@ Ribbon::update() {
 
   curve_->eval(1.0, 1, der);
   normal = der[1];
-  next_->curve_->eval(0.0, 1, der);
+  next_.lock()->curve_->eval(0.0, 1, der);
   normal = normal ^ der[1];
   normal.normalize();
   rmf_.setEnd(normal);

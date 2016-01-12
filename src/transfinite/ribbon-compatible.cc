@@ -8,9 +8,9 @@ RibbonCompatible::~RibbonCompatible() {
 void
 RibbonCompatible::update() {
   VectorVector der;
-  prev_->curve()->eval(1.0, 1, der);
+  prev_.lock()->curve()->eval(1.0, 1, der);
   prev_tangent_ = -der[1];
-  next_->curve()->eval(0.0, 1, der);
+  next_.lock()->curve()->eval(0.0, 1, der);
   next_tangent_ = der[1];
 
   Ribbon::update();

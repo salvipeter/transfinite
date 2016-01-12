@@ -23,7 +23,7 @@ public:
 
 protected:
   std::shared_ptr<BSCurve> curve_;
-  std::shared_ptr<Ribbon> prev_, next_;
+  std::weak_ptr<Ribbon> prev_, next_;
   RMF rmf_;
   Vector3D handler_;
   double multiplier_;
