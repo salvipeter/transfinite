@@ -408,11 +408,13 @@ void bezierTest() {
   writeBezierControlPoints(surf, "../../models/bezier-cpts.obj");
 
   // Normal degree elevation
-  writeBezierControlPoints(elevateDegree(surf), "../../models/bezier-elevated-cpts.obj");
+  SurfaceGeneralizedBezier sextic = elevateDegree(surf);
+  writeBezierControlPoints(sextic, "../../models/bezier-elevated-cpts.obj");
+  sextic.eval(15).writeOBJ("../../models/bezier-elevated.obj");
   SurfaceGeneralizedBezier elevated = surf;
   for (size_t i = 0; i < 30; ++i)
     elevated = elevateDegree(elevated);
-  writeBezierControlPoints(elevated, "../../models/bezier-elevated.obj");
+  writeBezierControlPoints(elevated, "../../models/bezier-elevated-30-times.obj");
 
   // Fit a sextic surface on the quintic mesh
 
@@ -425,16 +427,21 @@ void bezierTest() {
   size_t l = (d + 1) / 2;       // # of layers
   size_t cp = 1 + d / 2;
   cp = n * cp * l + 1;          // # of control points
+  size_t bcp = n * (d - 1) * 2; // # of boundary control points
+  size_t mcp = cp - bcp;        // # of movable control points
   size_t m = points.size();     // # of samples
 
+  // Initialize patch with the fixed boundaries
   surf.initNetwork(n, d);
-  // Hack: we use the domain of the previous surface
-  // (cannot call setupLoop() yet, but weight() needs the domain...)
-  // This is just a temporary problem, because eventually we will fix
-  // the first two layers on each side, and if we have the boundaries,
-  // we can call setupLoop(). But for now, it is a completely free fit.
-  Eigen::MatrixXd A(m, cp);
+  for (size_t i = 0; i < n; ++i)
+    for (size_t j = 0; j < d - 1; ++j)
+      for (size_t k = 0; k < 2; ++k)
+        surf.setControlPoint(i, j, k, sextic.controlPoint(i, j, k));
+  surf.setupLoop();
+
+  Eigen::MatrixXd A(m, mcp);
   Eigen::MatrixXd b(m, 3);
+  b.setZero();
 
   // Fill the matrices
   for (size_t j = 0; j < m; ++j) {
@@ -452,11 +459,16 @@ void bezierTest() {
         blend += surf.weight((side + n - 1) % n, d - row, col, params[j]);
       if (col > d - l)
         blend += surf.weight((side + 1) % n, row, d - col, params[j]);
-      A(j, i) = blend;
+      if (i > bcp)
+        A(j, i - bcp) = blend;
+      else {
+        Point3D p = surf.controlPoint(side, col, row);
+        b(j, 0) -= p[0] * blend; b(j, 1) -= p[1] * blend; b(j, 2) -= p[2] * blend;
+      }
       blend_sum += blend;
     }
     A(j, 0) = 1.0 - blend_sum;
-    b(j, 0) = points[j][0]; b(j, 1) = points[j][1]; b(j, 2) = points[j][2];
+    b(j, 0) += points[j][0]; b(j, 1) += points[j][1]; b(j, 2) += points[j][2];
   }
 
   // LSQ Fit
@@ -464,7 +476,7 @@ void bezierTest() {
 
   // Fill control points
   surf.setCentralControlPoint(Point3D(x(0, 0), x(0, 1), x(0, 2)));
-  for (size_t i = 1, side = 0, col = 0, row = 0; i < cp; ++i, ++col) {
+  for (size_t i = bcp + 1, side = 0, col = 2, row = 2; i < cp; ++i, ++col) {
     if (col >= d - row) {
       if (++side >= n) {
         side = 0;
@@ -472,11 +484,10 @@ void bezierTest() {
       }
       col = row;
     }
-    surf.setControlPoint(side, col, row, Point3D(x(i, 0), x(i, 1), x(i, 2)));
+    surf.setControlPoint(side, col, row, Point3D(x(i - bcp, 0), x(i - bcp, 1), x(i - bcp, 2)));
   }
 
   // Export mesh
-  surf.setupLoop();
   surf.eval(15).writeOBJ("../../models/bezier-sextic.obj");
   writeBezierControlPoints(surf, "../../models/bezier-sextic-cpts.obj");
 }
