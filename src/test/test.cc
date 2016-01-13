@@ -317,7 +317,7 @@ SurfaceGeneralizedBezier loadBezier(const std::string &filename) {
   cp = n * cp * l + 1;          // # of control points
 
   SurfaceGeneralizedBezier surf;
-  surf.initNetwork(5, 5);
+  surf.initNetwork(n, d);
 
   Point3D p;
   f >> p[0] >> p[1] >> p[2];
