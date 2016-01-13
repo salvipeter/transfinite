@@ -220,12 +220,72 @@ void writeBezierControlPoints(const SurfaceGeneralizedBezier &surf, const std::s
     f << "v " << p[0] << " " << p[1] << " " << p[2] << std::endl;
     for (size_t i = 0; i < n; ++i) {
       size_t a = base + i;
-      size_t b = base + i + 1;
+      size_t b = base + (i == n - 1 ? 0 : i + 1);
       size_t c = base + n;
       f << "f " << a << " " << b << " " << c << std::endl;
     }
   }
   f.close();
+}
+
+SurfaceGeneralizedBezier elevateDegree(const SurfaceGeneralizedBezier &surf) {
+  size_t n = surf.domain()->vertices().size();
+  size_t d = surf.degree() + 1;
+  SurfaceGeneralizedBezier result;
+  result.initNetwork(n, d);
+  size_t l = result.layers();
+
+  // Set the corner control points
+  for (size_t i = 0; i < n; ++i)
+    result.setControlPoint(i, 0, 0, surf.controlPoint(i, 0, 0));
+
+  // Set the boundary control points
+  for (size_t j = 1; j < d; ++j) {
+    double eta = (double)j / d;
+    for (size_t i = 0; i < n; ++i)
+      result.setControlPoint(i, j, 0,
+                             surf.controlPoint(i, j - 1, 0) * eta +
+                             surf.controlPoint(i, j, 0) * (1 - eta));
+  }
+
+  // Set all other control points (except the center)
+  // When d is odd, the topmost layer of the original patch
+  // is simulated by the control points of the adjacent boundary
+  for (size_t j = 1; j <= d / 2; ++j) {
+    double eta = (double)j / d;
+    for (size_t k = 1; k < l; ++k) {
+      double theta = (double)k / d;
+      for (size_t i = 0; i < n; ++i) {
+        Point3D p1, p2, p3, p4;
+        p1 = surf.controlPoint(i, j - 1, k - 1);
+        p2 = surf.controlPoint(i, j, k - 1);
+        if (d % 2 == 0 || k < d / 2) {
+          p3 = surf.controlPoint(i, j - 1, k);
+          p4 = surf.controlPoint(i, j, k);
+        } else {
+          size_t im = (i + n - 1) % n;
+          p3 = surf.controlPoint(im, d - k - 1, j - 1);
+          if (j == d / 2)
+            p4 = surf.centralControlPoint();
+          else
+            p4 = surf.controlPoint(im, d - k - 1, j);
+        }
+        result.setControlPoint(i, j, k,
+                               p1 * eta * theta + p2 * (1 - eta) * theta +
+                               p3 * eta * (1 - theta) + p4 * (1 - eta) * (1 - theta));
+      }
+    }
+  }
+
+  // Set center as the mass center of the innermost control points
+  Point3D center(0, 0, 0);
+  for (size_t i = 0; i < n; ++i)
+    center += result.controlPoint(i, l, l - 1);
+  center /= n;
+  result.setCentralControlPoint(center);
+
+  result.setupLoop();
+  return result;
 }
 
 void bezierTest() {
@@ -332,7 +392,14 @@ void bezierTest() {
   mesh.writeOBJ("../../models/bezier.obj");
   writeBezierControlPoints(surf, "../../models/bezier-cpts.obj");
 
-  // Fit a sextic surface on this mesh
+  // Normal degree elevation
+  writeBezierControlPoints(elevateDegree(surf), "../../models/bezier-elevated-cpts.obj");
+  SurfaceGeneralizedBezier elevated = surf;
+  for (size_t i = 0; i < 30; ++i)
+    elevated = elevateDegree(elevated);
+  writeBezierControlPoints(elevated, "../../models/bezier-elevated.obj");
+
+  // Fit a sextic surface on the quintic mesh
 
   // Input data
   PointVector points = mesh.points();
