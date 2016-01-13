@@ -18,3 +18,4 @@ Makefile
 *.sdf
 *.opensdf
 *.user
+src/Eigen/*

@@ -303,128 +303,50 @@ SurfaceGeneralizedBezier elevateDegree(const SurfaceGeneralizedBezier &surf) {
   return result;
 }
 
-void bezierTest() {
+SurfaceGeneralizedBezier loadBezier(const std::string &filename) {
+  std::ifstream f(filename);
+  if (!f.is_open()) {
+    std::cerr << "Unable to open file: " << filename << std::endl;
+    return SurfaceGeneralizedBezier();
+  }
+
+  size_t n, d;
+  f >> n >> d;
+  size_t l = (d + 1) / 2;
+  size_t cp = 1 + d / 2;
+  cp = n * cp * l + 1;          // # of control points
+
   SurfaceGeneralizedBezier surf;
   surf.initNetwork(5, 5);
-  surf.setCentralControlPoint(Point3D(62.6431, 9.65198, 22.5239));
 
-  // Auto-generated data, contains redundancies
-  surf.setControlPoint(0,0,0,Point3D(61.7919, 58, 116.732));
-  surf.setControlPoint(0,1,0,Point3D(92.9346, 55.6215, 91.3775)); 
-  surf.setControlPoint(0,2,0,Point3D(109.87, 58.9153, 54.4686)); 
-  surf.setControlPoint(0,3,0,Point3D(123.086, 58.4892, 17.2603)); 
-  surf.setControlPoint(0,4,0,Point3D(130.802, 57.9993, -20.5265)); 
-  surf.setControlPoint(0,5,0,Point3D(131.793, 58, -60)); 
-  surf.setControlPoint(0,0,1,Point3D(51.523, 47.9294, 117.163)); 
-  surf.setControlPoint(0,1,1,Point3D(83.5958, 44.6549, 93.0348)); 
-  surf.setControlPoint(0,2,1,Point3D(98.5855, 44.1235, 55.9962)); 
-  surf.setControlPoint(0,3,1,Point3D(108.744, 39.0439, 18.0016)); 
-  surf.setControlPoint(0,4,1,Point3D(114.053, 35.1734, -20.5281)); 
-  surf.setControlPoint(0,5,1,Point3D(115.054, 35.1673, -60.0014)); 
-  surf.setControlPoint(0,0,2,Point3D(40.1278, 40.5432, 117.313)); 
-  surf.setControlPoint(0,1,2,Point3D(62.8623, 33.4245, 91.669)); 
-  surf.setControlPoint(0,2,2,Point3D(74.2388, 25.4256, 50.9729)); 
-  surf.setControlPoint(0,3,2,Point3D(84.1649, 17.9494, 8.6288)); 
-  surf.setControlPoint(0,4,2,Point3D(94.8741, 12.6111, -28.4806)); 
-  surf.setControlPoint(0,5,2,Point3D(98.3238, 12.2747, -61.3907)); 
-  surf.setControlPoint(1,0,0,Point3D(131.793, 58, -60)); 
-  surf.setControlPoint(1,1,0,Point3D(115.054, 35.1673, -60.0014)); 
-  surf.setControlPoint(1,2,0,Point3D(98.3238, 12.2747, -61.3907)); 
-  surf.setControlPoint(1,3,0,Point3D(88.4707, -13.7322, -60.2359)); 
-  surf.setControlPoint(1,4,0,Point3D(86.0242, -43.0892, -56.2415)); 
-  surf.setControlPoint(1,5,0,Point3D(72.1941, -67.4299, -59.9941)); 
-  surf.setControlPoint(1,0,1,Point3D(130.802, 57.9993, -20.5265)); 
-  surf.setControlPoint(1,1,1,Point3D(114.053, 35.1734, -20.5281)); 
-  surf.setControlPoint(1,2,1,Point3D(94.8741, 12.6111, -28.4806)); 
-  surf.setControlPoint(1,3,1,Point3D(81.7361, -12.943, -36.0907)); 
-  surf.setControlPoint(1,4,1,Point3D(76.7726, -41.9252, -38.7019)); 
-  surf.setControlPoint(1,5,1,Point3D(62.7974, -66.1704, -42.5395)); 
-  surf.setControlPoint(1,0,2,Point3D(123.086, 58.4892, 17.2603)); 
-  surf.setControlPoint(1,1,2,Point3D(108.744, 39.0439, 18.0016)); 
-  surf.setControlPoint(1,2,2,Point3D(84.1649, 17.9494, 8.6288)); 
-  surf.setControlPoint(1,3,2,Point3D(67.6886, -9.86071, -5.51556)); 
-  surf.setControlPoint(1,4,2,Point3D(60.8794, -40.719, -20.0232)); 
-  surf.setControlPoint(1,5,2,Point3D(51.0532, -65.35, -29.3928)); 
-  surf.setControlPoint(2,0,0,Point3D(72.1941, -67.4299, -59.9941)); 
-  surf.setControlPoint(2,1,0,Point3D(62.7974, -66.1704, -42.5395)); 
-  surf.setControlPoint(2,2,0,Point3D(51.0532, -65.35, -29.3928)); 
-  surf.setControlPoint(2,3,0,Point3D(36.6922, -64.8978, -20.2125)); 
-  surf.setControlPoint(2,4,0,Point3D(19.6749, -64.7858, -15.0237)); 
-  surf.setControlPoint(2,5,0,Point3D(0, -64.5101, -14.7862)); 
-  surf.setControlPoint(2,0,1,Point3D(86.0242, -43.0892, -56.2415)); 
-  surf.setControlPoint(2,1,1,Point3D(76.7726, -41.9252, -38.7019)); 
-  surf.setControlPoint(2,2,1,Point3D(60.8794, -40.719, -20.0232)); 
-  surf.setControlPoint(2,3,1,Point3D(40.9138, -39.6976, -3.51752)); 
-  surf.setControlPoint(2,4,1,Point3D(19.675, -39.1309, 7.13632)); 
-  surf.setControlPoint(2,5,1,Point3D(3.84774e-05, -38.8132, 7.32499)); 
-  surf.setControlPoint(2,0,2,Point3D(88.4707, -13.7322, -60.2359)); 
-  surf.setControlPoint(2,1,2,Point3D(81.7361, -12.943, -36.0907)); 
-  surf.setControlPoint(2,2,2,Point3D(67.6886, -9.86071, -5.51556)); 
-  surf.setControlPoint(2,3,2,Point3D(44.4584, -6.05418, 14.8337)); 
-  surf.setControlPoint(2,4,2,Point3D(18.1019, -2.51218, 18.9975)); 
-  surf.setControlPoint(2,5,2,Point3D(-0.00130326, -2.27912, 19.0098)); 
-  surf.setControlPoint(3,0,0,Point3D(0, -64.5101, -14.7862)); 
-  surf.setControlPoint(3,1,0,Point3D(3.84774e-05, -38.8132, 7.32499)); 
-  surf.setControlPoint(3,2,0,Point3D(-0.00130326, -2.27912, 19.0098)); 
-  surf.setControlPoint(3,3,0,Point3D(-0.000653163, 13.7061, 50.0875)); 
-  surf.setControlPoint(3,4,0,Point3D(0.0070725, 16.102, 87.221)); 
-  surf.setControlPoint(3,5,0,Point3D(-0.00806045, 31.2519, 117.651)); 
-  surf.setControlPoint(3,0,1,Point3D(19.6749, -64.7858, -15.0237)); 
-  surf.setControlPoint(3,1,1,Point3D(19.675, -39.1309, 7.13632)); 
-  surf.setControlPoint(3,2,1,Point3D(18.1019, -2.51218, 18.9975)); 
-  surf.setControlPoint(3,3,1,Point3D(16.0069, 13.6112, 50.2838)); 
-  surf.setControlPoint(3,4,1,Point3D(14.443, 16.1255, 87.563)); 
-  surf.setControlPoint(3,5,1,Point3D(14.4281, 31.3009, 117.98)); 
-  surf.setControlPoint(3,0,2,Point3D(36.6922, -64.8978, -20.2125)); 
-  surf.setControlPoint(3,1,2,Point3D(40.9138, -39.6976, -3.51752)); 
-  surf.setControlPoint(3,2,2,Point3D(44.4584, -6.05418, 14.8337)); 
-  surf.setControlPoint(3,3,2,Point3D(43.6807, 15.3926, 47.466)); 
-  surf.setControlPoint(3,4,2,Point3D(37.5815, 23.1714, 89.3225)); 
-  surf.setControlPoint(3,5,2,Point3D(27.7633, 34.9634, 117.604)); 
-  surf.setControlPoint(4,0,0,Point3D(-0.00806045, 31.2519, 117.651)); 
-  surf.setControlPoint(4,1,0,Point3D(14.4281, 31.3009, 117.98)); 
-  surf.setControlPoint(4,2,0,Point3D(27.7633, 34.9634, 117.604)); 
-  surf.setControlPoint(4,3,0,Point3D(40.1278, 40.5432, 117.313)); 
-  surf.setControlPoint(4,4,0,Point3D(51.523, 47.9294, 117.163)); 
-  surf.setControlPoint(4,5,0,Point3D(61.7919, 58, 116.732)); 
-  surf.setControlPoint(4,0,1,Point3D(0.0070725, 16.102, 87.221)); 
-  surf.setControlPoint(4,1,1,Point3D(14.443, 16.1255, 87.563)); 
-  surf.setControlPoint(4,2,1,Point3D(37.5815, 23.1714, 89.3225)); 
-  surf.setControlPoint(4,3,1,Point3D(62.8623, 33.4245, 91.669)); 
-  surf.setControlPoint(4,4,1,Point3D(83.5958, 44.6549, 93.0348)); 
-  surf.setControlPoint(4,5,1,Point3D(92.9346, 55.6215, 91.3775)); 
-  surf.setControlPoint(4,0,2,Point3D(-0.000653163, 13.7061, 50.0875)); 
-  surf.setControlPoint(4,1,2,Point3D(16.0069, 13.6112, 50.2838)); 
-  surf.setControlPoint(4,2,2,Point3D(43.6807, 15.3926, 47.466)); 
-  surf.setControlPoint(4,3,2,Point3D(74.2388, 25.4256, 50.9729)); 
-  surf.setControlPoint(4,4,2,Point3D(98.5855, 44.1235, 55.9962)); 
-  surf.setControlPoint(4,5,2,Point3D(109.87, 58.9153, 54.4686)); 
+  Point3D p;
+  f >> p[0] >> p[1] >> p[2];
+  surf.setCentralControlPoint(p);
+
+  for (size_t i = 1, side = 0, col = 0, row = 0; i < cp; ++i, ++col) {
+    if (col >= d - row) {
+      if (++side >= n) {
+        side = 0;
+        ++row;
+      }
+      col = row;
+    }
+    f >> p[0] >> p[1] >> p[2];
+    surf.setControlPoint(side, col, row, p);
+  }
+  f.close();
 
   surf.setupLoop();
 
-  // Generate mesh output
-  TriMesh mesh = surf.eval(15);
-  mesh.writeOBJ("../../models/bezier.obj");
-  writeBezierControlPoints(surf, "../../models/bezier-cpts.obj");
+  return surf;
+}
 
-  // Normal degree elevation
-  SurfaceGeneralizedBezier sextic = elevateDegree(surf);
-  writeBezierControlPoints(sextic, "../../models/bezier-elevated-cpts.obj");
-  sextic.eval(15).writeOBJ("../../models/bezier-elevated.obj");
-  SurfaceGeneralizedBezier elevated = surf;
-  for (size_t i = 0; i < 30; ++i)
-    elevated = elevateDegree(elevated);
-  writeBezierControlPoints(elevated, "../../models/bezier-elevated-30-times.obj");
-
-  // Fit a sextic surface on the quintic mesh
-
-  // Input data
-  PointVector points = mesh.points();
-  Point2DVector params = surf.domain()->parameters(15);
-
-  size_t n = 5;                 // # of sides
-  size_t d = 6;                 // degree
-  size_t l = (d + 1) / 2;       // # of layers
+SurfaceGeneralizedBezier fitWithOriginal(const SurfaceGeneralizedBezier &original,
+                                         const PointVector &points,
+                                         const Point2DVector &params) {
+  size_t n = original.domain()->vertices().size();
+  size_t d = original.degree();
+  size_t l = original.layers();
   size_t cp = 1 + d / 2;
   cp = n * cp * l + 1;          // # of control points
   size_t bcp = n * (d - 1) * 2; // # of boundary control points
@@ -432,11 +354,12 @@ void bezierTest() {
   size_t m = points.size();     // # of samples
 
   // Initialize patch with the fixed boundaries
+  SurfaceGeneralizedBezier surf;
   surf.initNetwork(n, d);
   for (size_t i = 0; i < n; ++i)
     for (size_t j = 0; j < d - 1; ++j)
       for (size_t k = 0; k < 2; ++k)
-        surf.setControlPoint(i, j, k, sextic.controlPoint(i, j, k));
+        surf.setControlPoint(i, j, k, original.controlPoint(i, j, k));
   surf.setupLoop();
 
   Eigen::MatrixXd A(m, mcp);
@@ -487,7 +410,31 @@ void bezierTest() {
     surf.setControlPoint(side, col, row, Point3D(x(i - bcp, 0), x(i - bcp, 1), x(i - bcp, 2)));
   }
 
-  // Export mesh
+  return surf;
+}
+
+void bezierTest(const std::string &filename) {
+  SurfaceGeneralizedBezier surf = loadBezier("../../models/" + filename + ".gbp");
+
+  // Generate mesh output
+  TriMesh mesh = surf.eval(15);
+  mesh.writeOBJ("../../models/bezier.obj");
+  writeBezierControlPoints(surf, "../../models/bezier-cpts.obj");
+
+  // Normal degree elevation
+  SurfaceGeneralizedBezier sextic = elevateDegree(surf);
+  writeBezierControlPoints(sextic, "../../models/bezier-elevated-cpts.obj");
+  sextic.eval(15).writeOBJ("../../models/bezier-elevated.obj");
+  SurfaceGeneralizedBezier elevated = surf;
+  for (size_t i = 0; i < 30; ++i)
+    elevated = elevateDegree(elevated);
+  writeBezierControlPoints(elevated, "../../models/bezier-elevated-30-times.obj");
+  for (size_t i = 0; i < 30; ++i)
+    elevated = elevateDegree(elevated);
+  writeBezierControlPoints(elevated, "../../models/bezier-elevated-60-times.obj");
+
+  // Fit a sextic surface on the quintic mesh
+  surf = fitWithOriginal(sextic, mesh.points(), surf.domain()->parameters(15));
   surf.eval(15).writeOBJ("../../models/bezier-sextic.obj");
   writeBezierControlPoints(surf, "../../models/bezier-sextic-cpts.obj");
 }
@@ -531,27 +478,33 @@ int main(int argc, char **argv) {
   size_t res = 15;
   double scaling = 20.0;
   double ribbon_length = 0.25;
-  std::string filename;
+
   if (argc < 2 || argc > 5) {
-    std::cerr << "Usage: " << argv[0]
-	      << " model-name [resolution] [fence-scaling] [ribbon-length]" << std::endl;
+    std::cerr << "Usage:\n"
+              << argv[0] << " model-name [resolution] [fence-scaling] [ribbon-length]" << std::endl
+              << argv[0] << " bezier [model-name]" << std::endl;
     return 1;
   }
-  filename = argv[1];
+
+  std::string filename = argv[1];
+
+  if (filename == "bezier") {
+    if (argc == 2)
+      bezierTest("cagd86");
+    else
+      bezierTest(argv[2]);
+    return 0;
+  } else if (filename == "class-a") {
+    classATest();
+    return 0;
+  }
+
   if (argc >= 3)
     res = atoi(argv[2]);
   if (argc >= 4)
     scaling = strtod(argv[3], nullptr);
   if (argc >= 5)
     ribbon_length = strtod(argv[4], nullptr);
-
-  if (filename == "bezier") {
-    bezierTest();
-    return 0;
-  } else if (filename == "class-a") {
-    classATest();
-    return 0;
-  }
 
   ribbonTest(filename, res, scaling, ribbon_length);
 
