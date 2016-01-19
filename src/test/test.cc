@@ -5,6 +5,7 @@
 #include <string>
 
 #include "../Eigen/LU"
+#include "../Eigen/SVD"
 
 #include "domain.hh"
 #include "ribbon.hh"
@@ -419,6 +420,10 @@ SurfaceGeneralizedBezier fitWithOriginal(const SurfaceGeneralizedBezier &origina
 
   // LSQ Fit
   Eigen::MatrixXd x = A.fullPivLu().solve(b);
+  if (!(A*x).isApprox(b)) {
+    Eigen::JacobiSVD<Eigen::MatrixXd> svd(A, Eigen::ComputeThinU | Eigen::ComputeThinV);
+    x = svd.solve(b);
+  }
 
   // Fill control points
   surf.setCentralControlPoint(surf.centralControlPoint() + normals[0] * x(0));
