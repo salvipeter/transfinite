@@ -172,6 +172,7 @@ public:
   // I/O
   PointVector points() const;
   std::list<Triangle> triangles() const;
+  Triangle project(const Point3D &p) const;
   void writeOBJ(std::string filename) const;
 
 private:

@@ -36,6 +36,14 @@ public:
     }
     return tris;
   }
+  Triangle project(const Point3D &p) const {
+    size_t f = m_.ClosestTriangleToPoint(Point<3, double>(p[0], p[1], p[2]));
+    Triangle tri;
+    size_t index = 0;
+    for (auto i = m_.VoF_Begin(f), ie = m_.VoF_End(f); i != ie; ++i)
+      tri[index++] = m_.VertexToPoint(*i);
+    return tri;
+  }
   void writeOBJ(std::string filename) const {
     std::ofstream f(filename);
     if (!f.is_open()) {

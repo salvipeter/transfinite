@@ -366,6 +366,11 @@ TriMesh::triangles() const {
   return impl_->triangles();
 }
 
+TriMesh::Triangle
+TriMesh::project(const Point3D &p) const {
+  return impl_->project(p);
+}
+
 void
 TriMesh::writeOBJ(std::string filename) const {
   impl_->writeOBJ(filename);

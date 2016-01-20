@@ -36,6 +36,26 @@ TriMesh::triangles() const {
   return triangles_;
 }
 
+TriMesh::Triangle
+TriMesh::project(const Point3D &p) const {
+  // Trivial (slow) implementation
+  auto projectToTriangle = [this,p](const Triangle &t) -> double {
+    const Point3D &a = points_[t[0]], &b = points_[t[1]], &c = points_[t[2]];
+    Vector3D n = ((b - a) ^ (c - a)).normalize();
+    return (p - a) * n;
+  };
+  std::list<Triangle>::const_iterator i = triangles_.begin(), result = i;
+  double min = projectToTriangle(*i);
+  while (++i != triangles_.end()) {
+    double d = projectToTriangle(*i);
+    if (d < min) {
+      min = d;
+      result = i;
+    }
+  }
+  return *result;
+}
+
 void
 TriMesh::writeOBJ(std::string filename) const {
   std::ofstream f(filename);
