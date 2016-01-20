@@ -165,7 +165,6 @@ void surfaceTest(std::string filename, std::string type, size_t resolution,
       midpoint += surf->ribbon(i)->eval(Point2D(0.6, 0.4));
     midpoint /= n;
     dynamic_cast<SurfaceMidpoint *>(surf.get())->setMidpoint(midpoint);
-    surf->update();
     Point3D p = surf->eval(domain->center());
     std::cout << "  midpoint error: " << (p - midpoint).normSqr() << std::endl;
   }

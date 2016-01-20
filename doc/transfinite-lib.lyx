@@ -244,14 +244,18 @@ key "cagd"
 \family typewriter
 SurfaceGeneralizedBezier
 \family default
-, implementing the new GB patch 
+, implementing the GB patch 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "bezier"
 
 \end_inset
 
-.
+, and the new
+\family typewriter
+ SurfaceMidpoint
+\family default
+ is the yet-unpublished MP patch.
  One- and two-sided surfaces are not supported.
 \end_layout
 
@@ -520,7 +524,7 @@ meterizationInterconnected
 \end_layout
 
 \begin_layout Itemize
-CR and GB patches use a parameterization based on Wachspress coordinates
+CR, GB and MP patches use a parameterization based on Wachspress coordinates
  
 \begin_inset Formula $\lambda_{i}$
 \end_inset
@@ -769,6 +773,7 @@ setupLoop
 () to extract the curves and fill in adjacency information.
 \end_layout
 
+\begin_deeper
 \begin_layout Standard
 Note, that you do not have to call 
 \family typewriter
@@ -788,6 +793,27 @@ setupLoop
 \family default
  only assumes that boundary control points are set.
  Any other control points can be set later.
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+Finally, the fullness of MP patches can be controlled by setting its middle
+ point by calling 
+\family typewriter
+setMidpoint
+\family default
+(
+\emph on
+p
+\emph default
+).
+ The default position can be restored by 
+\family typewriter
+unsetMidpoint
+\family default
+().
+ Both of these functions assume that the patch is already fully initialized
+ (as in 1--5 above).
 \end_layout
 
 \begin_layout Subsection
@@ -1319,7 +1345,7 @@ Karikó,
 A Multi-sided Bézier Patch with a Simple Control Structure
 \emph default
 .
- Computer Graphics Forum (under revision), 2016.
+ Computer Graphics Forum 35(2), 2016 (accepted).
 \end_layout
 
 \begin_layout Bibliography

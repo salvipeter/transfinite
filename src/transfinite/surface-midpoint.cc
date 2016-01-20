@@ -47,11 +47,13 @@ void
 SurfaceMidpoint::setMidpoint(const Point3D &p) {
   midpoint_ = p;
   midpoint_set_ = true;
+  updateCentralControlPoint();
 }
  
 void
 SurfaceMidpoint::unsetMidpoint() {
   midpoint_set_ = false;
+  updateCentralControlPoint();
 }
 
 double
