@@ -14,6 +14,7 @@
 #include "surface-generalized-bezier.hh"
 #include "surface-generalized-coons.hh"
 #include "surface-composite-ribbon.hh"
+#include "surface-midpoint.hh"
 
 using namespace Transfinite;
 
@@ -157,6 +158,17 @@ void surfaceTest(std::string filename, std::string type, size_t resolution,
   std::cout << type << ":" << std::endl;
   std::cout << "  positional error: " << max_pos_error << std::endl;
   std::cout << "  tangential error: " << max_tan_error * 180.0 / M_PI << std::endl;
+
+  if (type == "mp") {
+    Point3D midpoint(0,0,0);
+    for (size_t i = 0; i < n; ++i)
+      midpoint += surf->ribbon(i)->eval(Point2D(0.6, 0.4));
+    midpoint /= n;
+    dynamic_cast<SurfaceMidpoint *>(surf.get())->setMidpoint(midpoint);
+    surf->update();
+    Point3D p = surf->eval(domain->center());
+    std::cout << "  midpoint error: " << (p - midpoint).normSqr() << std::endl;
+  }
 
 #ifndef NO_SURFACE_FIT
 
@@ -517,6 +529,7 @@ int main(int argc, char **argv) {
   surfaceTest(filename, "cb", res, std::make_shared<SurfaceCornerBased>());
   surfaceTest(filename, "gc", res, std::make_shared<SurfaceGeneralizedCoons>());
   surfaceTest(filename, "cr", res, std::make_shared<SurfaceCompositeRibbon>());
+  surfaceTest(filename, "mp", res, std::make_shared<SurfaceMidpoint>());
 
   return 0;
 }

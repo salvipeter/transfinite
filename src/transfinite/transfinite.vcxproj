@@ -98,6 +98,7 @@
     <ClInclude Include="surface-generalized-bezier.hh" />
     <ClInclude Include="surface-generalized-coons.hh" />
     <ClInclude Include="surface-side-based.hh" />
+    <ClInclude Include="surface-midpoint.hh" />
     <ClInclude Include="surface.hh" />
   </ItemGroup>
   <ItemGroup>
@@ -119,6 +120,7 @@
     <ClCompile Include="surface-generalized-bezier.cc" />
     <ClCompile Include="surface-generalized-coons.cc" />
     <ClCompile Include="surface-side-based.cc" />
+    <ClCompile Include="surface-midpoint.cc" />
     <ClCompile Include="surface.cc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
