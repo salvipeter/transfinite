@@ -354,37 +354,17 @@ SurfaceGeneralizedBezier fitWithOriginal(const SurfaceGeneralizedBezier &origina
   size_t mcp = cp - bcp;        // # of movable control points
   size_t m = points.size();     // # of samples
 
-  // Pseudo-normal directions
-  VectorVector normals;
-  normals.reserve(mcp);
-  Vector3D v(0, 0, 0);
-  for (size_t i = 0; i < n; ++i) {
-    size_t ip = (i + 1) % n;
-    Vector3D v1 = original.centralControlPoint() - original.controlPoint(ip, l, l - 1);
-    Vector3D v2 = original.centralControlPoint() - original.controlPoint(i, l, l - 1);
-    v += (v1 ^ v2).normalize();
-  }
-  normals.push_back(v.normalize());
-  for (size_t i = bcp + 1, side = 0, col = 2, row = 2; i < cp; ++i, ++col) {
-    if (col >= d - row) {
-      if (++side >= n) {
-        side = 0;
-        ++row;
-      }
-      col = row;
-    }
-    Vector3D v1 =
-      original.controlPoint(side, col + 1, row) - original.controlPoint(side, col - 1, row);
-    Vector3D v2 =
-      original.controlPoint(side, col, row) - original.controlPoint(side, col, row - 1);
-    normals.push_back((v1 ^ v2).normalize());
-  }
+  // Initialize patch with the fixed boundaries
+  SurfaceGeneralizedBezier surf;
+  surf.initNetwork(n, d);
+  for (size_t i = 0; i < n; ++i)
+    for (size_t j = 0; j < d - 1; ++j)
+      for (size_t k = 0; k < 2; ++k)
+        surf.setControlPoint(i, j, k, original.controlPoint(i, j, k));
+  surf.setupLoop();
 
-  // Initialize patch with the original
-  SurfaceGeneralizedBezier surf = original;
-
-  Eigen::MatrixXd A(3 * m, mcp);
-  Eigen::VectorXd b(3 * m);
+  Eigen::MatrixXd A(m, mcp);
+  Eigen::MatrixXd b(m, 3);
   b.setZero();
 
   // Fill the matrices
@@ -404,18 +384,15 @@ SurfaceGeneralizedBezier fitWithOriginal(const SurfaceGeneralizedBezier &origina
       if (col > d - l)
         blend += surf.weight((side + 1) % n, row, d - col, params[j]);
       if (i > bcp)
-        for (size_t k = 0; k < 3; ++k)
-          A(3 * j + k, i - bcp) = blend * normals[i - bcp][k];
-      Point3D p = surf.controlPoint(side, col, row);
-      b(3 * j) -= p[0] * blend; b(3 * j + 1) -= p[1] * blend; b(3 * j + 2) -= p[2] * blend;
+        A(j, i - bcp) = blend;
+      else {
+        Point3D p = surf.controlPoint(side, col, row);
+        b(j, 0) -= p[0] * blend; b(j, 1) -= p[1] * blend; b(j, 2) -= p[2] * blend;
+      }
       blend_sum += blend;
     }
-    double blend = 1.0 - blend_sum;
-    for (size_t k = 0; k < 3; ++k)
-      A(3 * j + k, 0) = blend * normals[0][k];
-    Point3D p = surf.centralControlPoint();
-    b(3 * j) -= p[0] * blend; b(3 * j + 1) -= p[1] * blend; b(3 * j + 2) -= p[2] * blend;
-    b(3 * j) += points[j][0]; b(3 * j + 1) += points[j][1]; b(3 * j + 2) += points[j][2];
+    A(j, 0) = 1.0 - blend_sum;
+    b(j, 0) += points[j][0]; b(j, 1) += points[j][1]; b(j, 2) += points[j][2];
   }
 
   // LSQ Fit
@@ -426,7 +403,7 @@ SurfaceGeneralizedBezier fitWithOriginal(const SurfaceGeneralizedBezier &origina
   }
 
   // Fill control points
-  surf.setCentralControlPoint(surf.centralControlPoint() + normals[0] * x(0));
+  surf.setCentralControlPoint(Point3D(x(0, 0), x(0, 1), x(0, 2)));
   for (size_t i = bcp + 1, side = 0, col = 2, row = 2; i < cp; ++i, ++col) {
     if (col >= d - row) {
       if (++side >= n) {
@@ -435,8 +412,7 @@ SurfaceGeneralizedBezier fitWithOriginal(const SurfaceGeneralizedBezier &origina
       }
       col = row;
     }
-    surf.setControlPoint(side, col, row, surf.controlPoint(side, col, row) +
-                         normals[i - bcp] * x(i - bcp));
+    surf.setControlPoint(side, col, row, Point3D(x(i - bcp, 0), x(i - bcp, 1), x(i - bcp, 2)));
   }
 
   return surf;
