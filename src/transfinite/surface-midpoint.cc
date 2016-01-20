@@ -83,9 +83,8 @@ SurfaceMidpoint::updateCentralControlPoint() {
   if (!midpoint_set_) {
     // Compute a default midpoint position
     midpoint_ = Point3D(0,0,0);
-    for (size_t i = 0; i < n_; ++i) {
-      midpoint_ += ribbons_[i]->eval(Point2D(0.5, 0.5));
-    }
+    for (size_t i = 0; i < n_; ++i)
+      midpoint_ += sideInterpolant(i, 0.5, 0.5);
     midpoint_ /= n_;
   }
   Point2D center = domain_->center();
