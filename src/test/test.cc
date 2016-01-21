@@ -2,6 +2,7 @@
 #include <fstream>
 #include <iomanip>
 #include <iostream>
+#include <sstream>
 #include <string>
 
 #include "../Eigen/LU"
@@ -353,6 +354,47 @@ SurfaceGeneralizedBezier loadBezier(const std::string &filename) {
   return surf;
 }
 
+TriMesh readOBJ(const std::string &filename) {
+  TriMesh result;
+  std::ifstream f(filename);
+  if (!f.is_open()) {
+    std::cerr << "Unable to open file: " << filename << std::endl;
+    return result;
+  }
+  bool points_set = false;
+  std::string line;
+  std::istringstream ss;
+  Point3D p;
+  TriMesh::Triangle t;
+  PointVector pv;
+  while (!f.eof()) {
+    std::getline(f, line);
+    if (line.empty())
+      continue;
+    switch (line[0]) {
+    case 'v':
+      ss.str(line);
+      ss.seekg(2); // skip the first two characters
+      ss >> p[0] >> p[1] >> p[2];
+      pv.push_back(p);
+      break;
+    case 'f':
+      if (!points_set) {
+        result.setPoints(pv);
+        points_set = true;
+      }
+      ss.str(line);
+      ss.seekg(2); // skip the first two characters
+      ss >> t[0] >> t[1] >> t[2];
+      result.addTriangle(t[0], t[1], t[2]);
+      break;
+    default:
+      break;
+    }
+  }
+  return result;
+}
+
 SurfaceGeneralizedBezier fitWithOriginal(const SurfaceGeneralizedBezier &original,
                                          const PointVector &points,
                                          const Point2DVector &params) {
@@ -482,6 +524,20 @@ void bezierTest(const std::string &filename) {
   writeBezierControlPoints(sextic3, "../../models/bezier-sextic-projected-cpts.obj");
 }
 
+void meshFitTest(const std::string &surfname, const std::string &meshname) {
+  SurfaceGeneralizedBezier surf = loadBezier("../../models/" + surfname + ".gbp");
+  TriMesh mesh = readOBJ("../../models/" + meshname + ".obj");
+
+  surf.eval(15).writeOBJ("../../models/bezier.obj");
+  writeBezierControlPoints(surf, "../../models/bezier-cpts.obj");
+
+  SurfaceGeneralizedBezier fitted = surf;
+  for (size_t i = 0; i < 1; ++i)
+    fitted = fitWithOriginal(fitted, mesh.points(), parameterizePoints(fitted, mesh.points()));
+  fitted.eval(15).writeOBJ("../../models/bezier-fitted.obj");
+  writeBezierControlPoints(fitted, "../../models/bezier-fitted-cpts.obj");
+}
+
 void classATest() {
 #ifdef NO_SURFACE_FIT
   CurveVector cv = readLOP("../../models/pocket6sided.lop");
@@ -525,7 +581,8 @@ int main(int argc, char **argv) {
   if (argc < 2 || argc > 5) {
     std::cerr << "Usage:\n"
               << argv[0] << " model-name [resolution] [fence-scaling] [ribbon-length]" << std::endl
-              << argv[0] << " bezier [model-name]" << std::endl;
+              << argv[0] << " bezier [model-name]" << std::endl
+              << argv[0] << " mesh-fit [model-name] [mesh-name]" << std::endl;
     return 1;
   }
 
@@ -539,6 +596,13 @@ int main(int argc, char **argv) {
     return 0;
   } else if (filename == "class-a") {
     classATest();
+    return 0;
+  } else if (filename == "mesh-fit") {
+    if (argc < 4) {
+      std::cerr << "Not enough parameters!" << std::endl;
+      return 1;
+    }
+    meshFitTest(argv[2], argv[3]);
     return 0;
   }
 
