@@ -178,17 +178,18 @@ public:
 
   // Mesh building
   void resizePoints(size_t n);
-  void setPoint(size_t i, const Point3D &p);
   void setPoints(const PointVector &pv);
   void addTriangle(size_t a, size_t b, size_t c);
 
   // I/O
   PointVector points() const;
   std::list<Triangle> triangles() const;
-  Triangle project(const Point3D &p) const;
+  Triangle closestTriangle(const Point3D &p) const;
   void writeOBJ(std::string filename) const;
 
 private:
+  double distanceToTriangle(const Point3D &p, const Triangle &tri) const;
+
   PointVector points_;
   std::list<Triangle> triangles_;
 };

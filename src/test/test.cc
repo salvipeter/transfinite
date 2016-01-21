@@ -429,6 +429,26 @@ SurfaceGeneralizedBezier fitWithOriginal(const SurfaceGeneralizedBezier &origina
   return surf;
 }
 
+Point2DVector parameterizePoints(const Surface &surf, const PointVector &points) {
+  size_t resolution = 15;
+  TriMesh mesh = surf.eval(resolution);
+  PointVector vertices = mesh.points();
+  const Point2DVector &params = surf.domain()->parameters(resolution);
+  Point2DVector result; result.reserve(points.size());
+  for (const auto &p : points) {
+    TriMesh::Triangle tri = mesh.closestTriangle(p);
+    const Point3D &a = vertices[tri[0]], &b = vertices[tri[1]], &c = vertices[tri[2]];
+    Vector3D n = ((b - a) ^ (c - a)).normalize();
+    Point3D q = p + n * ((a - p) * n);
+    double x = ((b - q) ^ (c - q)).norm();
+    double y = ((a - q) ^ (c - q)).norm();
+    double z = ((a - q) ^ (b - q)).norm();
+    Point2D uv = (params[tri[0]] * x + params[tri[1]] * y + params[tri[2]] * z) / (x + y + z);
+    result.push_back(uv);
+  }
+  return result;
+}
+
 void bezierTest(const std::string &filename) {
   SurfaceGeneralizedBezier surf = loadBezier("../../models/" + filename + ".gbp");
 
@@ -438,7 +458,7 @@ void bezierTest(const std::string &filename) {
   writeBezierControlPoints(surf, "../../models/bezier-cpts.obj");
 
   // Normal degree elevation
-  SurfaceGeneralizedBezier sextic = elevateDegree(surf);
+  SurfaceGeneralizedBezier sextic = elevateDegree(surf), sextic2, sextic3;
   writeBezierControlPoints(sextic, "../../models/bezier-elevated-cpts.obj");
   sextic.eval(15).writeOBJ("../../models/bezier-elevated.obj");
   SurfaceGeneralizedBezier elevated = surf;
@@ -450,9 +470,16 @@ void bezierTest(const std::string &filename) {
   writeBezierControlPoints(elevated, "../../models/bezier-elevated-60-times.obj");
 
   // Fit a sextic surface on the quintic mesh
-  surf = fitWithOriginal(sextic, mesh.points(), surf.domain()->parameters(15));
-  surf.eval(15).writeOBJ("../../models/bezier-sextic.obj");
-  writeBezierControlPoints(surf, "../../models/bezier-sextic-cpts.obj");
+  sextic2 = fitWithOriginal(sextic, mesh.points(), surf.domain()->parameters(15));
+  sextic2.eval(15).writeOBJ("../../models/bezier-sextic.obj");
+  writeBezierControlPoints(sextic2, "../../models/bezier-sextic-cpts.obj");
+
+  // Fit again, now with projected parameterization
+  sextic3 = sextic;
+  for (size_t i = 0; i < 1; ++i)
+    sextic3 = fitWithOriginal(sextic3, mesh.points(), parameterizePoints(sextic3, mesh.points()));
+  sextic3.eval(15).writeOBJ("../../models/bezier-sextic-projected.obj");
+  writeBezierControlPoints(sextic3, "../../models/bezier-sextic-projected-cpts.obj");
 }
 
 void classATest() {

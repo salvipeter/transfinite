@@ -342,11 +342,6 @@ TriMesh::resizePoints(size_t n) {
 }
 
 void
-TriMesh::setPoint(size_t i, const Point3D &p) {
-  impl_->setPoint(i, p);
-}
-
-void
 TriMesh::setPoints(const PointVector &pv) {
   impl_->setPoints(pv);
 }
@@ -367,8 +362,8 @@ TriMesh::triangles() const {
 }
 
 TriMesh::Triangle
-TriMesh::project(const Point3D &p) const {
-  return impl_->project(p);
+TriMesh::closestTriangle(const Point3D &p) const {
+  return impl_->closestTriangle(p);
 }
 
 void

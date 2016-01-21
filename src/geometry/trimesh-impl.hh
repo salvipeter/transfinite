@@ -12,11 +12,11 @@ namespace Geometry {
 class TriMesh::TriMeshImpl {
 public:
   void resizePoints(size_t n) { m_.Points().resize(n); }
-  void setPoint(size_t i, const Point3D &p) { m_.Points()[i] = Point<3, double>(p[0], p[1], p[2]); }
   void setPoints(const PointVector &pv) {
     m_.Points().clear(); m_.Points().reserve(pv.size());
     std::transform(pv.begin(), pv.end(), std::back_inserter(m_.Points()),
                    [](const Point3D &p) { return Point<3, double>(p[0], p[1], p[2]); });
+    m_.UpdateOctree();
   }
   void addTriangle(size_t a, size_t b, size_t c) { m_.AddTriangle(a, b, c, false); }
   PointVector points() const {
@@ -36,7 +36,7 @@ public:
     }
     return tris;
   }
-  Triangle project(const Point3D &p) const {
+  Triangle closestTriangle(const Point3D &p) const {
     size_t f = m_.ClosestTriangleToPoint(Point<3, double>(p[0], p[1], p[2]));
     Triangle tri;
     size_t index = 0;
