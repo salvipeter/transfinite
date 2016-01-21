@@ -32,8 +32,8 @@ TriMesh::triangles() const {
   return triangles_;
 }
 
-double
-TriMesh::distanceToTriangle(const Point3D &p, const Triangle &tri) const {
+Point3D
+TriMesh::projectToTriangle(const Point3D &p, const Triangle &tri) const {
   const Point3D &q1 = points_[tri[0]], &q2 = points_[tri[1]], &q3 = points_[tri[2]];
   // As in Schneider, Eberly: Geometric Tools for Computer Graphics, Morgan Kaufmann, 2003.
   // Section 10.3.2, pp. 376-382 (with my corrections)
@@ -110,16 +110,16 @@ TriMesh::distanceToTriangle(const Point3D &p, const Triangle &tri) const {
       t  = 1.0 - s;
     }
   }
-  return (B + E0 * s + E1 * t - P).norm();
+  return B + E0 * s + E1 * t;
 }
 
 TriMesh::Triangle
 TriMesh::closestTriangle(const Point3D &p) const {
   // Trivial (slow) implementation
   std::list<Triangle>::const_iterator i = triangles_.begin(), result = i;
-  double min = distanceToTriangle(p, *i);
+  double min = (projectToTriangle(p, *i) - p).norm();
   while (++i != triangles_.end()) {
-    double d = distanceToTriangle(p, *i);
+    double d = (projectToTriangle(p, *i) - p).norm();
     if (d < min) {
       min = d;
       result = i;

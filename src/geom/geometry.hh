@@ -188,7 +188,7 @@ public:
   void writeOBJ(std::string filename) const;
 
 private:
-  double distanceToTriangle(const Point3D &p, const Triangle &tri) const;
+  Point3D projectToTriangle(const Point3D &p, const Triangle &tri) const;
 
   PointVector points_;
   std::list<Triangle> triangles_;
