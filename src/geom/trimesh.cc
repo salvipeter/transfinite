@@ -45,20 +45,15 @@ TriMesh::projectToTriangle(const Point3D &p, const Triangle &tri) const {
     if (s < 0) {
       if (t < 0) {
         // Region 4
-        double tmp0 = b + d, tmp1 = c + e;
-        if (tmp1 <= tmp0) {
+        if (e < 0) {
           s = 0.0;
-          t = (tmp1 <= 0.0 ? 1.0 : (e >= 0.0 ? 0.0 : -e / c));
+          t = (-e >= c ? 1.0 : -e / c);
+        } else if (d < 0) {
+          t = 0.0;
+          s = (-d >= a ? 1.0 : -d / a);
         } else {
-          double numer = tmp1 - tmp0;
-          double denom = a - 2 * b + c;
-          if (numer < denom) {
-            s = numer / denom;
-            t = 1.0 - s;
-          } else {
-            t = 0.0;
-            s = (d >= 0.0 ? 0.0 : (-d >= a ? 1.0 : -d / a));
-          }
+          s = 0.0;
+          t = 0.0;
         }
       } else {
         // Region 3
