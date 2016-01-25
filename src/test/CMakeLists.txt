@@ -8,7 +8,7 @@ endif()
 
 include_directories(../transfinite)
 
-add_executable(test test.cc)
+add_executable(test test.cc gb-fit.cc io.cc cp-centers.cc)
 
 if(USE_OWN_GEOMETRY_LIB)
   add_dependencies(test geom)
