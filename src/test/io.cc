@@ -115,6 +115,37 @@ SurfaceGeneralizedBezier loadBezier(const std::string &filename) {
   return surf;
 }
 
+void saveBezier(const SurfaceGeneralizedBezier &surf, const std::string &filename) {
+  std::ofstream f(filename);
+  if (!f.is_open()) {
+    std::cerr << "Unable to open file: " << filename << std::endl;
+    return;
+  }
+
+  size_t n = surf.domain()->vertices().size();
+  size_t d = surf.degree();
+  f << n << ' ' << d << std::endl;
+  size_t l = (d + 1) / 2;
+  size_t cp = 1 + d / 2;
+  cp = n * cp * l + 1;          // # of control points
+
+  Point3D p = surf.centralControlPoint();
+  f << p[0] << ' ' << p[1] << ' ' << p[2] << std::endl;
+
+  for (size_t i = 1, side = 0, col = 0, row = 0; i < cp; ++i, ++col) {
+    if (col >= d - row) {
+      if (++side >= n) {
+        side = 0;
+        ++row;
+      }
+      col = row;
+    }
+    p = surf.controlPoint(side, col, row);
+    f << p[0] << ' ' << p[1] << ' ' << p[2] << std::endl;
+  }
+  f.close();
+}
+
 void writeBezierControlPoints(const SurfaceGeneralizedBezier &surf, const std::string &filename) {
   // Slow but simple implementation creating a nice mesh
   size_t n = surf.domain()->vertices().size();

@@ -9,4 +9,5 @@ using namespace Transfinite;
 CurveVector readLOP(std::string filename);
 TriMesh readOBJ(const std::string &filename);
 SurfaceGeneralizedBezier loadBezier(const std::string &filename);
+void saveBezier(const SurfaceGeneralizedBezier &surf, const std::string &filename);
 void writeBezierControlPoints(const SurfaceGeneralizedBezier &surf, const std::string &filename);

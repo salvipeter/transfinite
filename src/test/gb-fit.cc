@@ -110,6 +110,7 @@ SurfaceGeneralizedBezier fitWithOriginal(const SurfaceGeneralizedBezier &origina
 
   Eigen::MatrixXd A(m + mcp, mcp);
   Eigen::MatrixXd b(m + mcp, 3);
+  A.setZero();
   b.setZero();
 
   // Fill the matrices
@@ -141,12 +142,8 @@ SurfaceGeneralizedBezier fitWithOriginal(const SurfaceGeneralizedBezier &origina
   }
 
   // Smoothing terms
-  const Point2DVector &centers = ControlPointCenters::get(n, d);
-  for (size_t j = 0; j < mcp; ++j) {
-    size_t j0 = m + j;
-    size_t index = j == 0 ? 0 : bcp + j;
-    double blend_sum = 0.0;
-    for (size_t i = 1, side = 0, col = 0, row = 0; i < cp; ++i, ++col) {
+  auto findControlPoint = [n,d,cp](size_t i, size_t j, size_t k) -> size_t {
+    for (size_t c = 1, side = 0, col = 0, row = 0; c < cp; ++c, ++col) {
       if (col >= d - row) {
         if (++side >= n) {
           side = 0;
@@ -154,22 +151,43 @@ SurfaceGeneralizedBezier fitWithOriginal(const SurfaceGeneralizedBezier &origina
         }
         col = row;
       }
-      double blend = surf.weight(side, col, row, centers[index]);
-      if (col < l)
-        blend += surf.weight((side + n - 1) % n, d - row, col, centers[index]);
-      if (col > d - l)
-        blend += surf.weight((side + 1) % n, row, d - col, centers[index]);
-      blend *= smoothing;
-      if (i > bcp)
-        A(j0, i - bcp) = blend;
-      else {
-        Point3D p = surf.controlPoint(side, col, row);
-        b(j0, 0) -= p[0] * blend; b(j0, 1) -= p[1] * blend; b(j0, 2) -= p[2] * blend;
-      }
-      blend_sum += blend;
+      size_t side_m = (side + n - 1) % n, side_p = (side + 1) % n;
+      if ((i == side && j == col && k == row) ||
+          (i == side_m && j == d - row && k == col) ||
+          (i == side_p && j == row && k == d - col))
+        return c;
     }
-    A(j0, 0) = smoothing - blend_sum;
-    A(j0, j) -= smoothing;
+    return 0;
+  };
+  auto setWeight = [&A,&b,n,d,l,bcp,surf,findControlPoint]
+    (size_t j, size_t side, size_t col, size_t row, double w) {
+    size_t i = findControlPoint(side, col, row);
+    if (i > bcp)
+      A(j, i - bcp) = w;
+    else if (i == 0)
+      A(j, 0) = w;
+    else {
+      Point3D p = surf.controlPoint(side, col, row);
+      b(j, 0) -= p[0] * w; b(j, 1) -= p[1] * w; b(j, 2) -= p[2] * w;
+    }
+  };
+  for (size_t j = 0; j < n; ++j)
+    setWeight(m, j, l, l - 1, -smoothing / n);
+  A(m, 0) = smoothing;
+  for (size_t i = bcp + 1, side = 0, col = 2, row = 2; i < cp; ++i, ++col) {
+    if (col >= d - row) {
+      if (++side >= n) {
+        side = 0;
+        ++row;
+      }
+      col = row;
+    }
+    size_t j = m + i - bcp;
+    setWeight(j, side, col - 1, row, -smoothing / 4.0);
+    setWeight(j, side, col + 1, row, -smoothing / 4.0);
+    setWeight(j, side, col, row - 1, -smoothing / 4.0);
+    setWeight(j, side, col, row + 1, -smoothing / 4.0);
+    A(j, i - bcp) = smoothing;
   }
 
   // LSQ Fit

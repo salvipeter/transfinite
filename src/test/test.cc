@@ -198,11 +198,29 @@ void meshFitTest(const std::string &surfname, const std::string &meshname) {
   surf.eval(15).writeOBJ("../../models/bezier.obj");
   writeBezierControlPoints(surf, "../../models/bezier-cpts.obj");
 
-  SurfaceGeneralizedBezier fitted = surf;
-  for (size_t i = 0; i < 1; ++i)
-    fitted = fitWithOriginal(fitted, mesh.points(), parameterizePoints(fitted, mesh.points()));
+  SurfaceGeneralizedBezier fitted;
+  fitted = fitWithOriginal(surf, mesh.points(), parameterizePoints(surf, mesh.points()));
   fitted.eval(15).writeOBJ("../../models/bezier-fitted.obj");
   writeBezierControlPoints(fitted, "../../models/bezier-fitted-cpts.obj");
+  saveBezier(fitted, "../../models/bezier-fitted.gbp");
+
+  fitted = fitWithOriginal(surf, mesh.points(), parameterizePoints(surf, mesh.points()),
+                           0.2);
+  fitted.eval(15).writeOBJ("../../models/bezier-fitted-smooth02.obj");
+  writeBezierControlPoints(fitted, "../../models/bezier-fitted-smooth02-cpts.obj");
+  saveBezier(fitted, "../../models/bezier-smooth02.gbp");
+
+  fitted = fitWithOriginal(surf, mesh.points(), parameterizePoints(surf, mesh.points()),
+                           0.5);
+  fitted.eval(15).writeOBJ("../../models/bezier-fitted-smooth05.obj");
+  writeBezierControlPoints(fitted, "../../models/bezier-fitted-smooth05-cpts.obj");
+  saveBezier(fitted, "../../models/bezier-smooth05.gbp");
+
+  fitted = fitWithOriginal(surf, mesh.points(), parameterizePoints(surf, mesh.points()),
+                           1.0);
+  fitted.eval(15).writeOBJ("../../models/bezier-fitted-smooth10.obj");
+  writeBezierControlPoints(fitted, "../../models/bezier-fitted-smooth10-cpts.obj");
+  saveBezier(fitted, "../../models/bezier-smooth10.gbp");
 }
 
 void classATest() {
