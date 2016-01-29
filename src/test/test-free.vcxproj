@@ -85,6 +85,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="gb-fit.hh" />
+    <ClInclude Include="io.hh" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="gb-fit.cc" />
+    <ClCompile Include="io.cc" />
     <ClCompile Include="test.cc" />
   </ItemGroup>
   <ItemGroup>

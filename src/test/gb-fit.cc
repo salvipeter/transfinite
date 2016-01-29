@@ -1,7 +1,6 @@
 #include "../Eigen/LU"
 #include "../Eigen/SVD"
 
-#include "cp-centers.hh"
 #include "domain.hh"
 
 #include "gb-fit.hh"
@@ -211,4 +210,19 @@ SurfaceGeneralizedBezier fitWithOriginal(const SurfaceGeneralizedBezier &origina
   }
 
   return surf;
+}
+
+DoubleVector deviationFromMesh(const SurfaceGeneralizedBezier &surf, const TriMesh &mesh) {
+  size_t resolution = 30;
+  TriMesh surf_mesh = surf.eval(resolution);
+  PointVector vertices = surf_mesh.points();
+  DoubleVector result;
+  for (const auto &p : mesh.points()) {
+    TriMesh::Triangle tri = surf_mesh.closestTriangle(p);
+    const Point3D &a = vertices[tri[0]], &b = vertices[tri[1]], &c = vertices[tri[2]];
+    Vector3D n = ((b - a) ^ (c - a)).normalize();
+    Point3D q = p + n * ((a - p) * n);
+    result.push_back((p - q).norm());
+  }
+  return result;
 }

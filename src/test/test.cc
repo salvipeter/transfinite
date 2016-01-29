@@ -16,6 +16,9 @@
 void ribbonTest(std::string filename, size_t resolution, 
 		double scaling, double ribbon_length) {
   CurveVector cv = readLOP("../../models/" + filename + ".lop");
+  if (cv.empty())
+    return;
+
   SurfaceSideBased surf;
   surf.setCurves(cv);
   surf.setupLoop();
@@ -74,6 +77,8 @@ void ribbonTest(std::string filename, size_t resolution,
 void surfaceTest(std::string filename, std::string type, size_t resolution,
                  std::shared_ptr<Surface> &&surf) {
   CurveVector cv = readLOP("../../models/" + filename + ".lop");
+  if (cv.empty())
+    return;
 
   surf->setCurves(cv);
   surf->setupLoop();             // should be called after curve pointers changed
@@ -223,6 +228,73 @@ void meshFitTest(const std::string &surfname, const std::string &meshname) {
   saveBezier(fitted, "../../models/bezier-smooth10.gbp");
 }
 
+void printStatistics(const DoubleVector &data) {
+  size_t n = data.size();
+  double mean = std::accumulate(data.begin(), data.end(), 0.0) / n;
+  DoubleVector dev; dev.reserve(n);
+  std::transform(data.begin(), data.end(), std::back_inserter(dev),
+                 [mean](double x) { return pow(x - mean, 2); });
+  double stddev = sqrt(std::accumulate(dev.begin(), dev.end(), 0.0) / (n - 1));
+  DoubleVector sorted = data; std::sort(sorted.begin(), sorted.end());
+  double quartiles[5];
+  quartiles[0] = sorted.front(); quartiles[4] = sorted.back();
+  for (size_t i = 1; i < 4; ++i) {
+    if (n % 4 == 0)
+      quartiles[i] = sorted[n * i / 4];
+    else if (n % 4 == 1)
+      quartiles[i] = sorted[n * i / 4] * 0.75 + sorted[n * i / 4 + 1] * 0.25;
+    else if (n % 4 == 2)
+      quartiles[i] = sorted[n * i / 4] * 0.5 + sorted[n * i / 4 + 1] * 0.5;
+    else
+      quartiles[i] = sorted[n * i / 4] * 0.25 + sorted[n * i / 4 + 1] * 0.75;
+  }
+  std::cout << "Statistics:" << std::endl
+            << "Mean:\t" << mean << "\nStd.Dev.:\t" << stddev << std::endl
+            << "Min:\t" << quartiles[0] << "\nMax:\t" << quartiles[4] << std::endl
+            << "Quartiles:\t" << quartiles[1] << ", " << quartiles[2]
+            << ", " << quartiles[3] << std::endl
+            << "Inter-quartile histogram:" << std::endl;
+  size_t bins = 25, height = 15;
+  double bin_width = (quartiles[3] - quartiles[1]) / bins;
+  std::vector<size_t> histogram(bins, 0);
+  size_t current_bin = 0;
+  double current_bin_min = quartiles[1];
+  double current_bin_max = quartiles[1] + bin_width;
+  for (double x : sorted) {
+    if (x < current_bin_min)
+      continue;
+    if (x > current_bin_max) {
+      ++current_bin;
+      current_bin_min += bin_width;
+      current_bin_max += bin_width;
+    }
+    if (current_bin >= bins)
+      break;
+    ++histogram[current_bin];
+  }
+  size_t max = *std::max_element(histogram.begin(), histogram.end());
+  std::transform(histogram.begin(), histogram.end(), histogram.begin(),
+                 [height,max](size_t k) { return k * height / max; });
+  for (size_t i = height; i > 0; --i) {
+    for (size_t j = 0; j < bins; ++j)
+      if (histogram[j] >= i)
+        std::cout << " xx";
+      else
+        std::cout << "   ";
+    std::cout << std::endl;
+  }
+  for (size_t j = 0; j < bins; ++j)
+    std::cout << "L__";
+  std::cout << "I" << std::endl;
+}
+
+void deviationTest(const std::string &surfname, const std::string &meshname) {
+  SurfaceGeneralizedBezier surf = loadBezier("../../models/" + surfname + ".gbp");
+  TriMesh mesh = readOBJ("../../models/" + meshname + ".obj");
+  DoubleVector deviations = deviationFromMesh(surf, mesh);
+  printStatistics(deviations);
+}
+
 void classATest() {
 #ifdef NO_SURFACE_FIT
   CurveVector cv = readLOP("../../models/pocket6sided.lop");
@@ -267,7 +339,8 @@ int main(int argc, char **argv) {
     std::cerr << "Usage:\n"
               << argv[0] << " model-name [resolution] [fence-scaling] [ribbon-length]" << std::endl
               << argv[0] << " bezier [model-name]" << std::endl
-              << argv[0] << " mesh-fit [model-name] [mesh-name]" << std::endl;
+              << argv[0] << " mesh-fit [model-name] [mesh-name]" << std::endl
+              << argv[0] << " deviation [model-name] [mesh-name]" << std::endl;
     return 1;
   }
 
@@ -282,12 +355,15 @@ int main(int argc, char **argv) {
   } else if (filename == "class-a") {
     classATest();
     return 0;
-  } else if (filename == "mesh-fit") {
+  } else if (filename == "mesh-fit" || filename == "deviation") {
     if (argc < 4) {
       std::cerr << "Not enough parameters!" << std::endl;
       return 1;
     }
-    meshFitTest(argv[2], argv[3]);
+    if (filename == "mesh-fit")
+      meshFitTest(argv[2], argv[3]);
+    else
+      deviationTest(argv[2], argv[3]);
     return 0;
   }
 
