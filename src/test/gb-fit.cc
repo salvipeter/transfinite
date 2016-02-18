@@ -88,15 +88,15 @@ Point2DVector parameterizePoints(const Surface &surf, const PointVector &points)
 SurfaceGeneralizedBezier fitWithOriginal(const SurfaceGeneralizedBezier &original,
                                          const PointVector &points,
                                          const Point2DVector &params,
-                                         double smoothing) {
+                                         double smoothing, size_t fixed_rows) {
   size_t n = original.domain()->vertices().size();
   size_t d = original.degree();
   size_t l = original.layers();
   size_t cp = 1 + d / 2;
-  cp = n * cp * l + 1;          // # of control points
-  size_t bcp = n * (d - 1) * 2; // # of boundary control points
-  size_t mcp = cp - bcp;        // # of movable control points
-  size_t m = points.size();     // # of samples
+  cp = n * cp * l + 1;                                // # of control points
+  size_t bcp = n * (d + 1 - fixed_rows) * fixed_rows; // # of boundary control points
+  size_t mcp = cp - bcp;                              // # of movable control points
+  size_t m = points.size();                           // # of samples
 
   // Initialize patch with the fixed boundaries
   SurfaceGeneralizedBezier surf;
@@ -173,7 +173,7 @@ SurfaceGeneralizedBezier fitWithOriginal(const SurfaceGeneralizedBezier &origina
   for (size_t j = 0; j < n; ++j)
     setWeight(m, j, l, l - 1, -smoothing / n);
   A(m, 0) = smoothing;
-  for (size_t i = bcp + 1, side = 0, col = 2, row = 2; i < cp; ++i, ++col) {
+  for (size_t i = bcp + 1, side = 0, col = fixed_rows, row = fixed_rows; i < cp; ++i, ++col) {
     if (col >= d - row) {
       if (++side >= n) {
         side = 0;
@@ -198,7 +198,7 @@ SurfaceGeneralizedBezier fitWithOriginal(const SurfaceGeneralizedBezier &origina
 
   // Fill control points
   surf.setCentralControlPoint(Point3D(x(0, 0), x(0, 1), x(0, 2)));
-  for (size_t i = bcp + 1, side = 0, col = 2, row = 2; i < cp; ++i, ++col) {
+  for (size_t i = bcp + 1, side = 0, col = fixed_rows, row = fixed_rows; i < cp; ++i, ++col) {
     if (col >= d - row) {
       if (++side >= n) {
         side = 0;
