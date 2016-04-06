@@ -44,15 +44,16 @@ public:
       tri[index++] = m_.VertexToPoint(*i);
     return tri;
   }
-  void writeOBJ(std::string filename) const {
+  bool writeOBJ(std::string filename) const {
     std::ofstream f(filename);
     if (!f.is_open()) {
       std::cerr << "Unable to open file: " << filename << std::endl;
-      return;
+      return false;
     }
     int vertex_offs = 0;
     m_.TriangulationToOBJ(f, 0, vertex_offs);
     f.close();
+    return true;
   }
 private:
   Triangulation<Point<3, double>> m_;

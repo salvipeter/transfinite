@@ -172,7 +172,7 @@ public:
   PointVector points() const;
   std::list<Triangle> triangles() const;
   Triangle closestTriangle(const Point3D &p) const;
-  void writeOBJ(std::string filename) const;
+  bool writeOBJ(std::string filename) const;
 
 private:
   class TriMeshImpl;

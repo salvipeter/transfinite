@@ -366,9 +366,9 @@ TriMesh::closestTriangle(const Point3D &p) const {
   return impl_->closestTriangle(p);
 }
 
-void
+bool
 TriMesh::writeOBJ(std::string filename) const {
-  impl_->writeOBJ(filename);
+  return impl_->writeOBJ(filename);
 }
 
 CurveFitter::CurveFitter()
