@@ -123,18 +123,19 @@ TriMesh::closestTriangle(const Point3D &p) const {
   return *result;
 }
 
-void
+bool
 TriMesh::writeOBJ(std::string filename) const {
   std::ofstream f(filename);
   if (!f.is_open()) {
     std::cerr << "Unable to open file: " << filename << std::endl;
-    return;
+    return false;
   }
   for (const auto &p : points_)
     f << "v " << p[0] << ' ' << p[1] << ' ' << p[2] << std::endl;
   for (const auto &t : triangles_)
     f << "f " << t[0] + 1 << ' ' << t[1] + 1 << ' ' << t[2] + 1 << std::endl;
   f.close();
+  return true;
 }
 
 } // namespace Geometry
