@@ -19,3 +19,4 @@ Makefile
 *.opensdf
 *.user
 src/Eigen/*
+pack/*
