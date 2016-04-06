@@ -80,7 +80,7 @@
   <ItemGroup>
     <ClCompile Include="bezier.cc" />
     <ClCompile Include="bspline.cc" />
-    <ClCompile Include="downhill.cc" />
+    <ClCompile Include="downhill.cpp" />
     <ClCompile Include="matrix3x3.cc" />
     <ClCompile Include="trimesh.cc" />
     <ClCompile Include="vector.cc" />
