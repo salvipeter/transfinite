@@ -525,7 +525,7 @@ Surface::fitTrimmed(double fit_tol, size_t resolution, size_t max_cpts_u, size_t
   // Add boundary points as separate point groups
   for (size_t i = 0; i < n_; ++i) {
     fitter.newPointGroup(fit_tol);
-    for (size_t j = 0; j < resolution; ++j) {
+    for (size_t j = 0; j <= resolution; ++j) {
       double t = (double)j / resolution;
       Point2D uv = domain_->edgePoint(i, t);
       fitter.addParamPoint(uv, eval(uv));
@@ -557,14 +557,14 @@ Surface::fitTrimmed(double fit_tol, size_t resolution, size_t max_cpts_u, size_t
     CurveFitter bf;
     bf.setDegree(3);
     bf.newPointGroup(fit_tol);
-    for (size_t j = 0; j < resolution; ++j) {
+    for (size_t j = 0; j <= resolution; ++j) {
       double t = (double)j / resolution;
       bf.addParamPoint(t, params3d[j]);
     }
     size_t nr_cpts = 5;       // kutykurutty
     bf.setNrControlPoints(nr_cpts);
     bf.addControlPoint(0, params3d[0]);
-    bf.addControlPoint(nr_cpts - 1, params3d[resolution-1]);
+    bf.addControlPoint(nr_cpts - 1, params3d[resolution]);
     bf.fit();
     s.param_curves_.push_back(std::make_shared<BSCurve>(bf.curve()));
   }
