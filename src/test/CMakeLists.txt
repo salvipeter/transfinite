@@ -17,3 +17,9 @@ else()
 endif()
 
 target_link_libraries(test ${GEOM_LIB} transfinite)
+
+if(NOT USE_OWN_GEOMETRY_LIB)
+  include_directories(../geoduck)
+  add_executable(kapi-test kapi-test.cc)
+  target_link_libraries(kapi-test ${GEOM_LIB} transfinite-kapi)
+endif()
