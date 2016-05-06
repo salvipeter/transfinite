@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <iostream>
+#include <numeric>
 
 #include "domain.hh"
 #include "ribbon.hh"
