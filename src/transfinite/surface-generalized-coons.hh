@@ -7,7 +7,9 @@ namespace Transfinite {
 class SurfaceGeneralizedCoons : public Surface {
 public:
   SurfaceGeneralizedCoons();
+  SurfaceGeneralizedCoons(const SurfaceGeneralizedCoons &) = default;
   virtual ~SurfaceGeneralizedCoons();
+  SurfaceGeneralizedCoons &operator=(const SurfaceGeneralizedCoons &) = default;
   virtual Point3D eval(const Point2D &uv) const;
   using Surface::eval;
 

@@ -7,7 +7,9 @@ namespace Transfinite {
 class SurfaceGeneralizedBezier : public Surface {
 public:
   SurfaceGeneralizedBezier();
+  SurfaceGeneralizedBezier(const SurfaceGeneralizedBezier &) = default;
   virtual ~SurfaceGeneralizedBezier();
+  SurfaceGeneralizedBezier &operator=(const SurfaceGeneralizedBezier &) = default;
   virtual Point3D eval(const Point2D &uv) const;
   using Surface::eval;
   size_t degree() const;

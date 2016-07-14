@@ -7,7 +7,9 @@ namespace Transfinite {
 class SurfaceMidpoint : public SurfaceCornerBased {
 public:
   SurfaceMidpoint();
+  SurfaceMidpoint(const SurfaceMidpoint &) = default;
   virtual ~SurfaceMidpoint();
+  SurfaceMidpoint &operator=(const SurfaceMidpoint &) = default;
   virtual void update(size_t i);
   virtual void update();
   virtual Point3D eval(const Point2D &uv) const;

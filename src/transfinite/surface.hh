@@ -13,7 +13,9 @@ class Ribbon;
 class Surface {
 public:
   Surface();
+  Surface(const Surface &) = default;
   virtual ~Surface();
+  Surface &operator=(const Surface &) = default;
   void setGamma(bool use_gamma);
   void setCurve(size_t i, const std::shared_ptr<BSCurve> &curve);
   void setCurves(const CurveVector &curves);

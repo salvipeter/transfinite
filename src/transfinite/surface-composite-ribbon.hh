@@ -7,7 +7,9 @@ namespace Transfinite {
 class SurfaceCompositeRibbon : public Surface {
 public:
   SurfaceCompositeRibbon();
+  SurfaceCompositeRibbon(const SurfaceCompositeRibbon &) = default;
   virtual ~SurfaceCompositeRibbon();
+  SurfaceCompositeRibbon &operator=(const SurfaceCompositeRibbon &) = default;
   virtual Point3D eval(const Point2D &uv) const;
   using Surface::eval;
 
