@@ -16,7 +16,7 @@ Makefile
 */Release/*
 */.vs/*
 *.filters
-*.VC.db
+*.VC.*db
 *.sdf
 *.opensdf
 *.user
