@@ -77,6 +77,24 @@ TriMesh readOBJ(const std::string &filename) {
   return result;
 }
 
+void writePCP(const std::string &filename, const Point2DVector &uvs, const PointVector &points) {
+  std::ofstream f(filename);
+  if (!f.is_open()) {
+    std::cerr << "Unable to open file: " << filename << std::endl;
+    return;
+  }
+
+  size_t n = uvs.size();
+  f << n << std::endl;
+  for (size_t i = 0; i < n; ++i) {
+    const Point2D &uv = uvs[i];
+    const Point3D &p = points[i];
+    f << p[0] << ' ' << p[1] << ' ' << p[2] << ' ' << uv[0] << ' ' << uv[1] << std::endl;
+  }
+
+  f.close();
+}
+
 SurfaceGeneralizedBezier loadBezier(const std::string &filename) {
   std::ifstream f(filename);
   if (!f.is_open()) {

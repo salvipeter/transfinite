@@ -197,6 +197,23 @@ void bezierTest(const std::string &filename) {
   writeBezierControlPoints(sextic3, "../../models/bezier-sextic-projected-smooth-cpts.obj");
 }
 
+void cloudTest(std::string filename, size_t resolution) {
+  CurveVector cv = readLOP("../../models/" + filename + ".lop");
+  if (cv.empty())
+    return;
+
+  std::shared_ptr<Surface> surf = std::make_shared<SurfaceGeneralizedCoons>();
+  surf->setCurves(cv);
+  surf->setupLoop();
+  surf->update();
+  Point2DVector uvs = surf->domain()->parameters(resolution);
+  PointVector points; points.reserve(uvs.size());
+  std::transform(uvs.begin(), uvs.end(), std::back_inserter(points),
+                 [surf](const Point2D &uv) { return surf->eval(uv); });
+
+  writePCP("../../models/" + filename + ".pcp", uvs, points);
+}
+
 void meshFitTest(const std::string &surfname, const std::string &meshname) {
   SurfaceGeneralizedBezier surf = loadBezier("../../models/" + surfname + ".gbp");
   TriMesh mesh = readOBJ("../../models/" + meshname + ".obj");
@@ -352,6 +369,12 @@ int main(int argc, char **argv) {
       bezierTest("cagd86");
     else
       bezierTest(argv[2]);
+    return 0;
+  } else if (filename == "cloud") {
+    if (argc == 2)
+      cloudTest("cagd86", 15);
+    else
+      cloudTest(argv[2], 15);
     return 0;
   } else if (filename == "class-a") {
     classATest();
