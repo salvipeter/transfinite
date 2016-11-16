@@ -37,7 +37,7 @@ ParameterizationBilinear::mapToRibbon(size_t i, const Point2D &uv) const {
       sd[0] = -c / b;
   } else {
     double D = b * b - 4.0 * a * c;
-    if(D < epsilon)
+    if (D < epsilon)
       D = 0.0;
     D = std::sqrt(D) / (2.0 * a);
     double s = -b / (2.0 * a);

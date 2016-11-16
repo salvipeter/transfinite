@@ -67,7 +67,7 @@ DomainAngular::update() {
   for (size_t i = 0; i < n_; ++i) {
     Vector2D v1 = (vertices_[i] - vertices_[prev(i)]).normalize();
     Vector2D v2 = (vertices_[next(i)] - vertices_[i]).normalize();
-    if((v2 - v1 * (v1 * v2))[0] * v1[1] > 0)
+    if ((v2 - v1 * (v1 * v2))[0] * v1[1] > 0)
       convex = false;
   }
 

@@ -33,10 +33,10 @@ Domain::update() {
   computeCenter();
   parameters_.clear();
   du_.resize(n_); dv_.resize(n_);
-  for(size_t i = 0; i < n_; ++i) {
+  for (size_t i = 0; i < n_; ++i) {
     du_[i] = vertices_[i] - vertices_[prev(i)];
     dv_[i] = Vector2D(du_[i][1], -du_[i][0]);
-    if((center_ - vertices_[i]) * dv_[i] < 0)
+    if ((center_ - vertices_[i]) * dv_[i] < 0)
       dv_[i] = -dv_[i];
   }
   return true;
@@ -55,13 +55,13 @@ Domain::toLocal(size_t i, const Vector2D &v) const {
 const Point2DVector &
 Domain::parameters(size_t resolution) const {
   size_t size = 1 + n_ * resolution * (resolution + 1) / 2;
-  if(parameters_.size() != size) {
+  if (parameters_.size() != size) {
     parameters_.reserve(size);
     parameters_.push_back(center_);
-    for(size_t j = 1; j <= resolution; ++j) {
+    for (size_t j = 1; j <= resolution; ++j) {
       double u = (double)j / (double)resolution;
-      for(size_t k = 0; k < n_; ++k)
-        for(size_t i = 0; i < j; ++i) {
+      for (size_t k = 0; k < n_; ++k)
+        for (size_t i = 0; i < j; ++i) {
           double v = (double)i / (double)j;
           Point2D ep = vertices_[prev(k)] * (1.0 - v) + vertices_[k] * v;
           Point2D p = center_ * (1.0 - u) + ep * u;
@@ -78,15 +78,15 @@ Domain::meshTopology(size_t resolution) const {
   mesh.resizePoints(1 + n_ * resolution * (resolution + 1) / 2);
 
   size_t inner_start = 0, outer_vert = 1;
-  for(size_t layer = 1; layer <= resolution; ++layer) {
+  for (size_t layer = 1; layer <= resolution; ++layer) {
     size_t inner_vert = inner_start, outer_start = outer_vert;
-    for(size_t side = 0; side < n_; ++side) {
+    for (size_t side = 0; side < n_; ++side) {
       size_t vert = 0;
       while(true) {
         size_t next_vert = (side == n_ - 1 && vert == layer - 1) ? outer_start : (outer_vert + 1);
         mesh.addTriangle(inner_vert, outer_vert, next_vert);
         ++outer_vert;
-        if(++vert == layer)
+        if (++vert == layer)
           break;
         size_t inner_next = (side == n_ - 1 && vert == layer - 1) ? inner_start : (inner_vert + 1);
         mesh.addTriangle(inner_vert, next_vert, inner_next);
