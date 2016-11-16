@@ -21,7 +21,7 @@ DomainCircular::update() {
 
   double alpha = 0.0;
   vertices_.resize(n_);
-  for(size_t i = 0; i < n_; ++i) {
+  for (size_t i = 0; i < n_; ++i) {
     alpha += lengths[i];
     vertices_[i] = Point2D(std::cos(alpha), std::sin(alpha));
   }

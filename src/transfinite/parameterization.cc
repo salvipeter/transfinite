@@ -22,7 +22,7 @@ Parameterization::update() {
 Point2DVector
 Parameterization::mapToRibbons(const Point2D &uv) const {
   auto cached = cache_.find(uv);
-  if(cached != cache_.end())
+  if (cached != cache_.end())
     return cached->second;
 
   Point2DVector result; result.reserve(n_);

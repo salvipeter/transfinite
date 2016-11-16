@@ -38,7 +38,7 @@ ParameterizationBarycentric::update() {
 const DoubleVector &
 ParameterizationBarycentric::barycentric(const Point2D &uv) const {
   auto cached = cache_.find(uv);
-  if(cached != cache_.end())
+  if (cached != cache_.end())
     return cached->second;
 
   Vector2DVector vectors; vectors.reserve(n_);
