@@ -357,6 +357,8 @@ int main(int argc, char **argv) {
     std::cerr << "Usage:\n"
               << argv[0] << " model-name [resolution] [fence-scaling] [ribbon-length]" << std::endl
               << argv[0] << " bezier [model-name]" << std::endl
+              << argv[0] << " cloud [model-name]" << std::endl
+              << argv[0] << " class-a" << std::endl
               << argv[0] << " mesh-fit [model-name] [mesh-name]" << std::endl
               << argv[0] << " deviation [model-name] [mesh-name]" << std::endl;
     return 1;
