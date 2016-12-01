@@ -18,13 +18,16 @@ public:
   void unsetMidpoint();
 
 protected:
+  virtual double deficiency(const Point2D &p) const;
   virtual std::shared_ptr<Ribbon> newRibbon() const;
+
+  Point3D central_cp_;
 
 private:
   void updateCentralControlPoint();
 
   bool midpoint_set_;
-  Point3D midpoint_, central_cp_;
+  Point3D midpoint_;
 };
 
 } // namespace Transfinite

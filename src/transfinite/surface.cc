@@ -4,6 +4,7 @@
 #include "parameterization.hh"
 #include "ribbon.hh"
 #include "surface.hh"
+#include "utilities.hh"
 
 // For the 4-sided central split fit
 #include "parameterization-bilinear.hh"
@@ -239,12 +240,6 @@ Surface::blendCornerDeficient(const Point2DVector &sds) const {
                   (sds[i][1] + sds[ip][1]));
   }
   return blf;
-}
-
-double
-Surface::blendHermite(double x) {
-  double x2 = x * x;
-  return 2.0 * x * x2 - 3.0 * x2 + 1.0;
 }
 
 void

@@ -2,6 +2,7 @@
 
 #include "domain.hh"
 #include "parameterization-interconnected.hh"
+#include "utilities.hh"
 
 namespace Transfinite {
 
@@ -26,12 +27,6 @@ ParameterizationInterconnected::mapToRibbons(const Point2D &uv) const {
     sds[i][1] = (1.0 - sds[prev(i)][0]) * Hs + sds[next(i)][0] * (1.0 - Hs);
   }
   return sds;
-}
-
-double
-ParameterizationInterconnected::blendHermite(double x) {
-  double x2 = x * x;
-  return 2.0 * x * x2 - 3.0 * x2 + 1.0;
 }
 
 } // namespace Transfinite

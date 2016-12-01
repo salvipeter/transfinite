@@ -50,7 +50,6 @@ protected:
   DoubleVector blendCorner(const Point2DVector &sds) const;
   DoubleVector blendSideSingular(const Point2DVector &sds) const;
   DoubleVector blendCornerDeficient(const Point2DVector &sds) const;
-  static double blendHermite(double x);
 
   size_t next(size_t i, size_t j = 1) const { return (i + j) % n_; }
   size_t prev(size_t i, size_t j = 1) const { return (i + n_ - j) % n_; }

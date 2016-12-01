@@ -22,3 +22,4 @@ Makefile
 *.user
 src/Eigen/*
 pack/*
+models/*

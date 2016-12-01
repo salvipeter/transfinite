@@ -13,6 +13,7 @@ add_library(transfinite
   parameterization.cc
     parameterization-bilinear.cc
     parameterization-barycentric.cc
+    parameterization-constrained-barycentric.cc
     parameterization-interconnected.cc
     parameterization-parallel.cc
   ribbon.cc
@@ -25,4 +26,6 @@ add_library(transfinite
     surface-generalized-coons.cc
     surface-composite-ribbon.cc
     surface-midpoint.cc
+    surface-midpoint-coons.cc
+  utilities.cc
 )

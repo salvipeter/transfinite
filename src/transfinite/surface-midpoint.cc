@@ -57,6 +57,13 @@ SurfaceMidpoint::unsetMidpoint() {
   updateCentralControlPoint();
 }
 
+double
+SurfaceMidpoint::deficiency(const Point2D &p) const {
+  DoubleVector blends = blendCornerDeficient(param_->mapToRibbons(p));
+  double blf_sum = std::accumulate(blends.begin(), blends.end(), 0.0);
+  return 1.0 - blf_sum;
+}
+
 std::shared_ptr<Ribbon>
 SurfaceMidpoint::newRibbon() const {
   return std::make_shared<RibbonType>();
@@ -74,12 +81,11 @@ SurfaceMidpoint::updateCentralControlPoint() {
   Point2D center = domain_->center();
   central_cp_ = Point3D(0,0,0);
   Point3D s = eval(center);
-  DoubleVector blends = blendCornerDeficient(param_->mapToRibbons(center));
-  double blf_sum = std::accumulate(blends.begin(), blends.end(), 0.0);
-  if (fabs(1.0 - blf_sum) < epsilon)
+  double def = deficiency(center);
+  if (fabs(def) < epsilon)
     central_cp_ = midpoint_;  // as good as anything else
   else
-    central_cp_ = (midpoint_ - s) / (1.0 - blf_sum);
+    central_cp_ = (midpoint_ - s) / def;
 }
 
 } // namespace Transfinite

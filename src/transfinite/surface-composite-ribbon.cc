@@ -2,6 +2,7 @@
 #include "parameterization-barycentric.hh"
 #include "ribbon-compatible-with-handler.hh"
 #include "surface-composite-ribbon.hh"
+#include "utilities.hh"
 
 namespace Transfinite {
 

@@ -11,6 +11,7 @@
 #include "surface-generalized-coons.hh"
 #include "surface-composite-ribbon.hh"
 #include "surface-midpoint.hh"
+#include "surface-midpoint-coons.hh"
 
 #include "gb-fit.hh"
 #include "io.hh"
@@ -138,7 +139,7 @@ void surfaceTest(std::string filename, std::string type, size_t resolution,
             << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count()
             << "ms" << std::endl;
 
-  if (type == "mp") {
+  if (type == "mp" || type == "mc") {
     Point3D midpoint(0,0,0);
     for (size_t i = 0; i < n; ++i)
       midpoint += surf->ribbon(i)->eval(Point2D(0.6, 0.4));
@@ -415,6 +416,7 @@ int main(int argc, char **argv) {
   surfaceTest(filename, "gc", res, std::make_shared<SurfaceGeneralizedCoons>());
   surfaceTest(filename, "cr", res, std::make_shared<SurfaceCompositeRibbon>());
   surfaceTest(filename, "mp", res, std::make_shared<SurfaceMidpoint>());
+  surfaceTest(filename, "mc", res, std::make_shared<SurfaceMidpointCoons>());
 
   return 0;
 }
