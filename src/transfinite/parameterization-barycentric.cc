@@ -22,7 +22,11 @@ ParameterizationBarycentric::mapToRibbon(size_t i, const Point2D &uv) const {
     double alpha = domain_->angle(i), beta = domain_->angle(prev(i));
     double dprev = domain_->toLocal(prev(i), uv - v[prev(i)])[1] * domain_->edgeLength(prev(i));
     double dnext = domain_->toLocal(next(i), uv - v[i])[1] * domain_->edgeLength(next(i));
-    sd[0] = std::sin(alpha) * dprev / (std::sin(alpha) * dprev + std::sin(beta) * dnext);
+    denom = std::sin(alpha) * dprev + std::sin(beta) * dnext;
+    if (denom < epsilon)        // only possible for 3-sided domains
+      sd[0] = 0.0;              // degenerate case - could be 1.0 or anything between
+    else
+      sd[0] = std::sin(alpha) * dprev / denom;
   } else
     sd[0] = l[i] / denom;
   sd[1] = 1.0 - l[i] - l[prev(i)];
