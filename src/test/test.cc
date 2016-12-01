@@ -81,11 +81,6 @@ void surfaceTest(std::string filename, std::string type, size_t resolution,
   if (cv.empty())
     return;
 
-  if (cv.size() == 3 && dynamic_cast<SurfaceCompositeRibbon *>(surf.get())) {
-    std::cout << "CR patches cannot be used for 3-sided surfaces." << std::endl;
-    return;
-  }
-
   surf->setCurves(cv);
   surf->setupLoop();             // should be called after curve pointers changed
   surf->update();                // should be called after curves changed
