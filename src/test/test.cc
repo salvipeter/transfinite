@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <chrono>
 #include <iostream>
 #include <numeric>
 
@@ -81,6 +82,9 @@ void surfaceTest(std::string filename, std::string type, size_t resolution,
   if (cv.empty())
     return;
 
+  std::chrono::steady_clock::time_point begin, end;
+
+  begin = std::chrono::steady_clock::now();
   surf->setCurves(cv);
   surf->setupLoop();             // should be called after curve pointers changed
   surf->update();                // should be called after curves changed
@@ -125,10 +129,14 @@ void surfaceTest(std::string filename, std::string type, size_t resolution,
       max_tan_error = std::max(max_tan_error, angle);
     }
   }
+  end = std::chrono::steady_clock::now();
 
   std::cout << type << ":" << std::endl;
   std::cout << "  positional error: " << max_pos_error << std::endl;
   std::cout << "  tangential error: " << max_tan_error * 180.0 / M_PI << std::endl;
+  std::cout << "  elapsed time    : "
+            << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count()
+            << "ms" << std::endl;
 
   if (type == "mp") {
     Point3D midpoint(0,0,0);
