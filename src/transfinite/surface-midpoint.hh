@@ -18,8 +18,6 @@ public:
   void unsetMidpoint();
 
 private:
-  static double hermite(double u);
-  DoubleVector deficientCornerBlend(const Point2DVector &sds) const;
   void updateCentralControlPoint();
 
   bool midpoint_set_;

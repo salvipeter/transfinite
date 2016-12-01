@@ -218,6 +218,22 @@ Surface::blendSideSingular(const Point2DVector &sds) const {
   return blf;
 }
 
+DoubleVector
+Surface::blendCornerDeficient(const Point2DVector &sds) const {
+  DoubleVector blf; blf.reserve(n_);
+  for (size_t i = 0; i < n_; ++i) {
+    size_t ip = next(i);
+    if (sds[i][1] < epsilon && sds[ip][1] < epsilon) {
+      blf.push_back(1.0);
+      continue;
+    }
+    blf.push_back((sds[ip][1] * blendHermite(1.0 - sds[i][0]) * blendHermite(sds[i][1] ) +
+                   sds[i][1]  * blendHermite(   sds[ip][0]  ) * blendHermite(sds[ip][1])) /
+                  (sds[i][1] + sds[ip][1]));
+  }
+  return blf;
+}
+
 double
 Surface::blendHermite(double x) {
   double x2 = x * x;

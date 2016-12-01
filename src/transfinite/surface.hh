@@ -48,6 +48,7 @@ protected:
   Point3D sideInterpolant(size_t i, double si, double di) const;
   DoubleVector blendCorner(const Point2DVector &sds) const;
   DoubleVector blendSideSingular(const Point2DVector &sds) const;
+  DoubleVector blendCornerDeficient(const Point2DVector &sds) const;
   static double blendHermite(double x);
 
   size_t next(size_t i, size_t j = 1) const { return (i + j) % n_; }
