@@ -154,6 +154,13 @@ Surface::sideInterpolant(size_t i, double si, double di) const {
   return ribbons_[i]->eval(Point2D(si, di));
 }
 
+Point3D
+Surface::cornerInterpolant(size_t i, const Point2DVector &sds) const {
+  double si = sds[i][0], si1 = sds[next(i)][0];
+  return sideInterpolant(i, si, si1) + sideInterpolant(next(i), si1, 1.0 - si)
+    - cornerCorrection(i, 1.0 - si, si1);
+}
+
 DoubleVector
 Surface::blendCorner(const Point2DVector &sds) const {
   DoubleVector blf; blf.reserve(n_);

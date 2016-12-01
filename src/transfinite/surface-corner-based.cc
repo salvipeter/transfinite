@@ -33,11 +33,4 @@ SurfaceCornerBased::newRibbon() const {
   return std::make_shared<RibbonType>();
 }
 
-Point3D
-SurfaceCornerBased::cornerInterpolant(size_t i, const Point2DVector &sds) const {
-  double si = sds[i][0], si1 = sds[next(i)][0];
-  return sideInterpolant(i, si, si1) + sideInterpolant(next(i), si1, 1.0 - si)
-    - cornerCorrection(i, 1.0 - si, si1);
-}
-
 } // namespace Transfinite

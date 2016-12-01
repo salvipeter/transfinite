@@ -46,6 +46,7 @@ protected:
   virtual std::shared_ptr<Ribbon> newRibbon() const = 0;
   Point3D cornerCorrection(size_t i, double s1, double s2) const;
   Point3D sideInterpolant(size_t i, double si, double di) const;
+  Point3D cornerInterpolant(size_t i, const Point2DVector &sds) const;
   DoubleVector blendCorner(const Point2DVector &sds) const;
   DoubleVector blendSideSingular(const Point2DVector &sds) const;
   DoubleVector blendCornerDeficient(const Point2DVector &sds) const;

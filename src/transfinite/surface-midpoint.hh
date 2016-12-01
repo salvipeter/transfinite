@@ -1,10 +1,10 @@
 #pragma once
 
-#include "surface-corner-based.hh"
+#include "surface.hh"
 
 namespace Transfinite {
 
-class SurfaceMidpoint : public SurfaceCornerBased {
+class SurfaceMidpoint : public Surface {
 public:
   SurfaceMidpoint();
   SurfaceMidpoint(const SurfaceMidpoint &) = default;
@@ -16,6 +16,9 @@ public:
   using Surface::eval;
   void setMidpoint(const Point3D &p);
   void unsetMidpoint();
+
+protected:
+  virtual std::shared_ptr<Ribbon> newRibbon() const;
 
 private:
   void updateCentralControlPoint();

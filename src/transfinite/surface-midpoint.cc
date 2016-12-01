@@ -13,7 +13,7 @@ using ParamType = ParameterizationBarycentric;
 using RibbonType = RibbonCompatibleWithHandler;
 
 SurfaceMidpoint::SurfaceMidpoint() : midpoint_set_(false) {
-  // Reinitialize parameterization, because the parent class used ParameterizationBilinear
+  domain_ = std::make_shared<DomainType>();
   param_ = std::make_shared<ParamType>();
   param_->setDomain(domain_);
 }
@@ -23,13 +23,13 @@ SurfaceMidpoint::~SurfaceMidpoint() {
 
 void
 SurfaceMidpoint::update(size_t i) {
-  SurfaceCornerBased::update(i);
+  Surface::update(i);
   updateCentralControlPoint();
 }
 
 void
 SurfaceMidpoint::update() {
-  SurfaceCornerBased::update();
+  Surface::update();
   updateCentralControlPoint();
 }
 
@@ -55,6 +55,11 @@ void
 SurfaceMidpoint::unsetMidpoint() {
   midpoint_set_ = false;
   updateCentralControlPoint();
+}
+
+std::shared_ptr<Ribbon>
+SurfaceMidpoint::newRibbon() const {
+  return std::make_shared<RibbonType>();
 }
 
 void
