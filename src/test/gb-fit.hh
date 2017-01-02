@@ -10,4 +10,3 @@ SurfaceGeneralizedBezier fitWithOriginal(const SurfaceGeneralizedBezier &origina
                                          const PointVector &points,
                                          const Point2DVector &params,
                                          double smoothing = 0, size_t fixed_rows = 2);
-DoubleVector deviationFromMesh(const SurfaceGeneralizedBezier &surf, const TriMesh &mesh);

@@ -315,8 +315,33 @@ void printStatistics(const DoubleVector &data) {
   std::cout << "I" << std::endl;
 }
 
+DoubleVector deviationFromMesh(const Surface &surf, const TriMesh &mesh) {
+  size_t resolution = 30;
+  TriMesh surf_mesh = surf.eval(resolution);
+  PointVector vertices = surf_mesh.points();
+  DoubleVector result;
+  for (const auto &p : mesh.points()) {
+    TriMesh::Triangle tri = surf_mesh.closestTriangle(p);
+    const Point3D &a = vertices[tri[0]], &b = vertices[tri[1]], &c = vertices[tri[2]];
+    Vector3D n = ((b - a) ^ (c - a)).normalize();
+    Point3D q = p + n * ((a - p) * n);
+    result.push_back((p - q).norm());
+  }
+  return result;
+}
+
 void deviationTest(const std::string &surfname, const std::string &meshname) {
-  SurfaceGeneralizedBezier surf = loadBezier("../../models/" + surfname + ".gbp");
+  // SurfaceGeneralizedBezier surf = loadBezier("../../models/" + surfname + ".gbp");
+  SurfaceMidpointCoons surf;
+  {
+    CurveVector cv = readLOP("../../models/" + surfname + ".lop");
+    if (cv.empty())
+      return;
+    surf.setCurves(cv);
+    surf.setupLoop();             // should be called after curve pointers changed
+    surf.update();                // should be called after curves changed
+  }
+
   TriMesh mesh = readOBJ("../../models/" + meshname + ".obj");
   DoubleVector deviations = deviationFromMesh(surf, mesh);
   printStatistics(deviations);
