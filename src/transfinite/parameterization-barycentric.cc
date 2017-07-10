@@ -16,8 +16,8 @@ ParameterizationBarycentric::mapToRibbon(size_t i, const Point2D &uv) const {
   double denom = l[prev(i)] + l[i];
   if (denom < epsilon) {
     // TODO:
-    // The following workaround is valid only for type_ == BarycentricType::WACHSPRESS;
-    // for the other types it will be discontinuous.
+    // The following workaround is valid only for type_ == BarycentricType::WACHSPRESS
+    // with domain_ being a DomainRegular; for all other cases it will be discontinuous.
     const Point2DVector &v = domain_->vertices();
     double alpha = domain_->angle(i), beta = domain_->angle(prev(i));
     double dprev = domain_->toLocal(prev(i), uv - v[prev(i)])[1] * domain_->edgeLength(prev(i));
