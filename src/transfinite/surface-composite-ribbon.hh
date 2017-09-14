@@ -15,7 +15,7 @@ public:
 
 protected:
   virtual std::shared_ptr<Ribbon> newRibbon() const;
-  Point3D compositeRibbon(size_t i, const Point2DVector &sds) const;
+  Point3D compositeRibbon(size_t i, const Point2D &sd) const;
 };
 
 } // namespace Transfinite

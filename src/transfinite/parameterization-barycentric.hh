@@ -6,6 +6,10 @@ namespace Transfinite {
 
 class ParameterizationBarycentric : public Parameterization {
 public:
+  enum class BarycentricType { WACHSPRESS, MEAN_VALUE, HARMONIC };
+
+  ParameterizationBarycentric();
+  ParameterizationBarycentric(BarycentricType type);
   virtual ~ParameterizationBarycentric();
   virtual Point2D mapToRibbon(size_t i, const Point2D &uv) const;
   virtual void update();
@@ -14,8 +18,7 @@ protected:
   const DoubleVector &barycentric(const Point2D &uv) const;
 
 private:
-  enum class BarycentricType { WACHSPRESS, MEAN_VALUE, HARMONIC };
-  static const BarycentricType type_ = BarycentricType::WACHSPRESS;
+  const BarycentricType type_;
 
   using CoordinateCache = std::map<Point2D, DoubleVector, PointComparator>;
   mutable CoordinateCache cache_;

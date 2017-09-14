@@ -6,6 +6,12 @@
 
 namespace Transfinite {
 
+ParameterizationBarycentric::ParameterizationBarycentric() : type_(BarycentricType::WACHSPRESS) {
+}
+
+ParameterizationBarycentric::ParameterizationBarycentric(BarycentricType type) : type_(type) {
+}
+
 ParameterizationBarycentric::~ParameterizationBarycentric() {
 }
 

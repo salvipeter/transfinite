@@ -3,6 +3,10 @@
 
 namespace Transfinite {
 
+ParameterizationPolar::ParameterizationPolar() :
+  ParameterizationBarycentric(BarycentricType::MEAN_VALUE) {
+}
+
 ParameterizationPolar::~ParameterizationPolar() {
 }
 

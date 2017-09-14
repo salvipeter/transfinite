@@ -25,7 +25,7 @@ SurfaceCompositeRibbon::eval(const Point2D &uv) const {
   DoubleVector blends = blendCorner(sds);
   Point3D p(0,0,0);
   for (size_t i = 0; i < n_; ++i)
-    p += compositeRibbon(i, sds) * (blends[i] + blends[prev(i)]);
+    p += compositeRibbon(i, sds[i]) * (blends[i] + blends[prev(i)]);
   return p * 0.5;
 }
 
@@ -35,8 +35,8 @@ SurfaceCompositeRibbon::newRibbon() const {
 }
 
 Point3D
-SurfaceCompositeRibbon::compositeRibbon(size_t i, const Point2DVector &sds) const {
-  double s = sds[i][0], d = sds[i][1], s1 = 1.0 - s, d1 = 1.0 - d;
+SurfaceCompositeRibbon::compositeRibbon(size_t i, const Point2D &sd) const {
+  double s = sd[0], d = sd[1], s1 = 1.0 - s, d1 = 1.0 - d;
   double Hs = blendHermite(s), Hd = blendHermite(d), Hs1 = 1.0 - Hs;
   return sideInterpolant(i, s, d) * Hd
     + sideInterpolant(prev(i), d1, s) * Hs

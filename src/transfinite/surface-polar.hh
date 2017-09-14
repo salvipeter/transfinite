@@ -15,7 +15,7 @@ public:
 
 protected:
   virtual std::shared_ptr<Ribbon> newRibbon() const;
-  Point3D polarRibbon(size_t i, const Point2DVector &pds) const;
+  Point3D polarRibbon(size_t i, const Point2D &pd) const;
 };
 
 } // namespace Transfinite

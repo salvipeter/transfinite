@@ -26,7 +26,7 @@ SurfacePolar::eval(const Point2D &uv) const {
   double d2sum = 0.0;
   for (size_t i = 0; i < n_; ++i) {
     double d2 = std::pow(pds[i][1], 2);
-    p += polarRibbon(i, pds) * d2;
+    p += polarRibbon(i, pds[i]) * d2;
     d2sum += d2;
   }
   return p / d2sum;
@@ -37,8 +37,8 @@ SurfacePolar::newRibbon() const {
   return std::make_shared<RibbonType>();
 }
 
-Point3D SurfacePolar::polarRibbon(size_t i, const Point2DVector &pds) const {
-  double psi = pds[i][0], d = pds[i][1];
+Point3D SurfacePolar::polarRibbon(size_t i, const Point2D &pd) const {
+  double psi = pd[0], d = pd[1];
   d = std::min(std::max(d, 0.0), 1.0); // avoid -epsilon and 1+epsilon
   double d1 = 1.0 - d;
   return ribbons_[i]->curve()->eval(d) * hermite(0, psi) +
