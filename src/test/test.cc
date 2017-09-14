@@ -12,6 +12,7 @@
 #include "surface-composite-ribbon.hh"
 #include "surface-midpoint.hh"
 #include "surface-midpoint-coons.hh"
+#include "surface-polar.hh"
 
 #include "gb-fit.hh"
 #include "io.hh"
@@ -442,6 +443,7 @@ int main(int argc, char **argv) {
   surfaceTest(filename, "cr", res, std::make_shared<SurfaceCompositeRibbon>());
   surfaceTest(filename, "mp", res, std::make_shared<SurfaceMidpoint>());
   surfaceTest(filename, "mc", res, std::make_shared<SurfaceMidpointCoons>());
+  surfaceTest(filename, "pp", res, std::make_shared<SurfacePolar>());
 
   return 0;
 }
