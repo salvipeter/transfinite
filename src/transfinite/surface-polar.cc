@@ -42,8 +42,8 @@ Point3D SurfacePolar::polarRibbon(size_t i, const Point2D &pd) const {
   d = std::min(std::max(d, 0.0), 1.0); // avoid -epsilon and 1+epsilon
   double d1 = 1.0 - d;
   return ribbons_[i]->curve()->eval(d) * hermite(0, psi) +
-    ribbons_[i]->crossDerivative(d) * hermite(1, psi) +
-    ribbons_[next(i)]->crossDerivative(d1) * hermite(2, psi) +
+    ribbons_[i]->crossDerivative(d) * d1 * hermite(1, psi) +
+    ribbons_[next(i)]->crossDerivative(d1) * d1 * hermite(2, psi) +
     ribbons_[next(i)]->curve()->eval(d1) * hermite(3, psi);
 }
 
