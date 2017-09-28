@@ -2,6 +2,7 @@
 #include "parameterization-barycentric.hh"
 #include "ribbon-dummy.hh"
 #include "surface-generalized-bezier.hh"
+#include "utilities.hh"
 
 namespace Transfinite {
 
@@ -201,33 +202,6 @@ SurfaceGeneralizedBezier::weight(size_t i, size_t j, size_t k, const Point2D &uv
 std::shared_ptr<Ribbon>
 SurfaceGeneralizedBezier::newRibbon() const {
   return std::make_shared<RibbonType>();
-}
-
-void
-SurfaceGeneralizedBezier::bernstein(size_t n, double u, DoubleVector &coeff) {
-  coeff.clear(); coeff.reserve(n + 1);
-  coeff.push_back(1.0);
-  double u1 = 1.0 - u;
-  for (size_t j = 1; j <= n; ++j) {
-    double saved = 0.0;
-    for (size_t k = 0; k < j; ++k) {
-      double  tmp = coeff[k];
-      coeff[k] = saved + tmp * u1;
-      saved = tmp * u;
-    }
-    coeff.push_back(saved);
-  }
-}
-
-double
-SurfaceGeneralizedBezier::bernstein(size_t i, size_t n, double u) {
-  DoubleVector tmp(n + 1, 0.0);
-  tmp[n-i] = 1.0;
-  const double u1 = 1.0 - u;
-  for (size_t k = 1; k <= n; ++k)
-    for (size_t j = n; j >= k; --j)
-      tmp[j] = tmp[j-1] * u + tmp[j] * u1;
-  return tmp[n];
 }
 
 } // namespace Transfinite

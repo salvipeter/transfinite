@@ -28,9 +28,6 @@ protected:
 private:
   using ControlNet = std::vector<PointVector>;
 
-  static void bernstein(size_t n, double u, DoubleVector &coeff);
-  static double bernstein(size_t i, size_t n, double u);
-
   size_t degree_, layers_;
   Point3D central_cp_;
   std::vector<ControlNet> nets_;

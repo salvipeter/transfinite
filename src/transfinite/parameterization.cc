@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <stdexcept>
 
 #include "domain.hh"
 #include "parameterization.hh"
@@ -31,6 +32,11 @@ Parameterization::mapToRibbons(const Point2D &uv) const {
 
   cache_[uv] = result;
   return result;
+}
+
+Point2D
+Parameterization::inverse(size_t i, const Point2D &pd) const {
+  throw std::logic_error("inverse() is not implemented for this parameterization");
 }
 
 } // namespace Transfinite
