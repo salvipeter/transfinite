@@ -2,6 +2,7 @@
 #include <cmath>
 
 #include "rmf.hh"
+#include "utilities.hh"
 
 namespace Transfinite {
 
@@ -41,7 +42,7 @@ RMF::update() {
   // As a workaround, we can add a rotation gradually,
   // by minimizing the total squared angular speed, see section 6.3 in the paper.
   const Vector3D &rmfEnd = f.n;
-  angleCorrection_ = std::acos(std::min(std::max(end_ * rmfEnd, -1.0), 1.0));
+  angleCorrection_ = std::acos(inrange(-1, end_ * rmfEnd, 1));
   if (((rmfEnd - end_) ^ end_) * f.d < 0.0)
     angleCorrection_ *= -1.0;
   angleCorrection_ /= f.s;

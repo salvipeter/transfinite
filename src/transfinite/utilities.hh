@@ -6,6 +6,8 @@ namespace Transfinite {
 
 using namespace Geometry;
 
+double inrange(double min, double x, double max);
+
 double blendHermite(double x);
 double hermite(int i, double t);
 
