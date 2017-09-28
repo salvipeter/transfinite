@@ -6,7 +6,7 @@ namespace Transfinite {
 
 class SurfacePolar : public Surface {
 public:
-  SurfacePolar();
+  SurfacePolar(size_t max_degree = 5);
   SurfacePolar(const SurfacePolar &) = default;
   virtual ~SurfacePolar();
   SurfacePolar &operator=(const SurfacePolar &) = default;
@@ -16,6 +16,9 @@ public:
 protected:
   virtual std::shared_ptr<Ribbon> newRibbon() const;
   Point3D polarRibbon(size_t i, const Point2D &pd) const;
+
+private:
+  size_t max_degree_;
 };
 
 } // namespace Transfinite

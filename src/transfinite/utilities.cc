@@ -58,4 +58,15 @@ bernstein(size_t i, size_t n, double u) {
   return tmp[n];
 }
 
+void
+bezierElevate(PointVector &cpts) {
+  size_t n = cpts.size();
+  Point3D tmp = cpts[0];
+  for (size_t i = 1; i < n; ++i) {
+    tmp = tmp * i / n + cpts[i] * (n - i) / n;
+    std::swap(cpts[i], tmp);
+  }
+  cpts.push_back(tmp);
+}
+
 } // namespace Transfinite

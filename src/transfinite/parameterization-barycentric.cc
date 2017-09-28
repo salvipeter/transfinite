@@ -82,12 +82,9 @@ ParameterizationBarycentric::barycentric(const Point2D &uv) const {
     const Vector2D &si_1 = vectors[i_1];
     const Vector2D &si1 = vectors[i1];
     double Bi = (si_1[0] * si1[1] - si_1[1] * si1[0]) / 2.0;
-    double ri_1, ri, ri1;
+    double ri_1 = 1.0, ri = 1.0, ri1 = 1.0;
     switch (type_) {
     case BarycentricType::WACHSPRESS:
-      ri_1 = 1.0;
-      ri = 1.0;
-      ri1 = 1.0;
       break;
     case BarycentricType::MEAN_VALUE:
       ri_1 = vectors[i_1].norm();
