@@ -37,7 +37,7 @@ SurfaceCompositeRibbon::newRibbon() const {
 Point3D
 SurfaceCompositeRibbon::compositeRibbon(size_t i, const Point2D &sd) const {
   double s = sd[0], d = sd[1], s1 = 1.0 - s, d1 = 1.0 - d;
-  double Hs = blendHermite(s), Hd = blendHermite(d), Hs1 = 1.0 - Hs;
+  double Hs = hermite(0, s), Hd = hermite(0, d), Hs1 = 1.0 - Hs;
   return sideInterpolant(i, s, d) * Hd
     + sideInterpolant(prev(i), d1, s) * Hs
     + sideInterpolant(next(i), d, s1) * Hs1

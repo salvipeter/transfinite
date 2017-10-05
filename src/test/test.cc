@@ -437,12 +437,12 @@ int main(int argc, char **argv) {
 
   ribbonTest(filename, res, scaling, ribbon_length);
 
-  surfaceTest(filename, "sb", res, std::make_shared<SurfaceSideBased>());
-  surfaceTest(filename, "cb", res, std::make_shared<SurfaceCornerBased>());
-  surfaceTest(filename, "gc", res, std::make_shared<SurfaceGeneralizedCoons>());
-  surfaceTest(filename, "cr", res, std::make_shared<SurfaceCompositeRibbon>());
-  surfaceTest(filename, "mp", res, std::make_shared<SurfaceMidpoint>());
-  surfaceTest(filename, "mc", res, std::make_shared<SurfaceMidpointCoons>());
+  // surfaceTest(filename, "sb", res, std::make_shared<SurfaceSideBased>());
+  // surfaceTest(filename, "cb", res, std::make_shared<SurfaceCornerBased>());
+  // surfaceTest(filename, "gc", res, std::make_shared<SurfaceGeneralizedCoons>());
+  // surfaceTest(filename, "cr", res, std::make_shared<SurfaceCompositeRibbon>());
+  // surfaceTest(filename, "mp", res, std::make_shared<SurfaceMidpoint>());
+  // surfaceTest(filename, "mc", res, std::make_shared<SurfaceMidpointCoons>());
   surfaceTest(filename, "pp", res, std::make_shared<SurfacePolar>());
 
   return 0;

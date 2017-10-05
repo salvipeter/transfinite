@@ -5,12 +5,6 @@
 namespace Transfinite {
 
 double
-blendHermite(double x) {
-  double x2 = x * x;
-  return 2.0 * x * x2 - 3.0 * x2 + 1.0;
-}
-
-double
 hermite(int i, double t) {
   switch(i) {
   case 0: return std::pow(1 - t, 3) + 3.0 * std::pow(1 - t, 2) * t;

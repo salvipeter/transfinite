@@ -235,8 +235,8 @@ Surface::blendCornerDeficient(const Point2DVector &sds) const {
       blf.push_back(1.0);
       continue;
     }
-    blf.push_back((sds[ip][1] * blendHermite(1.0 - sds[i][0]) * blendHermite(sds[i][1] ) +
-                   sds[i][1]  * blendHermite(   sds[ip][0]  ) * blendHermite(sds[ip][1])) /
+    blf.push_back((sds[ip][1] * hermite(0, 1.0 - sds[i][0]) * hermite(0, sds[i][1] ) +
+                   sds[i][1]  * hermite(0,    sds[ip][0]  ) * hermite(0, sds[ip][1])) /
                   (sds[i][1] + sds[ip][1]));
   }
   return blf;

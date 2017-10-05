@@ -20,6 +20,7 @@ add_library(transfinite
   ribbon.cc
     ribbon-compatible.cc
     ribbon-compatible-with-handler.cc
+    ribbon-nsided.cc
   surface.cc
     surface-side-based.cc
     surface-corner-based.cc

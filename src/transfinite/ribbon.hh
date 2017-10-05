@@ -18,8 +18,8 @@ public:
   void reset();
   virtual void update();
   virtual Vector3D crossDerivative(double s) const = 0;
-  Point3D eval(const Point2D &sd) const;
-  Vector3D normal(double s) const;
+  virtual Point3D eval(const Point2D &sd) const;
+  virtual Vector3D normal(double s) const;
 
 protected:
   std::shared_ptr<BSCurve> curve_;
