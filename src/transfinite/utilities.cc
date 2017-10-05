@@ -5,6 +5,15 @@
 namespace Transfinite {
 
 double
+inrange(double min, double x, double max) {
+  if (x < min)
+    return min;
+  if (x > max)
+    return max;
+  return x;
+}
+
+double
 hermite(int i, double t) {
   switch(i) {
   case 0: return std::pow(1 - t, 3) + 3.0 * std::pow(1 - t, 2) * t;
@@ -41,6 +50,17 @@ bernstein(size_t i, size_t n, double u) {
     for (size_t j = n; j >= k; --j)
       tmp[j] = tmp[j-1] * u + tmp[j] * u1;
   return tmp[n];
+}
+
+void
+bezierElevate(PointVector &cpts) {
+  size_t n = cpts.size();
+  Point3D tmp = cpts[0];
+  for (size_t i = 1; i < n; ++i) {
+    tmp = tmp * i / n + cpts[i] * (n - i) / n;
+    std::swap(cpts[i], tmp);
+  }
+  cpts.push_back(tmp);
 }
 
 } // namespace Transfinite

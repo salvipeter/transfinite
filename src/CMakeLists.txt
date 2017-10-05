@@ -15,7 +15,7 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
   set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 endif()
 
-set(USE_OWN_GEOMETRY_LIB OFF)
+set(USE_OWN_GEOMETRY_LIB ON)
 
 add_subdirectory(transfinite)
 add_subdirectory(test)
