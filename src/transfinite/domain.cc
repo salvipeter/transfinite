@@ -53,6 +53,11 @@ Domain::toLocal(size_t i, const Vector2D &v) const {
   return Point2D(v * du_[i], v * dv_[i]) / du_[i].normSqr();
 }
 
+Point2D
+Domain::fromLocal(size_t i, const Vector2D &v) const {
+  return du_[i] * v[0] + dv_[i] * v[1];
+}
+
 bool
 Domain::intersectEdgeWithRay(size_t i, const Point2D &p, const Vector2D &v, Point2D &result) const {
   Point2D q1 = vertices_[prev(i)], q2 = vertices_[i];

@@ -31,6 +31,7 @@ public:
   double angle(size_t i) const;
   const Point2DVector &vertices() const;
   Point2D toLocal(size_t i, const Vector2D &v) const;
+  Point2D fromLocal(size_t i, const Vector2D &v) const;
   bool intersectEdgeWithRay(size_t i, const Point2D &p, const Vector2D &v, Point2D &result) const;
 
 protected:

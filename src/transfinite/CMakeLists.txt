@@ -30,6 +30,7 @@ add_library(transfinite
     surface-composite-ribbon.cc
     surface-midpoint.cc
     surface-midpoint-coons.cc
+    surface-nsided.cc
     surface-polar.cc
   utilities.cc
 )
