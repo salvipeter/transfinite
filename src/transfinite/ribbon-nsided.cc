@@ -1,3 +1,5 @@
+#include <cmath>
+
 #include "ribbon-nsided.hh"
 #include "utilities.hh"
 
@@ -16,8 +18,19 @@ RibbonNSided::update() {
 Vector3D
 RibbonNSided::crossDerivative(double s) const {
   Vector3D n = normal(s);
-  // TODO
-  return Vector3D(0,0,0);
+  double u = inrange(0, s, 1);
+  VectorVector der;
+  curve_->eval(u, 1, der);
+  Vector3D &d = der[1].normalize();
+  if (s == u)
+    return n ^ d;
+
+  // Polar lines
+  double phi = s < 0 ? -s : s - 1;
+  if (s < 0)
+    d *= -1;
+  Vector3D b = d ^ n;
+  return b * std::cos(phi) + d * std::sin(phi);
 }
 
 Point3D
