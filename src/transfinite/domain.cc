@@ -57,17 +57,12 @@ bool
 Domain::intersectEdgeWithRay(size_t i, const Point2D &p, const Vector2D &v, Point2D &result) const {
   Point2D q1 = vertices_[prev(i)], q2 = vertices_[i];
   size_t x = fabs(v[0]) > fabs(v[1]) ? 0 : 1, y = 1 - x;
-  double denom = q2[y] - q1[y];
+  double denom = v[x] * (q2[y] - q1[y]) - v[y] * (q2[x] - q1[x]);
 
-  if (fabs(denom) < epsilon) {
-    x = 1 - x; y = 1 - y;
-    if (fabs(v[x]) < epsilon)     // parallel
-      return false;
-    denom = q2[y] - q1[y];
-  }
+  if (fabs(denom) < epsilon)
+    return false;
 
-  double dv = v[y] / v[x];
-  double t = (p[y] - q1[y] + dv * (q1[x] - p[x])) / (denom - dv * (q2[x] - q1[x]));
+  double t = (v[x] * (p[y] - q1[y]) + v[y] * (q1[x] - p[x])) / denom;
 
   if (t < -epsilon || t > 1 + epsilon)
     return false;
