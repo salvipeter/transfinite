@@ -61,13 +61,12 @@ Domain::fromLocal(size_t i, const Vector2D &v) const {
 bool
 Domain::intersectEdgeWithRay(size_t i, const Point2D &p, const Vector2D &v, Point2D &result) const {
   Point2D q1 = vertices_[prev(i)], q2 = vertices_[i];
-  size_t x = fabs(v[0]) > fabs(v[1]) ? 0 : 1, y = 1 - x;
-  double denom = v[x] * (q2[y] - q1[y]) - v[y] * (q2[x] - q1[x]);
+  double denom = v[0] * (q2[1] - q1[1]) - v[1] * (q2[0] - q1[0]);
 
   if (fabs(denom) < epsilon)
     return false;
 
-  double t = (v[x] * (p[y] - q1[y]) + v[y] * (q1[x] - p[x])) / denom;
+  double t = (v[0] * (p[1] - q1[1]) - v[1] * (p[0] - q1[0])) / denom;
 
   if (t < -epsilon || t > 1 + epsilon)
     return false;
