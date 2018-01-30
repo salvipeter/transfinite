@@ -4,7 +4,7 @@ project(Transfinite)
 cmake_policy(SET CMP0015 NEW)   # link directories are relative to source
 
 if(CMAKE_COMPILER_IS_GNUCXX)
-  set(CMAKE_CXX_FLAGS "-Wall -pedantic -std=c++1y -fPIC")
+  set(CMAKE_CXX_FLAGS "-Wall -pedantic -std=c++17 -fPIC")
   set(CMAKE_CXX_FLAGS_DEBUG "-O0 -g -DDEBUG")
   set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 endif(CMAKE_COMPILER_IS_GNUCXX)
