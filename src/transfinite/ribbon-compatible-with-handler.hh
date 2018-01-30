@@ -7,8 +7,8 @@ namespace Transfinite {
 class RibbonCompatibleWithHandler : public RibbonCompatible {
 public:
   virtual ~RibbonCompatibleWithHandler();
-  virtual void update();
-  virtual Vector3D crossDerivative(double s) const;
+  virtual void update() override;
+  virtual Vector3D crossDerivative(double s) const override;
 
 protected:
   Vector3D central_;

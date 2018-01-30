@@ -10,11 +10,11 @@ public:
   SurfaceCornerBased(const SurfaceCornerBased &) = default;
   virtual ~SurfaceCornerBased();
   SurfaceCornerBased &operator=(const SurfaceCornerBased &) = default;
-  virtual Point3D eval(const Point2D &uv) const;
+  virtual Point3D eval(const Point2D &uv) const override;
   using Surface::eval;
 
 protected:
-  virtual std::shared_ptr<Ribbon> newRibbon() const;
+  virtual std::shared_ptr<Ribbon> newRibbon() const override;
 };
 
 } // namespace Transfinite

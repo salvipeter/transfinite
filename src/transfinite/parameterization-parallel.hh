@@ -7,8 +7,8 @@ namespace Transfinite {
 class ParameterizationParallel : public ParameterizationBilinear {
 public:
   virtual ~ParameterizationParallel();
-  virtual Point2D mapToRibbon(size_t i, const Point2D &uv) const;
-  virtual void update();
+  virtual Point2D mapToRibbon(size_t i, const Point2D &uv) const override;
+  virtual void update() override;
 
 protected:
   DoubleVector multipliers_;

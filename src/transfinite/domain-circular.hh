@@ -7,7 +7,7 @@ namespace Transfinite {
 class DomainCircular : public Domain {
 public:
   virtual ~DomainCircular();
-  virtual bool update();
+  virtual bool update() override;
 };
 
 } // namespace Transfinite

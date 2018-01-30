@@ -10,7 +10,7 @@ public:
   SurfaceMidpointCoons(const SurfaceMidpointCoons &) = default;
   virtual ~SurfaceMidpointCoons();
   SurfaceMidpointCoons &operator=(const SurfaceMidpointCoons &) = default;
-  virtual Point3D eval(const Point2D &uv) const;
+  virtual Point3D eval(const Point2D &uv) const override;
   using Surface::eval;
 };
 
