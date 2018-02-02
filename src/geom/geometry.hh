@@ -177,6 +177,7 @@ public:
   using Triangle = std::array<size_t, 3>;
 
   // Mesh building
+  void clear();
   void resizePoints(size_t n);
   void setPoints(const PointVector &pv);
   void addTriangle(size_t a, size_t b, size_t c);

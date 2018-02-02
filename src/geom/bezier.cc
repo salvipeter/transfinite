@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <cmath>
 
 #include "downhill.h"
 
@@ -97,7 +98,7 @@ BCurve::fitClassA(size_t degree,
     Vector3D axis = (Matrix3x3::rotation((v1 - v0).normalize(), phi) * (v0 ^ v1)).normalize();
     Vector3D w0 = (v0 - axis * (v0 * axis)).normalize();
     Vector3D w1 = (v1 - axis * (v1 * axis)).normalize();
-    double theta = acos(std::min(std::max(w0 * w1, -1.0), 1.0)) / (degree - 1);
+    double theta = std::acos(std::min(std::max(w0 * w1, -1.0), 1.0)) / (degree - 1);
     M = Matrix3x3::rotation(axis, theta) * s;
   };
   auto evalMatrix = [this, generateClassA, pa, pb, v0] (const Matrix3x3 &M) -> double {

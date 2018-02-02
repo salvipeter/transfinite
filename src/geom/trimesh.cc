@@ -8,6 +8,12 @@
 namespace Geometry {
 
 void
+TriMesh::clear() {
+  points_.clear();
+  triangles_.clear();
+}
+
+void
 TriMesh::resizePoints(size_t n) {
   points_.resize(n);
 }
