@@ -10,7 +10,8 @@ namespace Geometry {
 BCurve::BCurve() {
 }
 
-BCurve::BCurve(const PointVector &cpts) : cp_(cpts) {
+BCurve::BCurve(const PointVector &cpts) : n_(cpts.size() - 1), cp_(cpts)
+{
 }
 
 Point3D
