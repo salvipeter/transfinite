@@ -185,8 +185,11 @@ public:
   void resizePoints(size_t n);
   void setPoints(const PointVector &pv);
   void addTriangle(size_t a, size_t b, size_t c);
+  void setTriangles(const std::list<Triangle> &tl);
 
   // I/O
+  Point3D &operator[](size_t i);
+  const Point3D &operator[](size_t i) const;
   PointVector points() const;
   std::list<Triangle> triangles() const;
   Triangle closestTriangle(const Point3D &p) const;

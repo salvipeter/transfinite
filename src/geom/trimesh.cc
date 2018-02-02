@@ -28,6 +28,21 @@ TriMesh::addTriangle(size_t a, size_t b, size_t c) {
   triangles_.push_back({a, b, c});
 }
 
+void
+TriMesh::setTriangles(const std::list<Triangle> &tl) {
+  triangles_ = tl;
+}
+
+Point3D &
+TriMesh::operator[](size_t i) {
+  return points_[i];
+}
+ 
+const Point3D &
+TriMesh::operator[](size_t i) const {
+  return points_[i];
+}
+
 PointVector
 TriMesh::points() const {
   return points_;
