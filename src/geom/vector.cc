@@ -39,6 +39,16 @@ Vector2D::operator/=(double x) {
   return *this;
 }
 
+double *
+Vector2D::data() {
+  return v_.data();
+}
+
+const double *
+Vector2D::data() const {
+  return v_.data();
+}
+
 double &
 Vector2D::operator[](size_t i) {
   return v_[i];
@@ -130,6 +140,16 @@ Vector3D::operator/=(double x) {
   v_[1] /= x;
   v_[2] /= x;
   return *this;
+}
+
+double *
+Vector3D::data() {
+  return v_.data();
+}
+
+const double *
+Vector3D::data() const {
+  return v_.data();
 }
 
 double &

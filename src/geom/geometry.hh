@@ -37,6 +37,8 @@ public:
   Vector2D &operator/=(double x);
 
   // Coordinates
+  double *data();
+  const double *data() const;
   double &operator[](size_t i);
   const double &operator[](size_t i) const;
 
@@ -70,6 +72,8 @@ public:
   Vector3D &operator/=(double x);
 
   // Coordinates
+  double *data();
+  const double *data() const;
   double &operator[](size_t i);
   const double &operator[](size_t i) const;
 
