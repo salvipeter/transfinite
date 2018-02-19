@@ -190,8 +190,8 @@ public:
   // I/O
   Point3D &operator[](size_t i);
   const Point3D &operator[](size_t i) const;
-  PointVector points() const;
-  std::list<Triangle> triangles() const;
+  const PointVector &points() const;
+  const std::list<Triangle> &triangles() const;
   Triangle closestTriangle(const Point3D &p) const;
   bool writeOBJ(std::string filename) const;
 

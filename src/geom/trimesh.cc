@@ -43,12 +43,12 @@ TriMesh::operator[](size_t i) const {
   return points_[i];
 }
 
-PointVector
+const PointVector &
 TriMesh::points() const {
   return points_;
 }
 
-std::list<TriMesh::Triangle>
+const std::list<TriMesh::Triangle> &
 TriMesh::triangles() const {
   return triangles_;
 }
