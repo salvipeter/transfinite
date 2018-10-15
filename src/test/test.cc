@@ -442,10 +442,10 @@ int main(int argc, char **argv) {
   // surfaceTest(filename, "cb", res, std::make_shared<SurfaceCornerBased>());
   // surfaceTest(filename, "gc", res, std::make_shared<SurfaceGeneralizedCoons>());
   // surfaceTest(filename, "cr", res, std::make_shared<SurfaceCompositeRibbon>());
-  // surfaceTest(filename, "mp", res, std::make_shared<SurfaceMidpoint>());
+  surfaceTest(filename, "mp", res, std::make_shared<SurfaceMidpoint>());
   // surfaceTest(filename, "mc", res, std::make_shared<SurfaceMidpointCoons>());
   // surfaceTest(filename, "pp", res, std::make_shared<SurfacePolar>());
-  surfaceTest(filename, "ns", res, std::make_shared<SurfaceNSided>());
+  // surfaceTest(filename, "ns", res, std::make_shared<SurfaceNSided>());
 
   return 0;
 }
