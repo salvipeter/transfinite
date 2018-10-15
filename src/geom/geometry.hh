@@ -157,6 +157,10 @@ public:
   Point3D eval(double u) const;
   Point3D eval(double u, size_t nr_der, VectorVector &der) const;
 
+  // Coordinates
+  const PointVector &controlPoints() const;
+  PointVector &controlPoints();
+
   // Parameterization
   void reverse();
   void normalize();

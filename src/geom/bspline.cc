@@ -106,6 +106,16 @@ BSCurve::eval(double u, size_t nr_der, VectorVector &der) const {
   return der[0];
 }
 
+const PointVector &
+BSCurve::controlPoints() const {
+  return cp_;
+}
+
+PointVector &
+BSCurve::controlPoints() {
+  return cp_;
+}
+
 void
 BSCurve::reverse() {
   size_t k = knots_.size();
