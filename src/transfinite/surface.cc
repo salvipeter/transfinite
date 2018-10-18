@@ -162,6 +162,13 @@ Surface::cornerInterpolant(size_t i, const Point2DVector &sds) const {
     - cornerCorrection(i, 1.0 - si, si1);
 }
 
+Point3D
+Surface::cornerInterpolantD(size_t i, const Point2DVector &sds) const {
+  double di = sds[i][1], di1 = sds[next(i)][1];
+  return sideInterpolant(i, 1.0 - di1, di) + sideInterpolant(next(i), di, di1)
+    - cornerCorrection(i, di1, di);
+}
+
 DoubleVector
 Surface::blendCorner(const Point2DVector &sds) const {
   DoubleVector blf; blf.reserve(n_);
