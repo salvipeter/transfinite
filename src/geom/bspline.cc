@@ -26,6 +26,18 @@ BSCurve::findSpan(double u) const {
   return (std::upper_bound(knots_.begin() + p_ + 1, knots_.end(), u) - knots_.begin()) - 1;
 }
 
+size_t
+BSCurve::findSpanWithMultiplicity(double u, size_t &multi) const
+{
+  auto range = std::equal_range(knots_.begin(), knots_.end(), u);
+  multi = range.second - range.first;
+
+  if (u == knots_[n_+1])
+    return n_;
+  return (range.second - knots_.begin()) - 1;
+}
+
+
 void
 BSCurve::basisFunctions(size_t i, double u, DoubleVector &coeff) const {
   coeff.clear(); coeff.reserve(p_ + 1);
@@ -163,6 +175,88 @@ BSCurve::arcLength(double from, double to) const {
   }
 
   return sum + arcLength(next, to);
+}
+
+BSCurve
+BSCurve::insertKnot(double u, size_t k, size_t s, size_t r) const {
+  BSCurve result;
+  result.p_ = p_; result.n_ = n_ + r;
+
+  result.knots_.reserve(knots_.size() + r);
+  std::copy_n(knots_.begin(), k + 1, std::back_inserter(result.knots_));
+  std::fill_n(std::back_inserter(result.knots_), r, u);
+  std::copy(knots_.begin() + k + 1, knots_.end(), std::back_inserter(result.knots_));
+
+  result.cp_.resize(cp_.size() + r);
+  std::copy_n(cp_.begin(), k - p_ + 1, result.cp_.begin());
+  std::copy(cp_.begin() + k - s, cp_.end(), result.cp_.begin() + r + k - s);
+
+  PointVector tmp; tmp.reserve(p_ - s + 1);
+
+  std::copy_n(cp_.begin() + k - p_, p_ - s + 1, std::back_inserter(tmp));
+
+  size_t L = k - p_ + 1;
+  for (size_t j = 1; j <= r; ++j, ++L) {
+    for (size_t i = 0; i <= p_ - j - s; ++i) {
+      double alpha = (u - knots_[L+i]) / (knots_[i+k+1] - knots_[L+i]);
+      tmp[i] = tmp[i+1] * alpha + tmp[i] * (1.0 - alpha);
+    }
+    result.cp_[L] = tmp[0];
+    result.cp_[k+r-j-s] = tmp[p_-j-s];
+  }
+  std::copy_n(tmp.begin() + 1, p_ - s - 1 - r, result.cp_.begin() + L);
+
+  return result;
+}
+
+BSCurve
+BSCurve::insertKnot(double u, size_t r) const {
+  size_t s;
+  size_t k = findSpanWithMultiplicity(u, s);
+  r = std::min(r, p_ - s);
+  return insertKnot(u, k, s, r);
+}
+
+DoubleVector
+BSCurve::intersectWithPlane(const Point3D &p, const Vector3D &n) const {
+  DoubleVector result;
+  BSCurve c = *this;
+  for (size_t k = 1; k <= c.n_; ++k) {
+    double d1 = (c.cp_[k-1] - p) * n;
+    double d2 = (c.cp_[k]   - p) * n;
+    if (d1 * d2 <= 0.0) {
+      if (d1 * d2 == 0.0 && d1 + d2 != 0.0 &&
+          ((k == 1    && d1 == 0.0) ||
+           (k == c.n_ && d2 == 0.0) ||
+           (k < c.n_  && (c.cp_[k+1] - p) * n == 0)))
+        continue;
+      double k1 = c.knots_[k], k2 = c.knots_[k+c.p_];
+      double g1 = k1, g2 = k2;
+      for (size_t l = k + 1, le = k + c.p_; l != le; ++l) {
+        g1 += c.knots_[l];
+        g2 += c.knots_[l];
+      }
+      g1 /= c.p_; g2 /= c.p_;
+      double ratio = d1 == 0.0 && d2 == 0.0
+        ? (g1 == k1 ? 0.0 : (g2 == k2 ? 1.0 : 0.5))
+        : std::abs(d1 / (d1 - d2));
+      double new_knot = g1 * (1.0 - ratio) + g2 * ratio;
+      if (std::abs((c.eval(new_knot) - p) * n) < epsilon) {
+        result.push_back(new_knot);
+        for (; k <= c.n_; ++k) {
+          double dd = (c.cp_[k] - p) * n;
+          if (dd != 0.0)
+            break;
+        }
+      } else {
+        size_t old_size = c.n_;
+        c = c.insertKnot(new_knot, c.p_ - 1);
+        if (c.n_ != old_size)
+          --k;
+      }
+    }
+  }
+  return result;
 }
 
 } // namespace Geometry

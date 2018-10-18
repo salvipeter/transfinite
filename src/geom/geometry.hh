@@ -150,8 +150,10 @@ class BSCurve {
 public:
   // Constructors
   BSCurve();
+  BSCurve(const BSCurve &) = default;
   BSCurve(const PointVector &cpts);
   BSCurve(size_t degree, const DoubleVector &knots, const PointVector &cpts);
+  BSCurve &operator=(const BSCurve &) = default;
 
   // Evaluation
   Point3D eval(double u) const;
@@ -167,9 +169,13 @@ public:
 
   // Other
   double arcLength(double from, double to) const;
+  BSCurve insertKnot(double u, size_t r) const;
+  DoubleVector intersectWithPlane(const Point3D &p, const Vector3D &n) const;
 
 private:
   size_t findSpan(double u) const;
+  size_t findSpanWithMultiplicity(double u, size_t &multi) const;
+  BSCurve insertKnot(double u, size_t k, size_t s, size_t r) const;
   void basisFunctions(size_t i, double u, DoubleVector &coeff) const;
   void basisFunctionsAll(size_t i, double u, std::vector<DoubleVector> &coeff) const;
   void derivativeControlPoints(size_t d, size_t r1, size_t r2, std::vector<PointVector> &dcp) const;
