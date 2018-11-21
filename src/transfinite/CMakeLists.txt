@@ -22,6 +22,7 @@ add_library(transfinite
     ribbon-compatible.cc
     ribbon-compatible-with-handler.cc
     ribbon-nsided.cc
+    ribbon-perpendicular.cc
   surface.cc
     surface-side-based.cc
     surface-corner-based.cc
