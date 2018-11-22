@@ -20,6 +20,7 @@ Makefile
 *.sdf
 *.opensdf
 *.user
+src/Eigen
 src/Eigen/*
 pack/*
 models/*

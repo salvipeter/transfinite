@@ -120,6 +120,11 @@ Surface::domain() const {
   return domain_;
 }
 
+std::shared_ptr<const Parameterization>
+Surface::parameterization() const {
+  return param_;
+}
+
 std::shared_ptr<const Ribbon>
 Surface::ribbon(size_t i) const {
   return ribbons_[i];

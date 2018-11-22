@@ -26,6 +26,7 @@ public:
   virtual void update(size_t i);
   virtual void update();
   std::shared_ptr<const Domain> domain() const;
+  std::shared_ptr<const Parameterization> parameterization() const;
   std::shared_ptr<const Ribbon> ribbon(size_t i) const;
   virtual Point3D eval(const Point2D &uv) const = 0;
   TriMesh eval(size_t resolution) const;
