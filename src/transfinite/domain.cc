@@ -77,6 +77,11 @@ Domain::intersectEdgeWithRay(size_t i, const Point2D &p, const Vector2D &v, Poin
   return true;
 }
 
+size_t
+Domain::size() const {
+  return n_;
+}
+
 const Point2DVector &
 Domain::parameters(size_t resolution) const {
   size_t size = 1 + n_ * resolution * (resolution + 1) / 2;

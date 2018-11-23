@@ -23,6 +23,7 @@ public:
   void setSide(size_t i, const std::shared_ptr<BSCurve> &curve);
   void setSides(const CurveVector &curves);
   virtual bool update();
+  size_t size() const;
   virtual const Point2DVector &parameters(size_t resolution) const;
   virtual TriMesh meshTopology(size_t resolution) const;
   const Point2D &center() const;
