@@ -170,6 +170,14 @@ void surfaceTest(std::string filename, std::string type, size_t resolution,
 void bezierTest(const std::string &filename) {
   SurfaceGeneralizedBezier surf = loadBezier("../../models/" + filename + ".gbp");
 
+  std::chrono::steady_clock::time_point begin, end;
+  begin = std::chrono::steady_clock::now();
+  surf.eval(100).writeOBJ("../../models/" + filename + "-GB.obj");
+  end = std::chrono::steady_clock::now();
+  std::cout << "  evaluation time : "
+            << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count()
+            << "ms" << std::endl;
+  
   // Generate mesh output
   TriMesh mesh = surf.eval(15);
   mesh.writeOBJ("../../models/bezier.obj");
