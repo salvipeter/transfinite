@@ -86,6 +86,7 @@ const Point2DVector &
 Domain::parameters(size_t resolution) const {
   size_t size = 1 + n_ * resolution * (resolution + 1) / 2;
   if (parameters_.size() != size) {
+    parameters_.clear();
     parameters_.reserve(size);
     parameters_.push_back(center_);
     for (size_t j = 1; j <= resolution; ++j) {
