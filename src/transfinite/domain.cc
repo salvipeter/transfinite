@@ -82,12 +82,43 @@ Domain::size() const {
   return n_;
 }
 
+static size_t meshSize(size_t n, size_t resolution) {
+  if (n == 3)
+    return (resolution + 1) * (resolution + 2) / 2;
+  if (n == 4)
+    return (resolution + 1) * (resolution + 1);
+  return 1 + n * resolution * (resolution + 1) / 2;
+}
+
 const Point2DVector &
 Domain::parameters(size_t resolution) const {
-  size_t size = 1 + n_ * resolution * (resolution + 1) / 2;
-  if (parameters_.size() != size) {
-    parameters_.clear();
-    parameters_.reserve(size);
+  size_t size = meshSize(n_, resolution);
+  if (parameters_.size() == size)
+    return parameters_;
+  parameters_.clear();
+  parameters_.reserve(size);
+
+  if (n_ == 3) {
+    for (size_t j = 0; j <= resolution; ++j) {
+      double u = (double)j / resolution;
+      auto p = vertices_[0] * u + vertices_[2] * (1 - u);
+      auto q = vertices_[1] * u + vertices_[2] * (1 - u);
+      for (size_t k = 0; k <= j; ++k) {
+        double v = j == 0 ? 1.0 : (double)k / j;
+        parameters_.push_back(p * (1 - v) + q * v);
+      }
+    }
+  } else if (n_ == 4) {
+    for (size_t j = 0; j <= resolution; ++j) {
+      double u = (double)j / resolution;
+      auto p = vertices_[0] * (1 - u) + vertices_[1] * u;
+      auto q = vertices_[3] * (1 - u) + vertices_[2] * u;
+      for (size_t k = 0; k <= resolution; ++k) {
+        double v = (double)k / resolution;
+        parameters_.push_back(p * (1 - v) + q * v);
+      }
+    }
+  } else { // n_ > 4
     parameters_.push_back(center_);
     for (size_t j = 1; j <= resolution; ++j) {
       double u = (double)j / (double)resolution;
@@ -106,27 +137,46 @@ Domain::parameters(size_t resolution) const {
 TriMesh
 Domain::meshTopology(size_t resolution) const {
   TriMesh mesh;
-  mesh.resizePoints(1 + n_ * resolution * (resolution + 1) / 2);
+  mesh.resizePoints(meshSize(n_, resolution));
 
-  size_t inner_start = 0, outer_vert = 1;
-  for (size_t layer = 1; layer <= resolution; ++layer) {
-    size_t inner_vert = inner_start, outer_start = outer_vert;
-    for (size_t side = 0; side < n_; ++side) {
-      size_t vert = 0;
-      while(true) {
-        size_t next_vert = (side == n_ - 1 && vert == layer - 1) ? outer_start : (outer_vert + 1);
-        mesh.addTriangle(inner_vert, outer_vert, next_vert);
-        ++outer_vert;
-        if (++vert == layer)
-          break;
-        size_t inner_next = (side == n_ - 1 && vert == layer - 1) ? inner_start : (inner_vert + 1);
-        mesh.addTriangle(inner_vert, next_vert, inner_next);
-        inner_vert = inner_next;
+  if (n_ == 3) {
+    size_t prev = 0, current = 1;
+    for (size_t i = 0; i < resolution; ++i) {
+      for (size_t j = 0; j < i; ++j) {
+        mesh.addTriangle(current + j, current + j + 1, prev + j);
+        mesh.addTriangle(current + j + 1, prev + j + 1, prev + j);
       }
+      mesh.addTriangle(current + i, current + i + 1, prev + i);
+      prev = current;
+      current += i + 2;
     }
-    inner_start = outer_start;
+  } else if (n_ == 4) {
+    for (size_t i = 0; i < resolution; ++i)
+      for (size_t j = 0; j < resolution; ++j) {
+        size_t index = i * (resolution + 1) + j;
+        mesh.addTriangle(index, index + resolution + 1, index + 1);
+        mesh.addTriangle(index + 1, index + resolution + 2, index + resolution + 1);
+      }
+  } else { // n_ > 4
+    size_t inner_start = 0, outer_vert = 1;
+    for (size_t layer = 1; layer <= resolution; ++layer) {
+      size_t inner_vert = inner_start, outer_start = outer_vert;
+      for (size_t side = 0; side < n_; ++side) {
+        size_t vert = 0;
+        while(true) {
+          size_t next_vert = (side == n_ - 1 && vert == layer - 1) ? outer_start : (outer_vert + 1);
+          mesh.addTriangle(inner_vert, outer_vert, next_vert);
+          ++outer_vert;
+          if (++vert == layer)
+            break;
+          size_t inner_next = (side == n_ - 1 && vert == layer - 1) ? inner_start : (inner_vert + 1);
+          mesh.addTriangle(inner_vert, next_vert, inner_next);
+          inner_vert = inner_next;
+        }
+      }
+      inner_start = outer_start;
+    }
   }
-
   return mesh;
 }
 
