@@ -21,6 +21,7 @@ add_library(transfinite
   ribbon.cc
     ribbon-compatible.cc
     ribbon-compatible-with-handler.cc
+    ribbon-coons.cc
     ribbon-nsided.cc
     ribbon-perpendicular.cc
   surface.cc
@@ -33,5 +34,6 @@ add_library(transfinite
     surface-midpoint-coons.cc
     surface-nsided.cc
     surface-polar.cc
+    surface-c0coons.cc
   utilities.cc
 )

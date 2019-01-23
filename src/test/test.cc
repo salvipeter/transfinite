@@ -14,6 +14,7 @@
 #include "surface-midpoint-coons.hh"
 #include "surface-nsided.hh"
 #include "surface-polar.hh"
+#include "surface-c0coons.hh"
 
 #include "gb-fit.hh"
 #include "io.hh"
@@ -454,6 +455,7 @@ int main(int argc, char **argv) {
   // surfaceTest(filename, "mc", res, std::make_shared<SurfaceMidpointCoons>());
   // surfaceTest(filename, "pp", res, std::make_shared<SurfacePolar>());
   // surfaceTest(filename, "ns", res, std::make_shared<SurfaceNSided>());
+  surfaceTest(filename, "cc", res, std::make_shared<SurfaceC0Coons>());
 
   return 0;
 }
