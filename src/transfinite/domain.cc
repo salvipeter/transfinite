@@ -155,7 +155,7 @@ Domain::meshTopology(size_t resolution) const {
       for (size_t j = 0; j < resolution; ++j) {
         size_t index = i * (resolution + 1) + j;
         mesh.addTriangle(index, index + resolution + 1, index + 1);
-        mesh.addTriangle(index + 1, index + resolution + 2, index + resolution + 1);
+        mesh.addTriangle(index + 1, index + resolution + 1, index + resolution + 2);
       }
   } else { // n_ > 4
     size_t inner_start = 0, outer_vert = 1;
