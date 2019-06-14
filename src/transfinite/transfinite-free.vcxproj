@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -22,31 +22,32 @@
     <ProjectGuid>{D2794688-F7FE-49DD-8A50-973F1395ABB0}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>transfinite</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
@@ -146,21 +147,26 @@
     <ClInclude Include="domain.hh" />
     <ClInclude Include="parameterization-barycentric.hh" />
     <ClInclude Include="parameterization-bilinear.hh" />
+    <ClInclude Include="parameterization-constrained-barycentric.hh" />
     <ClInclude Include="parameterization-interconnected.hh" />
     <ClInclude Include="parameterization-parallel.hh" />
     <ClInclude Include="parameterization.hh" />
     <ClInclude Include="ribbon-compatible-with-handler.hh" />
     <ClInclude Include="ribbon-compatible.hh" />
+    <ClInclude Include="ribbon-coons.hh" />
     <ClInclude Include="ribbon-dummy.hh" />
     <ClInclude Include="ribbon.hh" />
     <ClInclude Include="rmf.hh" />
+    <ClInclude Include="surface-c0coons.hh" />
     <ClInclude Include="surface-composite-ribbon.hh" />
     <ClInclude Include="surface-corner-based.hh" />
     <ClInclude Include="surface-generalized-bezier.hh" />
     <ClInclude Include="surface-generalized-coons.hh" />
+    <ClInclude Include="surface-midpoint-coons.hh" />
     <ClInclude Include="surface-side-based.hh" />
     <ClInclude Include="surface-midpoint.hh" />
     <ClInclude Include="surface.hh" />
+    <ClInclude Include="utilities.hh" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="domain-angular.cc" />
@@ -169,20 +175,25 @@
     <ClCompile Include="domain.cc" />
     <ClCompile Include="parameterization-barycentric.cc" />
     <ClCompile Include="parameterization-bilinear.cc" />
+    <ClCompile Include="parameterization-constrained-barycentric.cc" />
     <ClCompile Include="parameterization-interconnected.cc" />
     <ClCompile Include="parameterization-parallel.cc" />
     <ClCompile Include="parameterization.cc" />
     <ClCompile Include="ribbon-compatible-with-handler.cc" />
     <ClCompile Include="ribbon-compatible.cc" />
+    <ClCompile Include="ribbon-coons.cc" />
     <ClCompile Include="ribbon.cc" />
     <ClCompile Include="rmf.cc" />
+    <ClCompile Include="surface-c0coons.cc" />
     <ClCompile Include="surface-composite-ribbon.cc" />
     <ClCompile Include="surface-corner-based.cc" />
     <ClCompile Include="surface-generalized-bezier.cc" />
     <ClCompile Include="surface-generalized-coons.cc" />
+    <ClCompile Include="surface-midpoint-coons.cc" />
     <ClCompile Include="surface-side-based.cc" />
     <ClCompile Include="surface-midpoint.cc" />
     <ClCompile Include="surface.cc" />
+    <ClCompile Include="utilities.cc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
