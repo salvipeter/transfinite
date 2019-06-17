@@ -16,10 +16,7 @@ ParameterizationParallel::mapToRibbon(size_t i, const Point2D &uv) const {
 }
 
 void
-ParameterizationParallel::update() {
-  // Should be called first to update n_
-  ParameterizationBilinear::update();
-
+ParameterizationParallel::updateMultipliers() {
   multipliers_.resize(n_);
   const Point2DVector &v = domain_->vertices();
   for (size_t i = 0; i < n_; ++i) {
@@ -31,6 +28,13 @@ ParameterizationParallel::update() {
     }
     multipliers_[i] = 1.0 / max_dist;
   }
+}
+
+void
+ParameterizationParallel::update() {
+  // Should be called first to update n_
+  ParameterizationBilinear::update();
+  updateMultipliers();
 }
 
 } // namespace Transfinite
