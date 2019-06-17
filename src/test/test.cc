@@ -2,6 +2,7 @@
 #include <chrono>
 #include <iostream>
 #include <numeric>
+#include <sstream>
 
 #include "domain.hh"
 #include "ribbon.hh"
@@ -15,6 +16,7 @@
 #include "surface-nsided.hh"
 #include "surface-polar.hh"
 #include "surface-c0coons.hh"
+#include "surface-superd.hh"
 
 #include "gb-fit.hh"
 #include "io.hh"
@@ -217,6 +219,22 @@ void bezierTest(const std::string &filename) {
   writeBezierControlPoints(sextic3, "../../models/bezier-sextic-projected-smooth-cpts.obj");
 }
 
+void superDTest(const std::string &filename, size_t resolution, double fullness) {
+  std::vector<SurfaceSuperD> surfaces = loadSuperDModel("../../models/" + filename + ".sdm");
+
+  std::chrono::steady_clock::time_point begin, end;
+  begin = std::chrono::steady_clock::now();
+  for (size_t i = 0; i < surfaces.size(); ++i) {
+    std::stringstream s;
+    s << "../../models/" << filename << "-SD-" << i << ".obj";
+    surfaces[i].eval(resolution).writeOBJ(s.str());
+  }
+  end = std::chrono::steady_clock::now();
+  std::cout << "  evaluation time : "
+            << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count()
+            << "ms" << std::endl;
+}
+
 void cloudTest(std::string filename, size_t resolution) {
   CurveVector cv = readLOP("../../models/" + filename + ".lop");
   if (cv.empty())
@@ -405,7 +423,8 @@ int main(int argc, char **argv) {
               << argv[0] << " cloud [model-name]" << std::endl
               << argv[0] << " class-a" << std::endl
               << argv[0] << " mesh-fit [model-name] [mesh-name]" << std::endl
-              << argv[0] << " deviation [model-name] [mesh-name]" << std::endl;
+              << argv[0] << " deviation [model-name] [mesh-name]" << std::endl
+              << argv[0] << " superd [model-name]" << std::endl;
     return 1;
   }
 
@@ -435,6 +454,18 @@ int main(int argc, char **argv) {
       meshFitTest(argv[2], argv[3]);
     else
       deviationTest(argv[2], argv[3]);
+    return 0;
+  } else if (filename == "superd") {
+    double fullness;
+    if (argc == 2)
+      superDTest("trebol", 15, 0.5);
+    else {
+      if (argc == 3)
+        fullness = 0.5;
+      else
+        fullness = strtod(argv[3], nullptr);
+      superDTest(argv[2], 15, fullness);
+    }
     return 0;
   }
 

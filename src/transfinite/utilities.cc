@@ -4,6 +4,11 @@
 
 namespace Transfinite {
 
+Point3D
+affineCombine(const Point3D &p, double x, const Point3D &q) {
+  return p * (1 - x) + q * x;
+}
+
 double
 inrange(double min, double x, double max) {
   if (x < min)

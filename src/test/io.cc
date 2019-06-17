@@ -233,3 +233,35 @@ void writeBezierControlPoints(const SurfaceGeneralizedBezier &surf, const std::s
 
   f.close();
 }
+
+std::vector<SurfaceSuperD> loadSuperDModel(const std::string &filename) {
+  std::vector<SurfaceSuperD> result;
+  std::ifstream f(filename);
+  if (!f.is_open()) {
+    std::cerr << "Unable to open file: " << filename << std::endl;
+    return {};
+  }
+  size_t patches;
+  f >> patches;
+  for (size_t i = 0; i < patches; ++i) {
+    SurfaceSuperD surf;
+    size_t n;
+    f >> n;
+    surf.initNetwork(n);
+    double x, y, z;
+    for (size_t j = 0; j < n; ++j) {
+      f >> x >> y >> z;
+      surf.setFaceControlPoint(j, { x, y, z });
+    }
+    for (size_t j = 0; j < n; ++j) {
+      f >> x >> y >> z;
+      surf.setEdgeControlPoint(j, { x, y, z });
+    }
+    f >> x >> y >> z;
+    surf.setVertexControlPoint({ x, y, z });
+    surf.setupLoop();
+    surf.updateRibbons();
+    result.push_back(surf);
+  }
+  return result;
+}

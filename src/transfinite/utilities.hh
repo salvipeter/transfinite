@@ -6,6 +6,8 @@ namespace Transfinite {
 
 using namespace Geometry;
 
+Point3D affineCombine(const Point3D &p, double x, const Point3D &q);
+
 double inrange(double min, double x, double max);
 
 double hermite(int i, double t);

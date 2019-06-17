@@ -18,6 +18,7 @@ add_library(transfinite
     parameterization-parallel.cc
     parameterization-perp-polar.cc
     parameterization-polar.cc
+    parameterization-superd.cc
   ribbon.cc
     ribbon-compatible.cc
     ribbon-compatible-with-handler.cc
@@ -25,7 +26,7 @@ add_library(transfinite
     ribbon-nsided.cc
     ribbon-perpendicular.cc
   surface.cc
-    surface-side-based.cc
+    surface-c0coons.cc
     surface-corner-based.cc
     surface-generalized-bezier.cc
     surface-generalized-coons.cc
@@ -34,6 +35,7 @@ add_library(transfinite
     surface-midpoint-coons.cc
     surface-nsided.cc
     surface-polar.cc
-    surface-c0coons.cc
+    surface-side-based.cc
+    surface-superd.cc
   utilities.cc
 )
