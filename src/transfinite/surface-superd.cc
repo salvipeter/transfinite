@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <cassert>
+#include <fstream>
 
 #include "domain-regular.hh"
 #include "parameterization-superd.hh"
@@ -59,6 +60,23 @@ SurfaceSuperD::generateOpp(size_t i) const {
   assert(false && "generateOpp() should only be called for 3- and 4-sided patches");
 }
 
+// static
+// void writeRibbonMesh(const SurfaceSuperD::QuarticSurface &s, const std::string &filename) {
+//   std::ofstream f(filename);
+//   for (size_t j = 0; j <= 4; ++j)
+//     for (size_t k = 0; k <= 4; ++k) {
+//       auto p = s[j][k];
+//       f << "v " << p[0] << ' ' << p[1] << ' ' << p[2] << std::endl;
+//     }
+//   for (size_t j = 0; j <= 4; ++j)
+//     for (size_t k = 0; k < 4; ++k) {
+//       size_t base = j * 5 + k;
+//       f << "l " << base + 1 << ' ' << base + 2 << std::endl;
+//       base = k * 5 + j;
+//       f << "l " << base + 1 << ' ' << base + 6 << std::endl;
+//     }
+// }
+
 SurfaceSuperD::QuarticSurface
 SurfaceSuperD::generateRibbon(size_t i) const {
   QuarticSurface result;
@@ -103,6 +121,7 @@ SurfaceSuperD::eval(const Point2D &uv) const {
 
 void
 SurfaceSuperD::initNetwork(size_t n) {
+  n_ = n;
   cp_f_.resize(n);
   cp_e_.resize(n);
 }
@@ -110,15 +129,11 @@ SurfaceSuperD::initNetwork(size_t n) {
 void
 SurfaceSuperD::setupLoop() {
   CurveVector curves;
-  DoubleVector knots;
-  PointVector cpts(5);
-  knots.insert(knots.end(), 5, 0.0);
-  knots.insert(knots.end(), 5, 1.0);
   for (size_t i = 0; i < n_; ++i) {
     auto base = generateBase(i);
     PointVector pv;
     pv.assign(base.begin(), base.end());
-    curves.push_back(std::make_shared<BSCurve>(4, knots, pv));
+    curves.push_back(std::make_shared<BSCurve>(pv));
   }
   setCurves(curves);
 
