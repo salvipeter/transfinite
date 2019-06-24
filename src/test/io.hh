@@ -3,6 +3,7 @@
 #include <string>
 
 #include "surface-generalized-bezier.hh"
+#include "surface-spatch.hh"
 #include "surface-superd.hh"
 
 using namespace Transfinite;
@@ -13,4 +14,5 @@ void writePCP(const std::string &filename, const Point2DVector &uvs, const Point
 SurfaceGeneralizedBezier loadBezier(const std::string &filename);
 void saveBezier(const SurfaceGeneralizedBezier &surf, const std::string &filename);
 void writeBezierControlPoints(const SurfaceGeneralizedBezier &surf, const std::string &filename);
+SurfaceSPatch loadSPatch(const std::string &filename);
 std::vector<SurfaceSuperD> loadSuperDModel(const std::string &filename);

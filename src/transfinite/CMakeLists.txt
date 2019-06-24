@@ -36,6 +36,7 @@ add_library(transfinite
     surface-nsided.cc
     surface-polar.cc
     surface-side-based.cc
+    surface-spatch.cc
     surface-superd.cc
   utilities.cc
 )

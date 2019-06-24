@@ -5,6 +5,7 @@
 #include "io.hh"
 
 #include "domain.hh"
+#include "utilities.hh"
 
 CurveVector readLOP(std::string filename) {
   std::ifstream f(filename);
@@ -232,6 +233,27 @@ void writeBezierControlPoints(const SurfaceGeneralizedBezier &surf, const std::s
     }
 
   f.close();
+}
+
+SurfaceSPatch loadSPatch(const std::string &filename) {
+  std::ifstream f(filename);
+  f.exceptions(std::ios::failbit | std::ios::badbit);
+  size_t n, d;
+  f >> n >> d;
+  size_t n_cp = binomial(n + d - 1, d);
+  SurfaceSPatch surf;
+  surf.initNetwork(n, d);
+  SurfaceSPatch::Index index(n);
+  for (size_t i = 0; i < n_cp; ++i) {
+    for (size_t j = 0; j < n; ++j)
+      f >> index[j];
+    Point3D p;
+    for (size_t j = 0; j < 3; ++j)
+      f >> p[j];
+    surf.setControlPoint(index, p);
+  }
+  surf.setupLoop();
+  return surf;
 }
 
 std::vector<SurfaceSuperD> loadSuperDModel(const std::string &filename) {

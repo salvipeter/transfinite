@@ -10,6 +10,8 @@ Point3D affineCombine(const Point3D &p, double x, const Point3D &q);
 
 double inrange(double min, double x, double max);
 
+size_t binomial(size_t n, size_t k);
+
 double hermite(int i, double t);
 
 void bernstein(size_t n, double u, DoubleVector &coeff);

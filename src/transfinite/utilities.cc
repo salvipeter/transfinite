@@ -18,6 +18,16 @@ inrange(double min, double x, double max) {
   return x;
 }
 
+size_t
+binomial(size_t n, size_t k) {
+  if (k > n)
+    return 0;
+  size_t result = 1;
+  for (size_t d = 1; d <= k; ++d, --n)
+    result = result * n / d;
+  return result;
+}
+
 double
 hermite(int i, double t) {
   switch(i) {
