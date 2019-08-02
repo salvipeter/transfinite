@@ -1,4 +1,4 @@
-#include "../Eigen/LU"
+#include "eigen3/Eigen/LU"
 
 #include "domain-angular.hh"
 #include "parameterization-polar.hh"
