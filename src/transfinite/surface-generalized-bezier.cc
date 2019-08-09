@@ -10,7 +10,7 @@ using DomainType = DomainRegular;
 using ParamType = ParameterizationBarycentric;
 using RibbonType = RibbonDummy;
 
-SurfaceGeneralizedBezier::SurfaceGeneralizedBezier() {
+SurfaceGeneralizedBezier::SurfaceGeneralizedBezier() : squared_weights_(false) {
   domain_ = std::make_shared<DomainType>();
   param_ = std::make_shared<ParamType>();
   param_->setDomain(domain_);
@@ -59,8 +59,15 @@ SurfaceGeneralizedBezier::eval(const Point2D &uv) const {
       else
         return nets_[i][0][0];
     }
-    double alpha = di_1 / (di_1 + di);
-    double beta  = di1  / (di1  + di);
+    double alpha, beta;
+    if (squared_weights_) {
+      double di_1_sq = di_1 * di_1, di_sq = di * di, di1_sq = di1 * di1;
+      alpha = di_1_sq / (di_1_sq + di_sq);
+      beta  = di1_sq  / (di1_sq  + di_sq);
+    } else {
+      alpha = di_1 / (di_1 + di);
+      beta  = di1  / (di1  + di);
+    }
     DoubleVector bl_s, bl_d;
     bernstein(degree_, si, bl_s);
     bernstein(degree_, di, bl_d);
@@ -136,6 +143,11 @@ SurfaceGeneralizedBezier::setupLoop() {
     param_->update();
 }
 
+void
+SurfaceGeneralizedBezier::useSquaredRationalWeights(bool use) {
+  squared_weights_ = use;
+}
+
 Point3D
 SurfaceGeneralizedBezier::centralControlPoint() const {
   return central_cp_;
@@ -158,6 +170,13 @@ SurfaceGeneralizedBezier::setControlPoint(size_t i, size_t j, size_t k, const Po
     nets_[prev(i)][degree_-k][j] = p;
   else if (degree_ - j < layers_)
     nets_[next(i)][k][degree_-j] = p;
+}
+
+void
+SurfaceGeneralizedBezier::setIndividualControlPoint(size_t i, size_t j, size_t k, const Point3D &p) {
+  // Use with caution:
+  // different control points at the 2x2 corner regions need squared rational weights to work
+  nets_[i][j][k] = p;
 }
 
 double
@@ -185,10 +204,19 @@ SurfaceGeneralizedBezier::weight(size_t i, size_t j, size_t k, const Point2D &uv
 
   // At the 2x2 corners use rational weights
   if (k < 2 && (j < 2 || j > degree_ - 2)) {
-    if (j < 2)
+    if (j < 2) {
+      if (squared_weights_) {
+        double di_1_sq = di_1 * di_1, di_sq = di * di;
+        return blend * di_1_sq / (di_1_sq + di_sq);
+      }
       return blend * di_1 / (di_1 + di);
-    else
+    } else {
+      if (squared_weights_) {
+        double di_sq = di * di, di1_sq = di1 * di1;
+        return blend * di1_sq  / (di1_sq  + di_sq);
+      }
       return blend * di1 / (di1  + di);
+    }
   }
 
   // On the diagonals use half of the weight
