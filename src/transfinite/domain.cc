@@ -137,12 +137,12 @@ Domain::parameters(size_t resolution) const {
 bool
 Domain::onEdge(size_t resolution, size_t index) const {
   if (n_ == 3) {
-    auto square = [](size_t n) {
-                    double root = std::sqrt(n);
-                    return root == std::floor(root);
-                  };
+    auto issquare = [](size_t n) {
+                      size_t root = std::round(std::sqrt(n));
+                      return root * root == n;
+                    };
     size_t n = index * 8 + 1;
-    return square(n) || square(n + 8);
+    return issquare(n) || issquare(n + 8);
   }
   if (n_ == 4) {
     return index <= resolution || index >= (resolution + 1) * resolution ||
