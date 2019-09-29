@@ -137,6 +137,8 @@ Domain::parameters(size_t resolution) const {
 bool
 Domain::onEdge(size_t resolution, size_t index) const {
   if (n_ == 3) {
+    if (index >= meshSize(3, resolution) - resolution - 1)
+      return true;
     auto issquare = [](size_t n) {
                       size_t root = std::round(std::sqrt(n));
                       return root * root == n;
