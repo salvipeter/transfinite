@@ -2,7 +2,7 @@
 
 #include "domain-regular.hh"
 #include "parameterization-bilinear.hh"
-#include "ribbon-compatible.hh"
+#include "ribbon-compatible-with-handler.hh"
 #include "surface-elastic.hh"
 #include "utilities.hh"
 
@@ -12,7 +12,7 @@ using namespace Eigen;
 
 using DomainType = DomainRegular;
 using ParamType = ParameterizationBilinear;
-using RibbonType = RibbonCompatible;
+using RibbonType = RibbonCompatibleWithHandler;
 
 SurfaceElastic::SurfaceElastic() : domain_tolerance(1.0e-5) {
   domain_ = std::make_shared<DomainType>();
