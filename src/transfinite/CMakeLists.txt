@@ -28,6 +28,7 @@ add_library(transfinite
   surface.cc
     surface-c0coons.cc
     surface-corner-based.cc
+    surface-elastic.cc
     surface-generalized-bezier.cc
     surface-generalized-coons.cc
     surface-composite-ribbon.cc

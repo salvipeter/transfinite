@@ -16,6 +16,7 @@
 #include "surface-nsided.hh"
 #include "surface-polar.hh"
 #include "surface-c0coons.hh"
+#include "surface-elastic.hh"
 #include "surface-spatch.hh"
 #include "surface-superd.hh"
 
@@ -507,7 +508,8 @@ int main(int argc, char **argv) {
   // surfaceTest(filename, "mc", res, std::make_shared<SurfaceMidpointCoons>());
   // surfaceTest(filename, "pp", res, std::make_shared<SurfacePolar>());
   // surfaceTest(filename, "ns", res, std::make_shared<SurfaceNSided>());
-  surfaceTest(filename, "cc", res, std::make_shared<SurfaceC0Coons>());
+  // surfaceTest(filename, "cc", res, std::make_shared<SurfaceC0Coons>());
+  surfaceTest(filename, "ep", res, std::make_shared<SurfaceElastic>());
 
   return 0;
 }

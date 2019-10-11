@@ -103,6 +103,16 @@ Vector2D::normalize() {
   return operator*=(1.0 / norm());
 }
 
+std::ostream &operator<<(std::ostream &os, const Vector2D &v) {
+  os << v[0] << ' ' << v[1];
+  return os;
+}
+
+std::istream &operator>>(std::istream &is, Vector2D &v) {
+  is >> v[0] >> v[1];
+  return is;
+}
+
 Vector3D::Vector3D() {
 }
 
@@ -211,6 +221,16 @@ Vector3D::normSqr() const {
 Vector3D &
 Vector3D::normalize() {
   return operator*=(1.0 / norm());
+}
+
+std::ostream &operator<<(std::ostream &os, const Vector3D &v) {
+  os << v[0] << ' ' << v[1] << ' ' << v[2];
+  return os;
+}
+
+std::istream &operator>>(std::istream &is, Vector3D &v) {
+  is >> v[0] >> v[1] >> v[2];
+  return is;
 }
 
 } // namespace Geometry

@@ -4,6 +4,11 @@
 
 namespace Transfinite {
 
+Point2D
+affineCombine(const Point2D &p, double x, const Point2D &q) {
+  return p * (1 - x) + q * x;
+}
+
 Point3D
 affineCombine(const Point3D &p, double x, const Point3D &q) {
   return p * (1 - x) + q * x;

@@ -3,6 +3,7 @@
 #define NO_SURFACE_FIT
 
 #include <array>
+#include <iostream>
 #include <list>
 #include <memory>
 #include <vector>
@@ -59,6 +60,9 @@ private:
   std::array<double, 2> v_;
 };
 
+std::ostream &operator<<(std::ostream &os, const Vector2D &v);
+std::istream &operator>>(std::istream &is, Vector2D &v);
+
 class Vector3D {
 public:
   // Constructors
@@ -94,6 +98,9 @@ public:
 private:
   std::array<double, 3> v_;
 };
+
+std::ostream &operator<<(std::ostream &os, const Vector3D &v);
+std::istream &operator>>(std::istream &is, Vector3D &v);
 
 class Matrix3x3 {
 public:

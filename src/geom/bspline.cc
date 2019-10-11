@@ -156,6 +156,8 @@ BSCurve::normalize() {
 
 double
 BSCurve::arcLength(double from, double to) const {
+  if (to > knots_[knots_.size() - p_ - 1])
+    to = knots_[knots_.size() - p_ - 1];
   if (from >= to)
     return 0.0;
   double next = std::min(to, knots_[findSpan(from) + 1]);
