@@ -26,6 +26,7 @@ public:
   size_t size() const;
   virtual const Point2DVector &parameters(size_t resolution) const;
   virtual TriMesh meshTopology(size_t resolution) const;
+  virtual bool onEdge(size_t resolution, size_t index) const;
   const Point2D &center() const;
   Point2D edgePoint(size_t i, double s) const;
   double edgeLength(size_t i) const;

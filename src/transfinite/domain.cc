@@ -134,6 +134,25 @@ Domain::parameters(size_t resolution) const {
   return parameters_;
 }
 
+bool
+Domain::onEdge(size_t resolution, size_t index) const {
+  if (n_ == 3) {
+    if (index >= meshSize(3, resolution) - resolution - 1)
+      return true;
+    auto issquare = [](size_t n) {
+                      size_t root = std::round(std::sqrt(n));
+                      return root * root == n;
+                    };
+    size_t n = index * 8 + 1;
+    return issquare(n) || issquare(n + 8);
+  }
+  if (n_ == 4) {
+    return index <= resolution || index >= (resolution + 1) * resolution ||
+      index % (resolution + 1) == 0 || index % (resolution + 1) == resolution;
+  }
+  return index >= meshSize(n_, resolution) - n_ * resolution;
+}
+
 TriMesh
 Domain::meshTopology(size_t resolution) const {
   TriMesh mesh;
