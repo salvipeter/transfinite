@@ -11,7 +11,7 @@ public:
   DownhillSimplex() : step(1.0), tolerance(0.0) { }
   void setStepLength(double len) { step = len; }
   void setTolerance(double tol) { tolerance = tol; }
-  void minimize(std::vector<double> &data, size_t iterations,
+  bool minimize(std::vector<double> &data, size_t iterations,
                 std::function<double(const std::vector<double> &)> func);
 
 private:
@@ -19,7 +19,7 @@ private:
 		       std::vector<double> &psum,
                        std::function<double(const std::vector<double> &)> funk,
                        size_t ihi, double fac);
-  static void amoeba(std::vector<std::vector<double> > &p, std::vector<double> &y, double tol,
+  static bool amoeba(std::vector<std::vector<double> > &p, std::vector<double> &y, double tol,
 		     size_t nmax, std::function<double(const std::vector<double> &)> funk);
 
   // Parameters

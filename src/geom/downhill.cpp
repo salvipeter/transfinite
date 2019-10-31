@@ -35,7 +35,7 @@ amotry(std::vector<std::vector<double> > &p,
   return ytry;
 }
 
-void DownhillSimplex::
+bool DownhillSimplex::
 amoeba(std::vector<std::vector<double> > &p,
        std::vector<double> &y,
        double tol, size_t nmax,
@@ -74,7 +74,7 @@ amoeba(std::vector<std::vector<double> > &p,
       std::swap(y[0], y[ilo]);
       for(size_t i = 0; i < ndim; ++i)
 	std::swap(p[0][i], p[ilo][i]);
-      break;
+      return rtol < tol;
     }
     nfunk += 2;
 
@@ -105,7 +105,7 @@ amoeba(std::vector<std::vector<double> > &p,
   }
 }
 
-void DownhillSimplex::
+bool DownhillSimplex::
 minimize(std::vector<double> &data, size_t iterations,
          std::function<double(const std::vector<double> &)> func)
 {
@@ -126,8 +126,10 @@ minimize(std::vector<double> &data, size_t iterations,
   for(size_t i = 0; i <= n; ++i)
     y.push_back(func(p[i]));
 
-  amoeba(p, y, tolerance, iterations, func);
+  bool success = amoeba(p, y, tolerance, iterations, func);
 
   for(size_t i = 0; i < n; ++i)
     data[i] = p[0][i];
+
+  return success;
 }
