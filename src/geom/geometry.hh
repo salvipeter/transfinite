@@ -212,6 +212,8 @@ public:
   Triangle closestTriangle(const Point3D &p) const;
   bool writeOBJ(std::string filename) const;
 
+  TriMesh &append(const TriMesh& other);
+
 private:
   Point3D projectToTriangle(const Point3D &p, const Triangle &tri) const;
 
