@@ -129,7 +129,7 @@ TriMesh::projectToTriangle(const Point3D &p, const Triangle &tri) const {
   return B + E0 * s + E1 * t;
 }
 
-TriMesh::Triangle
+const TriMesh::Triangle &
 TriMesh::closestTriangle(const Point3D &p) const {
   // Trivial (slow) implementation
   std::list<Triangle>::const_iterator i = triangles_.begin(), result = i;

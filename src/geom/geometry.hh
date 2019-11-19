@@ -203,20 +203,19 @@ public:
   void setPoints(const PointVector &pv);
   void addTriangle(size_t a, size_t b, size_t c);
   void setTriangles(const std::list<Triangle> &tl);
+  TriMesh &append(const TriMesh &other);
 
   // I/O
   Point3D &operator[](size_t i);
   const Point3D &operator[](size_t i) const;
   const PointVector &points() const;
   const std::list<Triangle> &triangles() const;
-  Triangle closestTriangle(const Point3D &p) const;
   bool writeOBJ(std::string filename) const;
 
-  TriMesh &append(const TriMesh& other);
-
-private:
+  const Triangle &closestTriangle(const Point3D &p) const;
   Point3D projectToTriangle(const Point3D &p, const Triangle &tri) const;
 
+private:
   PointVector points_;
   std::list<Triangle> triangles_;
 };
