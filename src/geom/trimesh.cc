@@ -87,7 +87,7 @@ TriMesh::projectToTriangle(const Point3D &p, const Triangle &tri) const {
       s = (d >= 0.0 ? 0.0 : (-d >= a ? 1.0 : -d / a));
     } else {
       // Region 0
-      double invDet = 1.0 / fabs(det);
+      double invDet = 1.0 / det;
       s *= invDet;
       t *= invDet;
     }
@@ -106,13 +106,15 @@ TriMesh::projectToTriangle(const Point3D &p, const Triangle &tri) const {
       }
     } else if (t < 0) {
       // Region 6
-      double numer = c + e - b - d, denom = c - 2 * b + a;
-      if (numer < denom) {
-        s = numer / denom;
-        t = 1.0 - s;
+      double tmp0 = b + e, tmp1 = a + d;
+      if (tmp1 > tmp0) {
+        double numer = tmp1 - tmp0;
+        double denom = c - 2 * b + a;
+        t = (numer >= denom ? 1.0 : numer / denom);
+        s = 1.0 - t;
       } else {
         t = 0.0;
-        s = (d >= 0.0 ? 0.0 : (-d >= a ? 1.0 : -d / a));
+        s = (tmp1 <= 0.0 ? 1.0 : (d >= 0.0 ? 0.0 : -d / a));
       }
     } else {
       // Region 1
