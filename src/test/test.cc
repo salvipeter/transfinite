@@ -9,6 +9,7 @@
 #include "surface-side-based.hh"
 #include "surface-corner-based.hh"
 #include "surface-generalized-bezier.hh"
+#include "surface-generalized-bezier-corner.hh"
 #include "surface-generalized-coons.hh"
 #include "surface-composite-ribbon.hh"
 #include "surface-midpoint.hh"
@@ -173,7 +174,8 @@ void surfaceTest(std::string filename, std::string type, size_t resolution,
 }
 
 void bezierTest(const std::string &filename) {
-  SurfaceGeneralizedBezier surf = loadBezier("../../models/" + filename + ".gbp");
+  SurfaceGeneralizedBezier surf;
+  loadBezier("../../models/" + filename + ".gbp", &surf);
 
   std::chrono::steady_clock::time_point begin, end;
   begin = std::chrono::steady_clock::now();
@@ -219,6 +221,24 @@ void bezierTest(const std::string &filename) {
                               0.2);
   sextic3.eval(15).writeOBJ("../../models/bezier-sextic-projected-smooth.obj");
   writeBezierControlPoints(sextic3, "../../models/bezier-sextic-projected-smooth-cpts.obj");
+}
+
+void cornerBezierTest(const std::string &filename) {
+  SurfaceGeneralizedBezierCorner surf;
+  loadBezier("../../models/" + filename + ".gbp", &surf);
+
+  std::chrono::steady_clock::time_point begin, end;
+  begin = std::chrono::steady_clock::now();
+  surf.eval(100).writeOBJ("../../models/" + filename + "-GBC.obj");
+  end = std::chrono::steady_clock::now();
+  std::cout << "  evaluation time : "
+            << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count()
+            << "ms" << std::endl;
+  
+  // Generate mesh output
+  TriMesh mesh = surf.eval(15);
+  mesh.writeOBJ("../../models/bezier.obj");
+  writeBezierControlPoints(surf, "../../models/bezier-cpts.obj");
 }
 
 void spatchTest(const std::string &filename, size_t resolution) {
@@ -267,7 +287,8 @@ void cloudTest(std::string filename, size_t resolution) {
 }
 
 void meshFitTest(const std::string &surfname, const std::string &meshname) {
-  SurfaceGeneralizedBezier surf = loadBezier("../../models/" + surfname + ".gbp");
+  SurfaceGeneralizedBezier surf;
+  loadBezier("../../models/" + surfname + ".gbp", &surf);
   TriMesh mesh = readOBJ("../../models/" + meshname + ".obj");
 
   surf.eval(15).writeOBJ("../../models/bezier.obj");
@@ -374,7 +395,8 @@ DoubleVector deviationFromMesh(const Surface &surf, const TriMesh &mesh) {
 }
 
 void deviationTest(const std::string &surfname, const std::string &meshname) {
-  // SurfaceGeneralizedBezier surf = loadBezier("../../models/" + surfname + ".gbp");
+  // SurfaceGeneralizedBezier surf;
+  // loadBezier("../../models/" + surfname + ".gbp", &surf);
   SurfaceMidpointCoons surf;
   {
     CurveVector cv = readLOP("../../models/" + surfname + ".lop");
@@ -434,6 +456,7 @@ int main(int argc, char **argv) {
     std::cerr << "Usage:\n"
               << argv[0] << " model-name [resolution] [fence-scaling] [ribbon-length]" << std::endl
               << argv[0] << " bezier [model-name]" << std::endl
+              << argv[0] << " bezier-corner [model-name]" << std::endl
               << argv[0] << " cloud [model-name]" << std::endl
               << argv[0] << " class-a" << std::endl
               << argv[0] << " mesh-fit [model-name] [mesh-name]" << std::endl
@@ -450,6 +473,12 @@ int main(int argc, char **argv) {
       bezierTest("cagd86");
     else
       bezierTest(argv[2]);
+    return 0;
+  } else if (filename == "bezier-corner") {
+    if (argc == 2)
+      cornerBezierTest("cagd86");
+    else
+      cornerBezierTest(argv[2]);
     return 0;
   } else if (filename == "cloud") {
     if (argc == 2)

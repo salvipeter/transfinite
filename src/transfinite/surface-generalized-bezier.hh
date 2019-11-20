@@ -14,7 +14,7 @@ public:
   using Surface::eval;
   size_t degree() const;
   size_t layers() const;
-  void initNetwork(size_t n, size_t degree);
+  virtual void initNetwork(size_t n, size_t degree);
   virtual void setupLoop() override;
   void useSquaredRationalWeights(bool use);
   Point3D centralControlPoint() const;
@@ -22,12 +22,11 @@ public:
   Point3D controlPoint(size_t i, size_t j, size_t k) const;
   void setControlPoint(size_t i, size_t j, size_t k, const Point3D &p);
   void setIndividualControlPoint(size_t i, size_t j, size_t k, const Point3D &p);
-  double weight(size_t i, size_t j, size_t k, const Point2D &uv) const;
+  virtual double weight(size_t i, size_t j, size_t k, const Point2D &uv) const;
 
 protected:
   virtual std::shared_ptr<Ribbon> newRibbon() const override;
 
-private:
   using ControlNet = std::vector<PointVector>;
 
   size_t degree_, layers_;

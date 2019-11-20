@@ -96,11 +96,11 @@ void writePCP(const std::string &filename, const Point2DVector &uvs, const Point
   f.close();
 }
 
-SurfaceGeneralizedBezier loadBezier(const std::string &filename) {
+void loadBezier(const std::string &filename, SurfaceGeneralizedBezier *surf) {
   std::ifstream f(filename);
   if (!f.is_open()) {
     std::cerr << "Unable to open file: " << filename << std::endl;
-    return SurfaceGeneralizedBezier();
+    return;
   }
 
   size_t n, d;
@@ -109,12 +109,11 @@ SurfaceGeneralizedBezier loadBezier(const std::string &filename) {
   size_t cp = 1 + d / 2;
   cp = n * cp * l + 1;          // # of control points
 
-  SurfaceGeneralizedBezier surf;
-  surf.initNetwork(n, d);
+  surf->initNetwork(n, d);
 
   Point3D p;
   f >> p[0] >> p[1] >> p[2];
-  surf.setCentralControlPoint(p);
+  surf->setCentralControlPoint(p);
 
   for (size_t i = 1, side = 0, col = 0, row = 0; i < cp; ++i, ++col) {
     if (col >= d - row) {
@@ -125,13 +124,11 @@ SurfaceGeneralizedBezier loadBezier(const std::string &filename) {
       col = row;
     }
     f >> p[0] >> p[1] >> p[2];
-    surf.setControlPoint(side, col, row, p);
+    surf->setControlPoint(side, col, row, p);
   }
   f.close();
 
-  surf.setupLoop();
-
-  return surf;
+  surf->setupLoop();
 }
 
 void saveBezier(const SurfaceGeneralizedBezier &surf, const std::string &filename) {
