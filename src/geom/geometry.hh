@@ -108,6 +108,9 @@ public:
   static Matrix3x3 identity();
   static Matrix3x3 rotation(const Vector3D &axis, double angle);
 
+  const double &operator()(size_t i, size_t j) const;
+  double &operator()(size_t i, size_t j);
+
   // Arithmetic
   Matrix3x3 operator+(const Matrix3x3 &m) const;
   Matrix3x3 &operator+=(const Matrix3x3 &m);
@@ -116,6 +119,8 @@ public:
   Vector3D operator*(const Vector3D &v) const;
   Matrix3x3 operator*(const Matrix3x3 &m) const;
   Matrix3x3 &operator*=(const Matrix3x3 &m);
+
+  Matrix3x3 inverse() const;
 
 private:
   std::array<double, 9> m_;

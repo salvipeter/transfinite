@@ -87,4 +87,39 @@ Matrix3x3::operator*=(const Matrix3x3 &m) {
   return *this;
 }
 
+Matrix3x3 Matrix3x3::inverse() const
+{
+  double det00 = m_[4] * m_[8] - m_[7] * m_[5];
+  double det01 = m_[5] * m_[6] - m_[3] * m_[8];
+  double det02 = m_[3] * m_[7] - m_[4] * m_[6];
+  double det = m_[0] * det00 + m_[1] * det01 + m_[2] * det02;
+  double invdet = 1 / det;
+
+  Matrix3x3 result;
+
+  result.m_[0] = det00 * invdet;
+  result.m_[1] = (m_[7] * m_[2] - m_[8] * m_[1]) * invdet;
+  result.m_[2] = (m_[1] * m_[5] - m_[2] * m_[4]) * invdet;
+
+  result.m_[3] = det01 * invdet;
+  result.m_[4] = (m_[8] * m_[0] - m_[6] * m_[2]) * invdet;
+  result.m_[5] = (m_[2] * m_[3] - m_[0] * m_[5]) * invdet;
+
+  result.m_[6] = det02 * invdet;
+  result.m_[7] = (m_[6] * m_[1] - m_[7] * m_[0]) * invdet;
+  result.m_[8] = (m_[0] * m_[4] - m_[1] * m_[3]) * invdet;
+
+  return result;
+}
+
+const double &Matrix3x3::operator()(size_t i, size_t j) const
+{
+  return m_[i * 3 + j];
+}
+
+double &Matrix3x3::operator()(size_t i, size_t j)
+{
+  return m_[i * 3 + j];
+}
+
 } // namespace Geometry
