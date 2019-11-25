@@ -215,7 +215,8 @@ public:
   const Point3D &operator[](size_t i) const;
   const PointVector &points() const;
   const std::list<Triangle> &triangles() const;
-  bool writeOBJ(std::string filename) const;
+  TriMesh readOBJ(std::string filename) const;
+  void writeOBJ(std::string filename) const;
 
   const Triangle &closestTriangle(const Point3D &p) const;
   Point3D projectToTriangle(const Point3D &p, const Triangle &tri) const;

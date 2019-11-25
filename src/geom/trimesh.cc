@@ -3,6 +3,7 @@
 #include <cmath>
 #include <iostream>
 #include <fstream>
+#include <sstream>
 #include <string>
 
 namespace Geometry {
@@ -146,19 +147,54 @@ TriMesh::closestTriangle(const Point3D &p) const {
   return *result;
 }
 
-bool
+TriMesh
+TriMesh::readOBJ(std::string filename) const {
+  TriMesh result;
+  std::ifstream f(filename);
+  f.exceptions(std::ios::failbit | std::ios::badbit);
+  bool points_set = false;
+  std::string line;
+  std::istringstream ss;
+  Point3D p;
+  TriMesh::Triangle t;
+  PointVector pv;
+  while (!f.eof()) {
+    std::getline(f, line);
+    f >> std::ws;
+    if (line.empty())
+      continue;
+    switch (line[0]) {
+    case 'v':
+      ss.str(line);
+      ss.seekg(2); // skip the first two characters
+      ss >> p[0] >> p[1] >> p[2];
+      pv.push_back(p);
+      break;
+    case 'f':
+      if (!points_set) {
+        result.setPoints(pv);
+        points_set = true;
+      }
+      ss.str(line);
+      ss.seekg(2); // skip the first two characters
+      ss >> t[0] >> t[1] >> t[2];
+      result.addTriangle(t[0], t[1], t[2]);
+      break;
+    default:
+      break;
+    }
+  }
+  return result;
+}
+
+void
 TriMesh::writeOBJ(std::string filename) const {
   std::ofstream f(filename);
-  if (!f.is_open()) {
-    std::cerr << "Unable to open file: " << filename << std::endl;
-    return false;
-  }
+  f.exceptions(std::ios::failbit | std::ios::badbit);
   for (const auto &p : points_)
     f << "v " << p[0] << ' ' << p[1] << ' ' << p[2] << std::endl;
   for (const auto &t : triangles_)
     f << "f " << t[0] + 1 << ' ' << t[1] + 1 << ' ' << t[2] + 1 << std::endl;
-  f.close();
-  return true;
 }
 
 TriMesh &
