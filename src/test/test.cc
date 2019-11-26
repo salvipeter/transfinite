@@ -21,6 +21,7 @@
 #include "surface-spatch.hh"
 #include "surface-superd.hh"
 
+#include "bezier.hh"
 #include "gb-fit.hh"
 #include "io.hh"
 

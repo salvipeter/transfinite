@@ -157,12 +157,16 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="bezier.hh" />
     <ClInclude Include="gb-fit.hh" />
     <ClInclude Include="io.hh" />
+    <ClInclude Include="nelder-mead.hh" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="gb-fit.cc" />
+    <ClCompile Include="bezier.cc" />
     <ClCompile Include="io.cc" />
+    <ClCompile Include="nelder-mead.cc" />
     <ClCompile Include="test.cc" />
   </ItemGroup>
   <ItemGroup>
