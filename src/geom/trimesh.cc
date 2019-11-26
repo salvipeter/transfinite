@@ -148,7 +148,7 @@ TriMesh::closestTriangle(const Point3D &p) const {
 }
 
 TriMesh
-TriMesh::readOBJ(std::string filename) const {
+TriMesh::readOBJ(std::string filename) {
   TriMesh result;
   std::ifstream f(filename);
   f.exceptions(std::ios::failbit | std::ios::badbit);
@@ -178,7 +178,7 @@ TriMesh::readOBJ(std::string filename) const {
       ss.str(line);
       ss.seekg(2); // skip the first two characters
       ss >> t[0] >> t[1] >> t[2];
-      result.addTriangle(t[0], t[1], t[2]);
+      result.addTriangle(t[0] - 1, t[1] - 1, t[2] - 1);
       break;
     default:
       break;
