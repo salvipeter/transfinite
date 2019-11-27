@@ -1,3 +1,0 @@
-[submodule "src/geom"]
-	path = src/geom
-	url = git@github.com:salvipeter/libgeom
