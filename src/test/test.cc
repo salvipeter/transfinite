@@ -11,6 +11,7 @@
 #include "surface-generalized-bezier.hh"
 #include "surface-generalized-bezier-corner.hh"
 #include "surface-generalized-coons.hh"
+#include "surface-harmonic.hh"
 #include "surface-composite-ribbon.hh"
 #include "surface-midpoint.hh"
 #include "surface-midpoint-coons.hh"
@@ -539,7 +540,8 @@ int main(int argc, char **argv) {
   // surfaceTest(filename, "pp", res, std::make_shared<SurfacePolar>());
   // surfaceTest(filename, "ns", res, std::make_shared<SurfaceNSided>());
   // surfaceTest(filename, "cc", res, std::make_shared<SurfaceC0Coons>());
-  surfaceTest(filename, "ep", res, std::make_shared<SurfaceElastic>());
+  // surfaceTest(filename, "ep", res, std::make_shared<SurfaceElastic>());
+  // surfaceTest(filename, "hp", res, std::make_shared<SurfaceHarmonic>());
 
   return 0;
 }

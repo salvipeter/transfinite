@@ -27,12 +27,13 @@ add_library(transfinite
     ribbon-perpendicular.cc
   surface.cc
     surface-c0coons.cc
+    surface-composite-ribbon.cc
     surface-corner-based.cc
     surface-elastic.cc
     surface-generalized-bezier.cc
     surface-generalized-bezier-corner.cc
     surface-generalized-coons.cc
-    surface-composite-ribbon.cc
+    surface-harmonic.cc
     surface-midpoint.cc
     surface-midpoint-coons.cc
     surface-nsided.cc
