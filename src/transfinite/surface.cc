@@ -82,9 +82,19 @@ Surface::setupLoop() {
   }
 }
 
+std::optional<Vector3D>
+Surface::ribbonHandler(size_t i) const {
+  return ribbons_[i]->handler();
+}
+
 void
 Surface::setRibbonHandler(size_t i, const Vector3D &h) {
   ribbons_[i]->setHandler(h);
+}
+
+double
+Surface::ribbonMultiplier(size_t i) const {
+  return ribbons_[i]->multiplier();
 }
 
 void

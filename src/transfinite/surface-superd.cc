@@ -180,6 +180,11 @@ SurfaceSuperD::setEdgeControlPoint(size_t i, const Point3D &p) {
   cp_e_[i] = p;
 }
 
+double
+SurfaceSuperD::fullness() const {
+  return fullness_;
+}
+
 void
 SurfaceSuperD::setFullness(double f) {
   fullness_ = f;

@@ -29,9 +29,21 @@ Ribbon::setNeighbors(const std::shared_ptr<Ribbon> &prev, const std::shared_ptr<
   next_ = next;
 }
 
+double
+Ribbon::multiplier() const {
+  return multiplier_;
+}
+
 void
 Ribbon::setMultiplier(double m) {
   multiplier_ = m;
+}
+
+std::optional<Vector3D>
+Ribbon::handler() const {
+  if (handler_initialized_)
+    return handler_;
+  return {};
 }
 
 void

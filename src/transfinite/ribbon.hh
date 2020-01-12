@@ -3,6 +3,8 @@
 #include "geometry.hh"
 #include "rmf.hh"
 
+#include <optional>
+
 namespace Transfinite {
 
 class Ribbon {
@@ -13,7 +15,9 @@ public:
   std::shared_ptr<BSCurve> curve();
   void setCurve(const std::shared_ptr<BSCurve> &curve);
   void setNeighbors(const std::shared_ptr<Ribbon> &prev, const std::shared_ptr<Ribbon> &next);
+  double multiplier() const;
   void setMultiplier(double m);
+  std::optional<Vector3D> handler() const;
   void setHandler(const Vector3D &h);
   void reset();
   virtual void update();

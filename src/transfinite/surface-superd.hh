@@ -23,6 +23,7 @@ public:
   void setFaceControlPoint(size_t i, const Point3D &p);
   Point3D edgeControlPoint(size_t i) const;
   void setEdgeControlPoint(size_t i, const Point3D &p);
+  double fullness() const;
   void setFullness(double f);
 
 protected:
