@@ -1,5 +1,5 @@
 #include <algorithm>
-#include <cassert>
+#include <exception>
 #include <fstream>
 
 #include "domain-regular.hh"
@@ -57,7 +57,7 @@ SurfaceSuperD::generateOpp(size_t i) const {
     std::reverse(result.begin(), result.end());
     return result;
   }
-  assert(false && "generateOpp() should only be called for 3- and 4-sided patches");
+  throw std::runtime_error("generateOpp() should only be called for 3- and 4-sided patches");
 }
 
 // static

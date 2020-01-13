@@ -110,7 +110,8 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;_USE_MATH_DEFINES;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\geom;..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -162,8 +163,10 @@
     <ClInclude Include="surface-composite-ribbon.hh" />
     <ClInclude Include="surface-corner-based.hh" />
     <ClInclude Include="surface-elastic.hh" />
+    <ClInclude Include="surface-generalized-bezier-corner.hh" />
     <ClInclude Include="surface-generalized-bezier.hh" />
     <ClInclude Include="surface-generalized-coons.hh" />
+    <ClInclude Include="surface-harmonic.hh" />
     <ClInclude Include="surface-midpoint-coons.hh" />
     <ClInclude Include="surface-side-based.hh" />
     <ClInclude Include="surface-midpoint.hh" />
@@ -193,8 +196,10 @@
     <ClCompile Include="surface-composite-ribbon.cc" />
     <ClCompile Include="surface-corner-based.cc" />
     <ClCompile Include="surface-elastic.cc" />
+    <ClCompile Include="surface-generalized-bezier-corner.cc" />
     <ClCompile Include="surface-generalized-bezier.cc" />
     <ClCompile Include="surface-generalized-coons.cc" />
+    <ClCompile Include="surface-harmonic.cc" />
     <ClCompile Include="surface-midpoint-coons.cc" />
     <ClCompile Include="surface-side-based.cc" />
     <ClCompile Include="surface-midpoint.cc" />
