@@ -61,11 +61,11 @@ SurfaceHarmonic::eval(size_t resolution) const {
     }
 
   // Set up the equations
-  Eigen::SparseMatrix<double> A(n_all + n_boundary, n_all + n_boundary);
-  Eigen::MatrixXd b = Eigen::MatrixXd::Zero(n_all + n_boundary, 3);
+  SparseMatrix<double> A(n_all + n_boundary, n_all + n_boundary);
+  MatrixXd b = MatrixXd::Zero(n_all + n_boundary, 3);
 
   // - Sparse matrix handling
-  Eigen::VectorXd nnz(n_all + n_boundary);
+  VectorXd nnz(n_all + n_boundary);
   for (size_t i = 0; i < n_all; ++i)
     nnz(i) = valences[i] + 2;
   for (size_t i = 0; i < n_boundary; ++i)
@@ -99,14 +99,14 @@ SurfaceHarmonic::eval(size_t resolution) const {
     if (domain_->onEdge(resolution, i)) {
       A.coeffRef(n_all + j, i) = 1;
       A.coeffRef(i, n_all + j) = 1;
-      b.block<1,3>(n_all + j, 0) = Eigen::Map<const Eigen::Vector3d>(points[i].data());
+      b.block<1,3>(n_all + j, 0) = Map<const Vector3d>(points[i].data());
       ++j;
     }
 
   // Solve the system
-  Eigen::SparseLU<Eigen::SparseMatrix<double>> solver;
+  SparseLU<SparseMatrix<double>> solver;
   solver.compute(A);
-  Eigen::MatrixXd x = solver.solve(b);
+  MatrixXd x = solver.solve(b);
 
   for (size_t i = 0; i < n_all; ++i)
     points[i] = { x(i, 0), x(i, 1), x(i, 2) };
