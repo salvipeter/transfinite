@@ -1,8 +1,4 @@
-if(USE_OWN_GEOMETRY_LIB)
-  include_directories(../geom)
-else()
-  include_directories(../geometry)
-endif()
+include_directories(../geom)
 
 add_library(transfinite
   rmf.cc

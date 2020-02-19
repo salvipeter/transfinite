@@ -159,20 +159,6 @@ void surfaceTest(std::string filename, std::string type, size_t resolution,
     std::cout << "  midpoint error: " << (p - midpoint).normSqr() << std::endl;
   }
 
-#ifndef NO_SURFACE_FIT
-
-  std::vector<BSSurface> surfaces = surf->fitCentralSplit(0.01);
-  IGES iges("../../models/" + filename + "-" + type + "-split.igs");
-  for (const auto &s : surfaces)
-    iges.writeSurface(s);
-  iges.close();
-
-  BSSurface trimmed = surf->fitTrimmed(0.01);
-  IGES iges2("../../models/" + filename + "-" + type + "-trim.igs");
-  iges2.writeSurface(trimmed);
-  iges2.close();
-
-#endif  // NO_SURFACE_FIT
 }
 
 void bezierTest(const std::string &filename) {
@@ -415,7 +401,6 @@ void deviationTest(const std::string &surfname, const std::string &meshname) {
 }
 
 void classATest() {
-#ifdef NO_SURFACE_FIT
   CurveVector cv = readLOP("../../models/pocket6sided.lop");
 
   CurveVector normal, class_a;
@@ -440,7 +425,6 @@ void classATest() {
   surf.setupLoop();
   surf.update();
   surf.eval(30).writeOBJ("../../models/bezier-class-a.obj");
-#endif  // NO_SURFACE_FIT
 }
 
 int main(int argc, char **argv) {

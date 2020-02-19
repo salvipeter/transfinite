@@ -1,25 +1,12 @@
-if(USE_OWN_GEOMETRY_LIB)
-  include_directories(../geom)
-  set(GEOM_LIB geom)
-else()
-  include_directories(../geometry)
-  set(GEOM_LIB -L../geometry -lgeometry)
-endif()
+include_directories(../geom)
+set(GEOM_LIB geom)
 
 include_directories(../transfinite)
 
+cmake_policy(SET CMP0037 OLD)   # allow executables with reserved names (like "test")
+
 add_executable(test test.cc gb-fit.cc io.cc bezier.cc nelder-mead.cc)
 
-if(USE_OWN_GEOMETRY_LIB)
-  add_dependencies(test geom)
-else()
-  add_dependencies(test geometry)
-endif()
+add_dependencies(test geom)
 
 target_link_libraries(test ${GEOM_LIB} transfinite)
-
-if(NOT USE_OWN_GEOMETRY_LIB)
-  include_directories(../geoduck)
-  add_executable(kapi-test kapi-test.cc)
-  target_link_libraries(kapi-test ${GEOM_LIB} transfinite-kapi)
-endif()

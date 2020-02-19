@@ -35,18 +35,6 @@ public:
   virtual Point3D eval(const Point2D &uv) const = 0;
   virtual TriMesh eval(size_t resolution) const;
 
-#ifndef NO_SURFACE_FIT
-  std::vector<BSSurface> fitCentralSplit(double fit_tol,
-                                         double knot_snapping_tol = 1.0e-2,
-                                         size_t sampling_density = 30) const;
-  BSSurface fitTrimmed(double fit_tol,
-                       size_t resolution = 15,
-                       size_t max_cpts_u = 12,
-                       size_t max_cpts_v = 12,
-                       double curvature_weight = 1.0e-6,
-                       double oscillation_weight = 1.0e-6) const;
-#endif  // NO_SURFACE_FIT
-
 protected:
   virtual std::shared_ptr<Ribbon> newRibbon() const = 0;
   Point3D cornerCorrection(size_t i, double s1, double s2) const;
