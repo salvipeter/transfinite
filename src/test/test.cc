@@ -239,21 +239,22 @@ void bezierTest(const std::string &filename) {
 }
 
 void cornerBezierTest(const std::string &filename) {
-  SurfaceGeneralizedBezierCorner surf;
-  loadBezier("../../models/" + filename + ".gbp", &surf);
+  auto surf = std::make_shared<SurfaceGeneralizedBezierCorner>();
+  loadBezier("../../models/" + filename + ".gbp", surf.get());
 
   std::chrono::steady_clock::time_point begin, end;
   begin = std::chrono::steady_clock::now();
-  surf.eval(100).writeOBJ("../../models/" + filename + "-GBC.obj");
+  surf->eval(100).writeOBJ("../../models/" + filename + "-GBC.obj");
   end = std::chrono::steady_clock::now();
   std::cout << "  evaluation time : "
             << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count()
             << "ms" << std::endl;
+  showDeviations(surf);
   
   // Generate mesh output
-  TriMesh mesh = surf.eval(15);
+  TriMesh mesh = surf->eval(15);
   mesh.writeOBJ("../../models/bezier.obj");
-  writeBezierControlPoints(surf, "../../models/bezier-cpts.obj");
+  writeBezierControlPoints(*surf, "../../models/bezier-cpts.obj");
 }
 
 void spatchTest(const std::string &filename, size_t resolution) {
