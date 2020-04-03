@@ -87,6 +87,73 @@ void ribbonTest(std::string filename, size_t resolution,
   ribbon_mesh.writeOBJ("../../models/" + filename + "-ribbons.obj");  
 }
 
+void showDeviations(const std::shared_ptr<Surface> &surf) {
+  size_t n = surf->domain()->size();
+  size_t res = 40;
+  double step = 1.0e-4;
+  std::shared_ptr<const Domain> domain = surf->domain();
+
+  // Special handling of Generalized Bezier surfaces
+  CurveVector inner_curves;
+  bool is_bezier = bool(std::dynamic_pointer_cast<SurfaceGeneralizedBezier>(surf));
+  if (is_bezier) {
+    auto bs = std::dynamic_pointer_cast<SurfaceGeneralizedBezier>(surf);
+    auto degree = bs->degree();
+    DoubleVector knots;
+    knots.insert(knots.end(), degree + 1, 0.0);
+    knots.insert(knots.end(), degree + 1, 1.0);
+    PointVector cpts(degree + 1);
+    for (size_t i = 0; i < n; ++i) {
+      for (size_t j = 0; j <= degree; ++j)
+        cpts[j] = bs->controlPoint(i, j, 1);
+      inner_curves.push_back(std::make_shared<BSCurve>(degree, knots, cpts));
+    }
+  }
+
+  // Positional test
+  double max_pos_error = 0.0;
+  for (size_t i = 0; i < n; ++i) {
+    for (size_t j = 0; j <= res; ++j) {
+      double s = (double)j / (double)res;
+      Point2D uv = domain->edgePoint(i, s);
+      Point3D p = surf->eval(uv), q = surf->ribbon(i)->curve()->eval(s);
+      max_pos_error = std::max(max_pos_error, (p - q).norm());
+    }
+  }
+
+  // Tangential test
+  double max_tan_error = 0.0;
+  VectorVector der;
+  const Point2DVector &v = domain->vertices();
+  for (size_t i = 0; i < n; ++i) {
+    Vector2D perp = v[i] - v[(i+n-1)%n];
+    perp = Vector2D(perp[1], -perp[0]);
+    if ((domain->center() - v[i]) * perp < 0)
+      perp = -perp;
+    perp.normalize();
+    for (size_t j = 0; j <= res; ++j) {
+      double s = (double)j / (double)res;
+      Point2D uv = domain->edgePoint(i, s);
+      Point2D uv2 = uv + perp * step;
+      Point3D p = surf->eval(uv), q = surf->eval(uv2);
+      surf->ribbon(i)->curve()->eval(s, 1, der);
+      Vector3D surf_normal = (der[1] ^ (q - p)).normalize();
+      Vector3D normal;
+      if (is_bezier) {
+        auto cross = inner_curves[i]->eval(s) - surf->ribbon(i)->curve()->eval(s);
+        normal = (der[1] ^ cross).normalize();
+      } else {
+        normal = surf->ribbon(i)->normal(s);
+      }
+      double angle = acos(surf_normal * normal);
+      max_tan_error = std::max(max_tan_error, angle);
+    }
+  }
+
+  std::cout << "  positional error: " << max_pos_error << std::endl;
+  std::cout << "  tangential error: " << max_tan_error * 180.0 / M_PI << std::endl;
+}
+
 void surfaceTest(std::string filename, std::string type, size_t resolution,
                  std::shared_ptr<Surface> &&surf) {
   CurveVector cv = readLOP("../../models/" + filename + ".lop");
@@ -102,87 +169,47 @@ void surfaceTest(std::string filename, std::string type, size_t resolution,
   surf->eval(resolution).writeOBJ("../../models/" + filename + "-" + type + ".obj");
   end = std::chrono::steady_clock::now();
 
-  std::shared_ptr<const Domain> domain = surf->domain();
-  const Point2DVector &v = domain->vertices();
-
-  size_t n = cv.size();
-  size_t res = 40;
-  double step = 1.0e-4;
-
-  // Positional test
-  double max_pos_error = 0.0;
-  for (size_t i = 0; i < n; ++i) {
-    for (size_t j = 0; j <= res; ++j) {
-      double s = (double)j / (double)res;
-      Point2D uv = domain->edgePoint(i, s);
-      Point3D p = surf->eval(uv), q = cv[i]->eval(s);
-      max_pos_error = std::max(max_pos_error, (p - q).norm());
-    }
-  }
-
-  // Tangential test
-  double max_tan_error = 0.0;
-  VectorVector der;
-  for (size_t i = 0; i < n; ++i) {
-    Vector2D perp = v[i] - v[(i+n-1)%n];
-    perp = Vector2D(perp[1], -perp[0]);
-    if ((domain->center() - v[i]) * perp < 0)
-      perp = -perp;
-    perp.normalize();
-    for (size_t j = 0; j <= res; ++j) {
-      double s = (double)j / (double)res;
-      Point2D uv = domain->edgePoint(i, s);
-      Point2D uv2 = uv + perp * step;
-      Point3D p = surf->eval(uv), q = surf->eval(uv2);
-      cv[i]->eval(s, 1, der);
-      Vector3D surf_normal = (der[1] ^ (q - p)).normalize();
-      Vector3D normal = surf->ribbon(i)->normal(s);
-      double angle = acos(surf_normal * normal);
-      max_tan_error = std::max(max_tan_error, angle);
-    }
-  }
-
   std::cout << type << ":" << std::endl;
-  std::cout << "  positional error: " << max_pos_error << std::endl;
-  std::cout << "  tangential error: " << max_tan_error * 180.0 / M_PI << std::endl;
   std::cout << "  evaluation time : "
             << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count()
             << "ms" << std::endl;
+  showDeviations(surf);
 
   if (type == "mp" || type == "mc") {
+    size_t n = surf->domain()->size();
     Point3D midpoint(0,0,0);
     for (size_t i = 0; i < n; ++i)
       midpoint += surf->ribbon(i)->eval(Point2D(0.6, 0.4));
     midpoint /= n;
     dynamic_cast<SurfaceMidpoint *>(surf.get())->setMidpoint(midpoint);
-    Point3D p = surf->eval(domain->center());
+    Point3D p = surf->eval(surf->domain()->center());
     std::cout << "  midpoint error: " << (p - midpoint).normSqr() << std::endl;
   }
-
 }
 
 void bezierTest(const std::string &filename) {
-  SurfaceGeneralizedBezier surf;
-  loadBezier("../../models/" + filename + ".gbp", &surf);
+  auto surf = std::make_shared<SurfaceGeneralizedBezier>();
+  loadBezier("../../models/" + filename + ".gbp", surf.get());
 
   std::chrono::steady_clock::time_point begin, end;
   begin = std::chrono::steady_clock::now();
-  surf.eval(100).writeOBJ("../../models/" + filename + "-GB.obj");
+  surf->eval(100).writeOBJ("../../models/" + filename + "-GB.obj");
   end = std::chrono::steady_clock::now();
   std::cout << "  evaluation time : "
             << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count()
             << "ms" << std::endl;
+  showDeviations(surf);
   
   // Generate mesh output
-  TriMesh mesh = surf.eval(15);
+  TriMesh mesh = surf->eval(15);
   mesh.writeOBJ("../../models/bezier.obj");
-  writeBezierControlPoints(surf, "../../models/bezier-cpts.obj");
+  writeBezierControlPoints(*surf, "../../models/bezier-cpts.obj");
 
   // Normal degree elevation
-  SurfaceGeneralizedBezier sextic = elevateDegree(surf), sextic2, sextic3;
+  SurfaceGeneralizedBezier sextic = elevateDegree(*surf), sextic2, sextic3;
   writeBezierControlPoints(sextic, "../../models/bezier-elevated-cpts.obj");
   sextic.eval(15).writeOBJ("../../models/bezier-elevated.obj");
-  SurfaceGeneralizedBezier elevated = surf;
+  SurfaceGeneralizedBezier elevated = *surf;
   for (size_t i = 0; i < 30; ++i)
     elevated = elevateDegree(elevated);
   writeBezierControlPoints(elevated, "../../models/bezier-elevated-30-times.obj");
@@ -191,7 +218,7 @@ void bezierTest(const std::string &filename) {
   writeBezierControlPoints(elevated, "../../models/bezier-elevated-60-times.obj");
 
   // Fit a sextic surface on the quintic mesh
-  sextic2 = fitWithOriginal(sextic, mesh.points(), surf.domain()->parameters(15));
+  sextic2 = fitWithOriginal(sextic, mesh.points(), surf->domain()->parameters(15));
   sextic2.eval(15).writeOBJ("../../models/bezier-sextic.obj");
   writeBezierControlPoints(sextic2, "../../models/bezier-sextic-cpts.obj");
 
