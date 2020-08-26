@@ -1,6 +1,6 @@
 #include <exception>
 
-#include <eigen3/Eigen/Sparse>
+#include <Eigen/Sparse>
 
 #include "domain-regular.hh"
 #include "parameterization-barycentric.hh"

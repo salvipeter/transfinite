@@ -15,6 +15,9 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
   set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 endif()
 
+find_package(Eigen3 3.3 REQUIRED NO_MODULE)
+include_directories(${EIGEN3_INCLUDE_DIR})
+
 add_subdirectory(transfinite)
 add_subdirectory(test)
 add_subdirectory(geom)

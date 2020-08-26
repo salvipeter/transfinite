@@ -1,5 +1,5 @@
-#include "eigen3/Eigen/LU"
-#include "eigen3/Eigen/SVD"
+#include "Eigen/LU"
+#include "Eigen/SVD"
 
 #include "domain.hh"
 

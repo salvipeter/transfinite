@@ -1,5 +1,11 @@
+//#define USE_CONSTRAINED_BARYCENTRIC
+
 #include "domain-regular.hh"
-#include "parameterization-barycentric.hh"
+#ifdef USE_CONSTRAINED_BARYCENTRIC
+# include "parameterization-constrained-barycentric.hh"
+#else
+# include "parameterization-barycentric.hh"
+#endif
 #include "ribbon-dummy.hh"
 #include "surface-generalized-bezier.hh"
 #include "utilities.hh"
@@ -7,7 +13,11 @@
 namespace Transfinite {
 
 using DomainType = DomainRegular;
+#ifdef USE_CONSTRAINED_BARYCENTRIC
+using ParamType = ParameterizationConstrainedBarycentric;
+#else
 using ParamType = ParameterizationBarycentric;
+#endif
 using RibbonType = RibbonDummy;
 
 SurfaceGeneralizedBezier::SurfaceGeneralizedBezier() : squared_weights_(false) {
@@ -74,6 +84,10 @@ SurfaceGeneralizedBezier::eval(const Point2D &uv) const {
     for (size_t k = 0; k < layers_; ++k) {
       for (size_t j = 0; j <= degree_; ++j) {
         double blend = bl_s[j] * bl_d[k];
+#ifdef USE_CONSTRAINED_BARYCENTRIC
+        if (j * 2 != degree_)
+          blend *= 0.5;
+#else
         if (k < 2 && (j < 2 || j > degree_ - 2)) {
           if (j < 2)
             blend *= alpha;
@@ -83,6 +97,7 @@ SurfaceGeneralizedBezier::eval(const Point2D &uv) const {
           blend *= 0.5;
         else if (j < k || j > degree_ - k)
           blend = 0.0;
+#endif
         surface_point += nets_[i][j][k] * blend;
         weight_sum += blend;
       }
