@@ -22,6 +22,7 @@ add_library(transfinite
     ribbon-nsided.cc
     ribbon-perpendicular.cc
   surface.cc
+    surface-biharmonic.cc
     surface-c0coons.cc
     surface-composite-ribbon.cc
     surface-corner-based.cc
