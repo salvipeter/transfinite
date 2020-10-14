@@ -2,8 +2,18 @@
 
 #include <Eigen/Geometry>
 #include <Eigen/Sparse>
+#include "Eigen/SVD"
 
-#include "domain-regular.hh"
+#ifdef HAVE_LIBTRIANGLE
+#define ANSI_DECLARATORS
+#define REAL double
+#define VOID void
+extern "C" {
+#include <triangle.h>
+}
+#endif // HAVE_LIBTRIANGLE
+
+#include "domain-angular.hh"
 #include "parameterization-barycentric.hh"
 #include "ribbon-compatible.hh"
 #include "surface-biharmonic.hh"
@@ -18,7 +28,7 @@ namespace Transfinite {
 
 using namespace Eigen;
 
-using DomainType = DomainRegular;
+using DomainType = DomainAngular;
 using ParamType = ParameterizationBarycentric;
 using RibbonType = RibbonCompatible;
 
@@ -74,6 +84,8 @@ static SparseMatrix<double> laplaceMatrix(const TriMesh &mesh, const PointVector
     Ls.coeffRef(t[2], t[1]) += -v1_cot;
     Ls.coeffRef(t[2], t[2]) += v2_cot + v1_cot;
   }
+  std::ofstream f("/tmp/biharmonic.txt");
+  f << Ls;
 
   return Ls;
 }
@@ -156,7 +168,7 @@ static SparseMatrix<double> prepareSolver(const TriMesh &mesh, const PointVector
   SparseMatrix<double> L = M.asDiagonal().inverse() * Ls;
 
   // Set up the equations
-  SparseMatrix<double> A = propagation ? Ls * L : L * L;
+  SparseMatrix<double> A = propagation ? Ls * L : SparseMatrix<double>(L.transpose() * L);
   A.conservativeResize(n_all + n_boundary, n_all + n_boundary);
 
   // Add the lagrange multiplicator part
@@ -169,10 +181,135 @@ static SparseMatrix<double> prepareSolver(const TriMesh &mesh, const PointVector
   return A;
 }
 
-TriMesh
-SurfaceBiharmonic::eval(size_t resolution) const {
+[[maybe_unused]]
+static Point2DVector projectToLSQPlane(const PointVector &pv) {
+  // Compute centroid
+  size_t n = pv.size();
+  Point3D centroid(0, 0, 0);
+  for (const auto &p : pv)
+    centroid += p;
+  centroid /= n;
+
+  // Solve by singular value decomposition
+  Eigen::MatrixXd A(n, 3);
+  for (size_t i = 0; i < n; ++i) {
+    auto p = pv[i] - centroid;
+    A.row(i) << p[0], p[1], p[2];
+  }
+  auto svd = A.jacobiSvd(Eigen::ComputeThinV);
+
+  // Extract principal directions
+  auto vec = [](const auto &v) { return Vector3D(v(0), v(1), v(2)); };
+  auto u = vec(svd.matrixV().col(0));
+  auto v = vec(svd.matrixV().col(1));
+
+  Point2DVector result;
+  for (const auto &p : pv)
+    result.emplace_back((p - centroid) * u, (p - centroid) * v);
+  return result;
+}
+
+[[maybe_unused]]
+auto
+SurfaceBiharmonic::generateDomainOld(size_t resolution) const {
   TriMesh mesh = domain_->meshTopology(resolution);
   Point2DVector uvs = domain_->parameters(resolution);
+  auto on_edge = [=](size_t i) { return domain_->onEdge(resolution, i); };
+  auto vertex_boundary = [=](size_t i) {
+    auto bc = dynamic_cast<ParameterizationBarycentric*>(param_.get())->barycentric(uvs[i]);
+    auto j = std::distance(bc.begin(), std::max_element(bc.begin(), bc.end()));
+    if (bc[next(j)] > bc[prev(j)])
+      j = next(j);
+    return std::make_pair(j, bc[j]);
+  };
+  return std::make_tuple(mesh, uvs, on_edge, vertex_boundary);
+}
+
+[[maybe_unused]]
+auto
+SurfaceBiharmonic::generateDomain(size_t resolution) const {
+#ifdef HAVE_LIBTRIANGLE
+  PointVector points3d;
+  double length = 0;
+  for (size_t i = 0; i < domain_->size(); ++i) {
+    auto curve = ribbons_[i]->curve();
+    length += curve->arcLength(curve->basis().low(), curve->basis().high());
+    for (size_t j = 0; j < resolution; ++j) {
+      double u = (double)j / resolution;
+      points3d.push_back(curve->eval(u));
+    }
+  }
+  length /= resolution * domain_->size();
+
+  auto projected = projectToLSQPlane(points3d);
+  double max_area = (length * length * std::sqrt(3.0)) / 4;
+
+  // Input points
+  size_t n = projected.size();
+  DoubleVector points; points.reserve(2 * n);
+  for (const auto &p : projected) {
+    points.push_back(p[0]);
+    points.push_back(p[1]);
+  }
+
+  // Input segments : just a closed polygon
+  std::vector<int> segments; segments.reserve(2 * n);
+  for (size_t i = 0; i < n; ++i) {
+    segments.push_back(i);
+    segments.push_back(i + 1);
+  }
+  segments.back() = 0;
+    
+  // Setup output data structure
+  struct triangulateio in, out;
+  in.pointlist = &points[0];
+  in.numberofpoints = n;
+  in.numberofpointattributes = 0;
+  in.pointmarkerlist = nullptr;
+  in.segmentlist = &segments[0];
+  in.numberofsegments = n;
+  in.segmentmarkerlist = nullptr;
+  in.numberofholes = 0;
+  in.numberofregions = 0;
+
+  // Setup output data structure
+  out.pointlist = nullptr;
+  out.pointattributelist = nullptr;
+  out.pointmarkerlist = nullptr;
+  out.trianglelist = nullptr;
+  out.triangleattributelist = nullptr;
+  out.segmentlist = nullptr;
+  out.segmentmarkerlist = nullptr;
+
+  // Call the library function [with maximum triangle area = resolution]
+  std::ostringstream cmd;
+  cmd << "pqa" << std::fixed << max_area << "DBPzQY";
+  triangulate(const_cast<char *>(cmd.str().c_str()), &in, &out, (struct triangulateio *)nullptr);
+
+  TriMesh mesh;
+  Point2DVector uvs;
+  for (int i = 0; i < out.numberofpoints; ++i)
+    uvs.emplace_back(out.pointlist[2*i], out.pointlist[2*i+1]);
+  for (int i = 0; i < out.numberoftriangles; ++i)
+    mesh.addTriangle(out.trianglelist[3*i+0],
+                     out.trianglelist[3*i+1],
+                     out.trianglelist[3*i+2]);
+
+  auto on_edge = [=](size_t i) { return i < n; };
+  auto vertex_boundary = [=](size_t i) {
+    size_t j = i / resolution;
+    double u = (double)(i - j * resolution) / resolution;
+    return std::make_pair(j, u);
+  };
+  return std::make_tuple(mesh, uvs, on_edge, vertex_boundary);
+#else  // !HAVE_LIBTRIANGLE
+  return generateDomainOld(resolution);
+#endif // HAVE_LIBTRIANGLE
+}
+
+TriMesh
+SurfaceBiharmonic::eval(size_t resolution) const {
+  auto [mesh, uvs, on_edge, vertex_boundary] = generateDomain(resolution);
   PointVector uvs3d;
   std::transform(uvs.begin(), uvs.end(), std::back_inserter(uvs3d),
                  [](const Point2D &p) { return Point3D(p[0], p[1], 0); });
@@ -184,18 +321,15 @@ SurfaceBiharmonic::eval(size_t resolution) const {
   // Set up boundary index map
   std::vector<size_t> boundary;
   for (size_t i = 0; i < n_all; ++i)
-    if (domain_->onEdge(resolution, i))
+    if (on_edge(i))
       boundary.push_back(i);
   size_t n_boundary = boundary.size();
 
   // Fill the boundary points & normals
   for (auto i : boundary) {
-    auto bc = dynamic_cast<ParameterizationBarycentric*>(param_.get())->barycentric(uvs[i]);
-    auto j = std::distance(bc.begin(), std::max_element(bc.begin(), bc.end()));
-    if (bc[next(j)] > bc[prev(j)])
-      j = next(j);
-    points[i] = ribbons_[j]->curve()->eval(bc[j]);
-    normals[i] = ribbons_[j]->normal(bc[j]);
+    auto [j, u] = vertex_boundary(i);
+    points[i] = ribbons_[j]->curve()->eval(u);
+    normals[i] = ribbons_[j]->normal(u);
   }
 
   // Compute the system
@@ -229,9 +363,7 @@ SurfaceBiharmonic::eval(size_t resolution) const {
   SparseMatrix<double> L = M.asDiagonal().inverse() * Ls;
 
   // Compute mean curvature
-  auto mean = computeCurvatures(mesh, areas,
-                                [&](size_t i) { return domain_->onEdge(resolution, i); },
-                                Vstar, Nstar);
+  auto mean = computeCurvatures(mesh, areas, on_edge, Vstar, Nstar);
   MatrixXd H(n_all, 3);
   for (size_t i = 0; i < n_all; ++i)
     H.row(i) = - Nstar.row(i) * mean[i];

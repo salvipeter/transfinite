@@ -14,6 +14,8 @@ public:
   virtual TriMesh eval(size_t resolution) const override;
 
 protected:
+  auto generateDomainOld(size_t resolution) const;
+  auto generateDomain(size_t resolution) const;
   virtual std::shared_ptr<Ribbon> newRibbon() const override;
 };
 

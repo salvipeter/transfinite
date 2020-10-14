@@ -1,4 +1,4 @@
-include_directories(../geom)
+include_directories(../geom ${LIBTRIANGLE_INCLUDE_DIRS})
 
 add_library(transfinite
   rmf.cc
@@ -39,4 +39,9 @@ add_library(transfinite
     surface-spatch.cc
     surface-superd.cc
   utilities.cc
+  ${LIBTRIANGLE_OBJECT}
 )
+
+if(LIBTRIANGLE_FOUND)
+  target_compile_definitions(transfinite PUBLIC HAVE_LIBTRIANGLE)
+endif()
