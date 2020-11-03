@@ -84,8 +84,6 @@ static SparseMatrix<double> laplaceMatrix(const TriMesh &mesh, const PointVector
     Ls.coeffRef(t[2], t[1]) += -v1_cot;
     Ls.coeffRef(t[2], t[2]) += v2_cot + v1_cot;
   }
-  std::ofstream f("/tmp/biharmonic.txt");
-  f << Ls;
 
   return Ls;
 }
