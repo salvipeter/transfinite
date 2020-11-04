@@ -163,7 +163,10 @@ static SparseMatrix<double> prepareSolver(const TriMesh &mesh, const PointVector
   SparseMatrix<double> Ls = laplaceMatrix(mesh, points);
   auto areas = voronoiAreas(mesh, points);
   Map<VectorXd> M(&areas[0], areas.size());
-  SparseMatrix<double> L = M.asDiagonal().inverse() * Ls;
+  DiagonalMatrix<double,Dynamic> M1 = M.asDiagonal().inverse();
+  for (size_t b : boundary)
+    M1.diagonal()(b) = 0;               // hack (private correspondence with T. Stanko)
+  SparseMatrix<double> L = M1 * Ls;
 
   // Set up the equations
   SparseMatrix<double> A = propagation ? Ls * L : SparseMatrix<double>(L.transpose() * L);
