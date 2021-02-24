@@ -31,6 +31,7 @@ add_library(transfinite
     surface-generalized-bezier-corner.cc
     surface-generalized-coons.cc
     surface-harmonic.cc
+    surface-hybrid.cc
     surface-midpoint.cc
     surface-midpoint-coons.cc
     surface-nsided.cc

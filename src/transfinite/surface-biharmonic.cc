@@ -139,9 +139,9 @@ static DoubleVector computeCurvatures(const TriMesh &mesh, const DoubleVector &a
       const Vector3d &n1 = normals.row(i1), &n2 = normals.row(i2), &n3 = normals.row(i3);
       if (on_edge(i1)) {
         if (on_edge(i2))
-          mean.row(i1) += (n1 + n2).normalized().cross(p2 - p1);
+          mean.row(i1) += (n1 * 2 + n2).normalized().cross(p2 - p1);
         if (on_edge(i3))
-          mean.row(i1) += (n1 + n3).normalized().cross(p1 - p3);
+          mean.row(i1) += (n1 * 2 + n3).normalized().cross(p1 - p3);
       }
       mean.row(i1) += (n1 + n2 + n3).normalized().cross(p3 - p2);
     };

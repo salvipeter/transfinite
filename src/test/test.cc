@@ -6,20 +6,21 @@
 
 #include "domain.hh"
 #include "ribbon.hh"
-#include "surface-side-based.hh"
+#include "surface-biharmonic.hh"
+#include "surface-c0coons.hh"
+#include "surface-composite-ribbon.hh"
 #include "surface-corner-based.hh"
-#include "surface-generalized-bezier.hh"
+#include "surface-elastic.hh"
 #include "surface-generalized-bezier-corner.hh"
+#include "surface-generalized-bezier.hh"
 #include "surface-generalized-coons.hh"
 #include "surface-harmonic.hh"
-#include "surface-biharmonic.hh"
-#include "surface-composite-ribbon.hh"
-#include "surface-midpoint.hh"
+#include "surface-hybrid.hh"
 #include "surface-midpoint-coons.hh"
+#include "surface-midpoint.hh"
 #include "surface-nsided.hh"
 #include "surface-polar.hh"
-#include "surface-c0coons.hh"
-#include "surface-elastic.hh"
+#include "surface-side-based.hh"
 #include "surface-spatch.hh"
 #include "surface-superd.hh"
 
@@ -96,7 +97,9 @@ void showDeviations(const std::shared_ptr<Surface> &surf) {
 
   // Special handling of Generalized Bezier surfaces
   CurveVector inner_curves;
-  bool is_bezier = bool(std::dynamic_pointer_cast<SurfaceGeneralizedBezier>(surf));
+  bool is_bezier =
+    bool(std::dynamic_pointer_cast<SurfaceGeneralizedBezier>(surf)) &&
+    !bool(std::dynamic_pointer_cast<SurfaceHybrid>(surf));
   if (is_bezier) {
     auto bs = std::dynamic_pointer_cast<SurfaceGeneralizedBezier>(surf);
     auto degree = bs->degree();
@@ -256,6 +259,22 @@ void cornerBezierTest(const std::string &filename) {
   TriMesh mesh = surf->eval(15);
   mesh.writeOBJ("../../models/bezier.obj");
   writeBezierControlPoints(*surf, "../../models/bezier-cpts.obj");
+}
+
+void hybridTest(const std::string &filename) {
+  auto surf = std::make_shared<SurfaceHybrid>();
+  loadBezier("../../models/" + filename + ".gbp", surf.get());
+  surf->update();
+
+  std::chrono::steady_clock::time_point begin, end;
+  begin = std::chrono::steady_clock::now();
+  surf->eval(15).writeOBJ("../../models/" + filename + "-HB.obj");
+  end = std::chrono::steady_clock::now();
+  std::cout << "  evaluation time : "
+            << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count()
+            << "ms" << std::endl;
+  showDeviations(surf);
+  writeBezierControlPoints(*surf, "../../models/hybrid-cpts.obj");
 }
 
 void spatchTest(const std::string &filename, size_t resolution) {
@@ -472,6 +491,7 @@ int main(int argc, char **argv) {
               << argv[0] << " model-name [resolution] [fence-scaling] [ribbon-length]" << std::endl
               << argv[0] << " bezier [model-name]" << std::endl
               << argv[0] << " bezier-corner [model-name]" << std::endl
+              << argv[0] << " hybrid [model-name]" << std::endl
               << argv[0] << " cloud [model-name]" << std::endl
               << argv[0] << " class-a" << std::endl
               << argv[0] << " mesh-fit [model-name] [mesh-name]" << std::endl
@@ -494,6 +514,12 @@ int main(int argc, char **argv) {
       cornerBezierTest("cagd86");
     else
       cornerBezierTest(argv[2]);
+    return 0;
+  } else if (filename == "hybrid") {
+    if (argc == 2)
+      hybridTest("cagd86");
+    else
+      hybridTest(argv[2]);
     return 0;
   } else if (filename == "cloud") {
     if (argc == 2)
@@ -555,7 +581,7 @@ int main(int argc, char **argv) {
   // surfaceTest(filename, "cc", res, std::make_shared<SurfaceC0Coons>());
   // surfaceTest(filename, "ep", res, std::make_shared<SurfaceElastic>());
   // surfaceTest(filename, "hp", res, std::make_shared<SurfaceHarmonic>());
-  // surfaceTest(filename, "bp", res, std::make_shared<SurfaceBiharmonic>());
+  surfaceTest(filename, "bp", res, std::make_shared<SurfaceBiharmonic>());
 
   return 0;
 }
