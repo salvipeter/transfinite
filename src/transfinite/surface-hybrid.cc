@@ -11,6 +11,7 @@ using ParamType = ParameterizationBarycentric;
 using RibbonType = RibbonCompatibleWithHandler;
 
 SurfaceHybrid::SurfaceHybrid() {
+  useSquaredRationalWeights(true);
   domain_ = std::make_shared<DomainType>();
   param_ = std::make_shared<ParamType>();
   param_->setDomain(domain_);

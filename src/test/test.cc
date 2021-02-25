@@ -204,14 +204,14 @@ void bezierTest() {
   showDeviations(surf);
   
   // Generate mesh output
-  TriMesh mesh = surf->eval(15);
+  TriMesh mesh = surf->eval(resolution);
   mesh.writeOBJ("../../models/bezier.obj");
   writeBezierControlPoints(*surf, "../../models/bezier-cpts.obj");
 
   // Normal degree elevation
   SurfaceGeneralizedBezier sextic = elevateDegree(*surf), sextic2, sextic3;
   writeBezierControlPoints(sextic, "../../models/bezier-elevated-cpts.obj");
-  sextic.eval(15).writeOBJ("../../models/bezier-elevated.obj");
+  sextic.eval(resolution).writeOBJ("../../models/bezier-elevated.obj");
   SurfaceGeneralizedBezier elevated = *surf;
   for (size_t i = 0; i < 30; ++i)
     elevated = elevateDegree(elevated);
@@ -221,15 +221,15 @@ void bezierTest() {
   writeBezierControlPoints(elevated, "../../models/bezier-elevated-60-times.obj");
 
   // Fit a sextic surface on the quintic mesh
-  sextic2 = fitWithOriginal(sextic, mesh.points(), surf->domain()->parameters(15));
-  sextic2.eval(15).writeOBJ("../../models/bezier-sextic.obj");
+  sextic2 = fitWithOriginal(sextic, mesh.points(), surf->domain()->parameters(resolution));
+  sextic2.eval(resolution).writeOBJ("../../models/bezier-sextic.obj");
   writeBezierControlPoints(sextic2, "../../models/bezier-sextic-cpts.obj");
 
   // Fit again, now with projected parameterization
   sextic3 = sextic;
   for (size_t i = 0; i < 1; ++i)
     sextic3 = fitWithOriginal(sextic3, mesh.points(), parameterizePoints(sextic3, mesh.points()));
-  sextic3.eval(15).writeOBJ("../../models/bezier-sextic-projected.obj");
+  sextic3.eval(resolution).writeOBJ("../../models/bezier-sextic-projected.obj");
   writeBezierControlPoints(sextic3, "../../models/bezier-sextic-projected-cpts.obj");
 
   // Fit again, now with smoothing
@@ -237,7 +237,7 @@ void bezierTest() {
   for (size_t i = 0; i < 1; ++i)
     sextic3 = fitWithOriginal(sextic3, mesh.points(), parameterizePoints(sextic3, mesh.points()),
                               0.2);
-  sextic3.eval(15).writeOBJ("../../models/bezier-sextic-projected-smooth.obj");
+  sextic3.eval(resolution).writeOBJ("../../models/bezier-sextic-projected-smooth.obj");
   writeBezierControlPoints(sextic3, "../../models/bezier-sextic-projected-smooth-cpts.obj");
 }
 
@@ -255,7 +255,7 @@ void cornerBezierTest() {
   showDeviations(surf);
   
   // Generate mesh output
-  TriMesh mesh = surf->eval(15);
+  TriMesh mesh = surf->eval(resolution);
   mesh.writeOBJ("../../models/bezier.obj");
   writeBezierControlPoints(*surf, "../../models/bezier-cpts.obj");
 }
@@ -269,7 +269,7 @@ void hybridTest() {
 
   std::chrono::steady_clock::time_point begin, end;
   begin = std::chrono::steady_clock::now();
-  surf->eval(15).writeOBJ("../../models/" + filename + "-HB.obj");
+  surf->eval(resolution).writeOBJ("../../models/" + filename + "-HB.obj");
   end = std::chrono::steady_clock::now();
   std::cout << "  evaluation time : "
             << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count()
@@ -328,30 +328,30 @@ void meshFitTest(const std::string &surfname, const std::string &meshname) {
   loadBezier("../../models/" + surfname + ".gbp", &surf);
   TriMesh mesh = readOBJ("../../models/" + meshname + ".obj");
 
-  surf.eval(15).writeOBJ("../../models/bezier.obj");
+  surf.eval(resolution).writeOBJ("../../models/bezier.obj");
   writeBezierControlPoints(surf, "../../models/bezier-cpts.obj");
 
   SurfaceGeneralizedBezier fitted;
   fitted = fitWithOriginal(surf, mesh.points(), parameterizePoints(surf, mesh.points()));
-  fitted.eval(15).writeOBJ("../../models/bezier-fitted.obj");
+  fitted.eval(resolution).writeOBJ("../../models/bezier-fitted.obj");
   writeBezierControlPoints(fitted, "../../models/bezier-fitted-cpts.obj");
   saveBezier(fitted, "../../models/bezier-fitted.gbp");
 
   fitted = fitWithOriginal(surf, mesh.points(), parameterizePoints(surf, mesh.points()),
                            0.2);
-  fitted.eval(15).writeOBJ("../../models/bezier-fitted-smooth02.obj");
+  fitted.eval(resolution).writeOBJ("../../models/bezier-fitted-smooth02.obj");
   writeBezierControlPoints(fitted, "../../models/bezier-fitted-smooth02-cpts.obj");
   saveBezier(fitted, "../../models/bezier-smooth02.gbp");
 
   fitted = fitWithOriginal(surf, mesh.points(), parameterizePoints(surf, mesh.points()),
                            0.5);
-  fitted.eval(15).writeOBJ("../../models/bezier-fitted-smooth05.obj");
+  fitted.eval(resolution).writeOBJ("../../models/bezier-fitted-smooth05.obj");
   writeBezierControlPoints(fitted, "../../models/bezier-fitted-smooth05-cpts.obj");
   saveBezier(fitted, "../../models/bezier-smooth05.gbp");
 
   fitted = fitWithOriginal(surf, mesh.points(), parameterizePoints(surf, mesh.points()),
                            1.0);
-  fitted.eval(15).writeOBJ("../../models/bezier-fitted-smooth10.obj");
+  fitted.eval(resolution).writeOBJ("../../models/bezier-fitted-smooth10.obj");
   writeBezierControlPoints(fitted, "../../models/bezier-fitted-smooth10-cpts.obj");
   saveBezier(fitted, "../../models/bezier-smooth10.gbp");
 }
