@@ -28,28 +28,25 @@
 #include "gb-fit.hh"
 #include "io.hh"
 
-void ribbonTest(std::string filename, size_t resolution, 
-		double scaling, double ribbon_length) {
-  CurveVector cv = readLOP("../../models/" + filename + ".lop");
-  if (cv.empty())
-    return;
+// Parameters
+std::string filename;
+double fullness = 0.5;
+size_t resolution = 15;
+double ribbon_length = 0.25;
+double scaling = 20.0;
 
-  SurfaceSideBased surf;
-  surf.setCurves(cv);
-  surf.setupLoop();
-  surf.update();
-
+void ribbonTest(const std::shared_ptr<Surface> &surf) {
   // Fence
   TriMesh fence_mesh;
-  size_t n = cv.size();
+  size_t n = surf->domain()->size();
   size_t size = n * resolution * 2;
   PointVector pv; pv.reserve(size);
   for (size_t i = 0; i < n; ++i) {
     for (size_t j = 0; j < resolution; ++j) {
       double u = (double)j / resolution;
-      Point3D p = surf.ribbon(i)->curve()->eval(u);
+      Point3D p = surf->ribbon(i)->curve()->eval(u);
       pv.push_back(p);
-      p += surf.ribbon(i)->normal(u) * scaling;
+      p += surf->ribbon(i)->normal(u) * scaling;
       pv.push_back(p);
     }
   }
@@ -71,8 +68,8 @@ void ribbonTest(std::string filename, size_t resolution,
   for (size_t i = 0; i < n; ++i) {
     for (size_t j = 0; j <= resolution; ++j) {
       double u = (double)j / resolution;
-      pv.push_back(surf.ribbon(i)->curve()->eval(u));
-      pv.push_back(surf.ribbon(i)->eval(Point2D(u, ribbon_length)));
+      pv.push_back(surf->ribbon(i)->curve()->eval(u));
+      pv.push_back(surf->ribbon(i)->eval(Point2D(u, ribbon_length)));
     }
   }
   ribbon_mesh.setPoints(pv);
@@ -158,8 +155,7 @@ void showDeviations(const std::shared_ptr<Surface> &surf) {
   std::cout << "  tangential error: " << max_tan_error * 180.0 / M_PI << std::endl;
 }
 
-void surfaceTest(std::string filename, std::string type, size_t resolution,
-                 std::shared_ptr<Surface> &&surf) {
+void surfaceTest(std::string type, std::shared_ptr<Surface> &&surf) {
   CurveVector cv = readLOP("../../models/" + filename + ".lop");
   if (cv.empty())
     return;
@@ -169,6 +165,9 @@ void surfaceTest(std::string filename, std::string type, size_t resolution,
   surf->setCurves(cv);
   surf->setupLoop();             // should be called after curve pointers changed
   surf->update();                // should be called after curves changed
+
+  ribbonTest(surf);
+
   begin = std::chrono::steady_clock::now();
   surf->eval(resolution).writeOBJ("../../models/" + filename + "-" + type + ".obj");
   end = std::chrono::steady_clock::now();
@@ -191,7 +190,7 @@ void surfaceTest(std::string filename, std::string type, size_t resolution,
   }
 }
 
-void bezierTest(const std::string &filename) {
+void bezierTest() {
   auto surf = std::make_shared<SurfaceGeneralizedBezier>();
   loadBezier("../../models/" + filename + ".gbp", surf.get());
 
@@ -242,7 +241,7 @@ void bezierTest(const std::string &filename) {
   writeBezierControlPoints(sextic3, "../../models/bezier-sextic-projected-smooth-cpts.obj");
 }
 
-void cornerBezierTest(const std::string &filename) {
+void cornerBezierTest() {
   auto surf = std::make_shared<SurfaceGeneralizedBezierCorner>();
   loadBezier("../../models/" + filename + ".gbp", surf.get());
 
@@ -261,10 +260,12 @@ void cornerBezierTest(const std::string &filename) {
   writeBezierControlPoints(*surf, "../../models/bezier-cpts.obj");
 }
 
-void hybridTest(const std::string &filename) {
+void hybridTest() {
   auto surf = std::make_shared<SurfaceHybrid>();
   loadBezier("../../models/" + filename + ".gbp", surf.get());
   surf->update();
+
+  ribbonTest(surf);
 
   std::chrono::steady_clock::time_point begin, end;
   begin = std::chrono::steady_clock::now();
@@ -277,7 +278,7 @@ void hybridTest(const std::string &filename) {
   writeBezierControlPoints(*surf, "../../models/hybrid-cpts.obj");
 }
 
-void spatchTest(const std::string &filename, size_t resolution) {
+void spatchTest() {
   auto surface = loadSPatch("../../models/" + filename + ".sp");
 
   std::chrono::steady_clock::time_point begin, end;
@@ -289,7 +290,7 @@ void spatchTest(const std::string &filename, size_t resolution) {
             << "ms" << std::endl;
 }
 
-void superDTest(const std::string &filename, size_t resolution, double fullness) {
+void superDTest() {
   std::vector<SurfaceSuperD> surfaces = loadSuperDModel("../../models/" + filename + ".sdm");
 
   std::chrono::steady_clock::time_point begin, end;
@@ -305,7 +306,7 @@ void superDTest(const std::string &filename, size_t resolution, double fullness)
             << "ms" << std::endl;
 }
 
-void cloudTest(std::string filename, size_t resolution) {
+void cloudTest() {
   CurveVector cv = readLOP("../../models/" + filename + ".lop");
   if (cv.empty())
     return;
@@ -482,10 +483,6 @@ int main(int argc, char **argv) {
   std::cout << "Compiled in RELEASE mode" << std::endl;
 #endif  // DEBUG
 
-  size_t res = 15;
-  double scaling = 20.0;
-  double ribbon_length = 0.25;
-
   if (argc < 2 || argc > 5) {
     std::cerr << "Usage:\n"
               << argv[0] << " model-name [resolution] [fence-scaling] [ribbon-length]" << std::endl
@@ -501,87 +498,61 @@ int main(int argc, char **argv) {
     return 1;
   }
 
-  std::string filename = argv[1];
+  std::string type = argv[1];
+  if (argc == 2)
+    filename = "cagd86";
+  else
+    filename = argv[2];
 
-  if (filename == "bezier") {
-    if (argc == 2)
-      bezierTest("cagd86");
-    else
-      bezierTest(argv[2]);
-    return 0;
-  } else if (filename == "bezier-corner") {
-    if (argc == 2)
-      cornerBezierTest("cagd86");
-    else
-      cornerBezierTest(argv[2]);
-    return 0;
-  } else if (filename == "hybrid") {
-    if (argc == 2)
-      hybridTest("cagd86");
-    else
-      hybridTest(argv[2]);
-    return 0;
-  } else if (filename == "cloud") {
-    if (argc == 2)
-      cloudTest("cagd86", 15);
-    else
-      cloudTest(argv[2], 15);
-    return 0;
-  } else if (filename == "class-a") {
+  if (type == "bezier")
+    bezierTest();
+  else if (type == "bezier-corner")
+    cornerBezierTest();
+  else if (type == "hybrid")
+    hybridTest();
+  else if (type == "cloud")
+    cloudTest();
+  else if (type == "class-a")
     classATest();
-    return 0;
-  } else if (filename == "mesh-fit" || filename == "deviation") {
+  else if (type == "mesh-fit" || type == "deviation") {
     if (argc < 4) {
       std::cerr << "Not enough parameters!" << std::endl;
       return 1;
     }
-    if (filename == "mesh-fit")
-      meshFitTest(argv[2], argv[3]);
+    if (type == "mesh-fit")
+      meshFitTest(filename, argv[3]);
     else
-      deviationTest(argv[2], argv[3]);
-    return 0;
-  } else if (filename == "spatch") {
+      deviationTest(filename, argv[3]);
+  } else if (type == "spatch")
+    spatchTest();
+  else if (type == "superd") {
     if (argc == 2)
-      spatchTest("cagd86", 15);
-    else {
-      spatchTest(argv[2], 15);
-    }
-    return 0;
-  } else if (filename == "superd") {
-    double fullness;
-    if (argc == 2)
-      superDTest("trebol", 15, 0.5);
-    else {
-      if (argc == 3)
-        fullness = 0.5;
-      else
-        fullness = strtod(argv[3], nullptr);
-      superDTest(argv[2], 15, fullness);
-    }
-    return 0;
+      filename = "trebol";
+    if (argc > 3)
+      fullness = strtod(argv[3], nullptr);
+    superDTest();
+  } else {
+
+    // First argument treated as filename
+    filename = type;
+    if (argc >= 3)
+      resolution = atoi(argv[2]);
+    if (argc >= 4)
+      scaling = strtod(argv[3], nullptr);
+    if (argc >= 5)
+      ribbon_length = strtod(argv[4], nullptr);
+
+    // surfaceTest("sb", std::make_shared<SurfaceSideBased>());
+    // surfaceTest("cb", std::make_shared<SurfaceCornerBased>());
+    // surfaceTest("gc", std::make_shared<SurfaceGeneralizedCoons>());
+    // surfaceTest("cr", std::make_shared<SurfaceCompositeRibbon>());
+    // surfaceTest("mp", std::make_shared<SurfaceMidpoint>());
+    surfaceTest("mc", std::make_shared<SurfaceMidpointCoons>());
+    // surfaceTest("pp", std::make_shared<SurfacePolar>());
+    // surfaceTest("ns", std::make_shared<SurfaceNSided>());
+    // surfaceTest("cc", std::make_shared<SurfaceC0Coons>());
+    // surfaceTest("ep", std::make_shared<SurfaceElastic>());
+    // surfaceTest("hp", std::make_shared<SurfaceHarmonic>());
+    // surfaceTest("bp", std::make_shared<SurfaceBiharmonic>());
   }
-
-  if (argc >= 3)
-    res = atoi(argv[2]);
-  if (argc >= 4)
-    scaling = strtod(argv[3], nullptr);
-  if (argc >= 5)
-    ribbon_length = strtod(argv[4], nullptr);
-
-  ribbonTest(filename, res, scaling, ribbon_length);
-
-  // surfaceTest(filename, "sb", res, std::make_shared<SurfaceSideBased>());
-  // surfaceTest(filename, "cb", res, std::make_shared<SurfaceCornerBased>());
-  // surfaceTest(filename, "gc", res, std::make_shared<SurfaceGeneralizedCoons>());
-  // surfaceTest(filename, "cr", res, std::make_shared<SurfaceCompositeRibbon>());
-  // surfaceTest(filename, "mp", res, std::make_shared<SurfaceMidpoint>());
-  surfaceTest(filename, "mc", res, std::make_shared<SurfaceMidpointCoons>());
-  // surfaceTest(filename, "pp", res, std::make_shared<SurfacePolar>());
-  // surfaceTest(filename, "ns", res, std::make_shared<SurfaceNSided>());
-  // surfaceTest(filename, "cc", res, std::make_shared<SurfaceC0Coons>());
-  // surfaceTest(filename, "ep", res, std::make_shared<SurfaceElastic>());
-  // surfaceTest(filename, "hp", res, std::make_shared<SurfaceHarmonic>());
-  surfaceTest(filename, "bp", res, std::make_shared<SurfaceBiharmonic>());
-
-  return 0;
 }
