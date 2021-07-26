@@ -2,12 +2,15 @@
 
 #include "geometry.hh"
 
+#include <functional>
 #include <optional>
 
 namespace Transfinite {
 
 using namespace Geometry;
 
+using NormalFence = std::function<Vector3D(double)>;
+  
 class Domain;
 class Parameterization;
 class Ribbon;
@@ -26,6 +29,7 @@ public:
   void setRibbonMultiplier(size_t i, double m);
   std::optional<Vector3D> ribbonHandler(size_t i) const;
   void setRibbonHandler(size_t i, const Vector3D &h);
+  void overrideNormalFence(size_t i, const std::shared_ptr<NormalFence> &fence);
   void resetRibbon(size_t i);
   virtual void update(size_t i);
   virtual void update();

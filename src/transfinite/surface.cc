@@ -92,6 +92,11 @@ Surface::setRibbonHandler(size_t i, const Vector3D &h) {
   ribbons_[i]->setHandler(h);
 }
 
+void
+Surface::overrideNormalFence(size_t i, const std::shared_ptr<NormalFence> &fence) {
+  ribbons_[i]->overrideNormalFence(fence);
+}
+
 double
 Surface::ribbonMultiplier(size_t i) const {
   return ribbons_[i]->multiplier();

@@ -44,14 +44,4 @@ RibbonNSided::eval(const Point2D &sd) const {
   return p + crossDerivative(sd[0]) * length;
 }
 
-Vector3D
-RibbonNSided::normal(double s) const {
-  double u = inrange(0, s, 1);
-  // Vector3D n1 = rmf_.eval(0), n2 = rmf_.eval(1);
-  // VectorVector der;
-  // curve_->eval(u, 1, der);
-  // TODO
-  return rmf_.eval(u);
-}
-
 } // namespace Transfinite

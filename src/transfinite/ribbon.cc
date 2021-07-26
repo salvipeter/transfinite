@@ -54,6 +54,11 @@ Ribbon::setHandler(const Vector3D &h) {
 }
 
 void
+Ribbon::overrideNormalFence(const std::shared_ptr<NormalFence> &fence) {
+  normal_fence_ = fence;
+}
+
+void
 Ribbon::reset() {
   multiplier_ = 1.0;
   handler_initialized_ = false;
@@ -89,6 +94,8 @@ Ribbon::eval(const Point2D &sd) const {
 
 Vector3D
 Ribbon::normal(double s) const {
+  if (normal_fence_)
+    return normal_fence_->operator()(s);
   return rmf_.eval(s);
 }
 

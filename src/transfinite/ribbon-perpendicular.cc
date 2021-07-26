@@ -18,7 +18,7 @@ RibbonPerpendicular::update() {
   auto pt = -der[1];
   next_.lock()->curve()->eval(0.0, 1, der);
   auto nt = der[1];
-  auto n0 = rmf_.eval(0.0); auto n1 = rmf_.eval(1.0);
+  auto n0 = normal(0.0);    auto n1 = normal(1.0);
   auto b0 = n0 ^ t0;        auto b1 = n1 ^ t1;
   prev_norm_ = pt.norm();   next_norm_ = nt.norm();
   pt /= prev_norm_;         nt /= next_norm_;
@@ -31,7 +31,7 @@ RibbonPerpendicular::crossDerivative(double s) const {
   VectorVector der;
   curve_->eval(s, 1, der);
   auto t = der[1].normalize();
-  auto n = rmf_.eval(s);
+  auto n = normal(s);
   auto size = prev_norm_ * (1.0 - s) + next_norm_ * s;
   auto alpha = prev_alpha_ * 2.0 * (s - 1.0) * (s - 0.5) + next_alpha_ * 2.0 * s * (s - 0.5)
     - 4.0 * s * (s - 1.0);
