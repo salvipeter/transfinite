@@ -11,6 +11,7 @@ add_library(transfinite
     parameterization-barycentric.cc
     parameterization-constrained-barycentric.cc
     parameterization-interconnected.cc
+    parameterization-overlap.cc
     parameterization-parallel.cc
     parameterization-perp-polar.cc
     parameterization-polar.cc

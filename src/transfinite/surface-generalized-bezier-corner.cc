@@ -10,7 +10,6 @@ namespace Transfinite {
 
 using DomainType = DomainRegular;
 using ParamType = ParameterizationConstrainedBarycentric;
-// using ParamType = ParameterizationBarycentric;
 using RibbonType = RibbonDummy;
 
 SurfaceGeneralizedBezierCorner::SurfaceGeneralizedBezierCorner() {
