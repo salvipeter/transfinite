@@ -4,6 +4,7 @@
 #include <cmath>
 #include <limits>
 #include <numeric>
+#include <iterator>
 
 namespace NelderMead {
 

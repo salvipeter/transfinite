@@ -22,32 +22,32 @@
     <ProjectGuid>{D2794688-F7FE-49DD-8A50-973F1395ABB0}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>transfinite</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
@@ -94,6 +94,7 @@
       <PreprocessorDefinitions>WIN32;_USE_MATH_DEFINES;DEBUG;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..;..\geom;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -129,7 +130,8 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;_USE_MATH_DEFINES;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\geom;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..;..\geom;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -150,13 +152,18 @@
     <ClInclude Include="parameterization-bilinear.hh" />
     <ClInclude Include="parameterization-constrained-barycentric.hh" />
     <ClInclude Include="parameterization-interconnected.hh" />
+    <ClInclude Include="parameterization-overlap.hh" />
     <ClInclude Include="parameterization-parallel.hh" />
+    <ClInclude Include="parameterization-perp-polar.hh" />
+    <ClInclude Include="parameterization-polar.hh" />
     <ClInclude Include="parameterization-superd.hh" />
     <ClInclude Include="parameterization.hh" />
     <ClInclude Include="ribbon-compatible-with-handler.hh" />
     <ClInclude Include="ribbon-compatible.hh" />
     <ClInclude Include="ribbon-coons.hh" />
     <ClInclude Include="ribbon-dummy.hh" />
+    <ClInclude Include="ribbon-nsided.hh" />
+    <ClInclude Include="ribbon-perpendicular.hh" />
     <ClInclude Include="ribbon.hh" />
     <ClInclude Include="rmf.hh" />
     <ClInclude Include="surface-biharmonic.hh" />
@@ -168,7 +175,10 @@
     <ClInclude Include="surface-generalized-bezier.hh" />
     <ClInclude Include="surface-generalized-coons.hh" />
     <ClInclude Include="surface-harmonic.hh" />
+    <ClInclude Include="surface-hybrid.hh" />
     <ClInclude Include="surface-midpoint-coons.hh" />
+    <ClInclude Include="surface-nsided.hh" />
+    <ClInclude Include="surface-polar.hh" />
     <ClInclude Include="surface-side-based.hh" />
     <ClInclude Include="surface-midpoint.hh" />
     <ClInclude Include="surface-spatch.hh" />
@@ -185,12 +195,17 @@
     <ClCompile Include="parameterization-bilinear.cc" />
     <ClCompile Include="parameterization-constrained-barycentric.cc" />
     <ClCompile Include="parameterization-interconnected.cc" />
+    <ClCompile Include="parameterization-overlap.cc" />
     <ClCompile Include="parameterization-parallel.cc" />
+    <ClCompile Include="parameterization-perp-polar.cc" />
+    <ClCompile Include="parameterization-polar.cc" />
     <ClCompile Include="parameterization-superd.cc" />
     <ClCompile Include="parameterization.cc" />
     <ClCompile Include="ribbon-compatible-with-handler.cc" />
     <ClCompile Include="ribbon-compatible.cc" />
     <ClCompile Include="ribbon-coons.cc" />
+    <ClCompile Include="ribbon-nsided.cc" />
+    <ClCompile Include="ribbon-perpendicular.cc" />
     <ClCompile Include="ribbon.cc" />
     <ClCompile Include="rmf.cc" />
     <ClCompile Include="surface-biharmonic.cc" />
@@ -202,7 +217,10 @@
     <ClCompile Include="surface-generalized-bezier.cc" />
     <ClCompile Include="surface-generalized-coons.cc" />
     <ClCompile Include="surface-harmonic.cc" />
+    <ClCompile Include="surface-hybrid.cc" />
     <ClCompile Include="surface-midpoint-coons.cc" />
+    <ClCompile Include="surface-nsided.cc" />
+    <ClCompile Include="surface-polar.cc" />
     <ClCompile Include="surface-side-based.cc" />
     <ClCompile Include="surface-midpoint.cc" />
     <ClCompile Include="surface-spatch.cc" />
