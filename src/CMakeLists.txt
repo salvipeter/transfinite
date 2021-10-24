@@ -22,5 +22,6 @@ find_package(Eigen3 3.3 REQUIRED NO_MODULE)
 include_directories(${EIGEN3_INCLUDE_DIR})
 
 add_subdirectory(transfinite)
+add_subdirectory(utils)
 add_subdirectory(test)
 add_subdirectory(geom)
