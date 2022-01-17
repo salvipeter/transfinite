@@ -13,6 +13,7 @@ using ParamType = ParameterizationConstrainedBarycentric;
 using RibbonType = RibbonCompatibleWithHandler;
 
 SurfaceMidpointCoons::SurfaceMidpointCoons() {
+  domain_ = std::make_shared<DomainType>();
   param_ = std::make_shared<ParamType>();
   param_->setDomain(domain_);
 }

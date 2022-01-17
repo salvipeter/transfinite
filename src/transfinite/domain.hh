@@ -24,11 +24,12 @@ public:
   void setSides(const CurveVector &curves);
   virtual bool update();
   size_t size() const;
-  virtual const Point2DVector &parameters(size_t resolution) const;
+  virtual size_t meshSize(size_t resolution) const;
+  const Point2DVector &parameters(size_t resolution) const;
   virtual TriMesh meshTopology(size_t resolution) const;
   virtual bool onEdge(size_t resolution, size_t index) const;
   const Point2D &center() const;
-  Point2D edgePoint(size_t i, double s) const;
+  virtual Point2D edgePoint(size_t i, double s) const;
   double edgeLength(size_t i) const;
   double angle(size_t i) const;
   const Point2DVector &vertices() const;
@@ -40,6 +41,7 @@ protected:
   size_t next(size_t i, size_t j = 1) const { return (i + j) % n_; }
   size_t prev(size_t i, size_t j = 1) const { return (i + n_ - j) % n_; }
   virtual void computeCenter();
+  virtual Point2DVector parametersImpl(size_t resolution) const;
 
   CurveVector curves_;
   size_t n_;

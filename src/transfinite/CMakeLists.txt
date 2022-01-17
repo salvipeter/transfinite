@@ -4,11 +4,13 @@ add_library(transfinite
   rmf.cc
   domain.cc
     domain-regular.cc
+    domain-circle.cc
     domain-circular.cc
     domain-angular.cc
   parameterization.cc
     parameterization-bilinear.cc
     parameterization-barycentric.cc
+    parameterization-circular.cc
     parameterization-constrained-barycentric.cc
     parameterization-interconnected.cc
     parameterization-overlap.cc

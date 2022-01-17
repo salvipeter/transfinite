@@ -1,15 +1,19 @@
 #include <cassert>
 
-#include "domain-regular.hh"
-#include "parameterization-constrained-barycentric.hh"
+#include "domain-circle.hh"
+#include "parameterization-circular.hh"
+// #include "domain-regular.hh"
+// #include "parameterization-constrained-barycentric.hh"
 #include "ribbon-dummy.hh"
 #include "surface-generalized-bezier-corner.hh"
 #include "utilities.hh"
 
 namespace Transfinite {
 
-using DomainType = DomainRegular;
-using ParamType = ParameterizationConstrainedBarycentric;
+using DomainType = DomainCircle;
+using ParamType = ParameterizationCircular;
+// using DomainType = DomainRegular;
+// using ParamType = ParameterizationConstrainedBarycentric;
 using RibbonType = RibbonDummy;
 
 SurfaceGeneralizedBezierCorner::SurfaceGeneralizedBezierCorner() {

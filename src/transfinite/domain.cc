@@ -82,21 +82,28 @@ Domain::size() const {
   return n_;
 }
 
-static size_t meshSize(size_t n, size_t resolution) {
-  if (n == 3)
+size_t
+Domain::meshSize(size_t resolution) const {
+  if (n_ == 3)
     return (resolution + 1) * (resolution + 2) / 2;
-  if (n == 4)
+  if (n_ == 4)
     return (resolution + 1) * (resolution + 1);
-  return 1 + n * resolution * (resolution + 1) / 2;
+  return 1 + n_ * resolution * (resolution + 1) / 2;
 }
 
 const Point2DVector &
 Domain::parameters(size_t resolution) const {
-  size_t size = meshSize(n_, resolution);
+  size_t size = meshSize(resolution);
   if (parameters_.size() == size)
     return parameters_;
-  parameters_.clear();
-  parameters_.reserve(size);
+  parameters_ = parametersImpl(resolution);
+  return parameters_;
+}
+
+Point2DVector
+Domain::parametersImpl(size_t resolution) const {
+  Point2DVector parameters;
+  parameters.reserve(meshSize(resolution));
 
   if (n_ == 3) {
     for (size_t j = 0; j <= resolution; ++j) {
@@ -105,7 +112,7 @@ Domain::parameters(size_t resolution) const {
       auto q = vertices_[1] * u + vertices_[2] * (1 - u);
       for (size_t k = 0; k <= j; ++k) {
         double v = j == 0 ? 1.0 : (double)k / j;
-        parameters_.push_back(p * (1 - v) + q * v);
+        parameters.push_back(p * (1 - v) + q * v);
       }
     }
   } else if (n_ == 4) {
@@ -115,11 +122,11 @@ Domain::parameters(size_t resolution) const {
       auto q = vertices_[3] * (1 - u) + vertices_[2] * u;
       for (size_t k = 0; k <= resolution; ++k) {
         double v = (double)k / resolution;
-        parameters_.push_back(p * (1 - v) + q * v);
+        parameters.push_back(p * (1 - v) + q * v);
       }
     }
   } else { // n_ > 4
-    parameters_.push_back(center_);
+    parameters.push_back(center_);
     for (size_t j = 1; j <= resolution; ++j) {
       double u = (double)j / (double)resolution;
       for (size_t k = 0; k < n_; ++k)
@@ -127,17 +134,17 @@ Domain::parameters(size_t resolution) const {
           double v = (double)i / (double)j;
           Point2D ep = vertices_[prev(k)] * (1.0 - v) + vertices_[k] * v;
           Point2D p = center_ * (1.0 - u) + ep * u;
-          parameters_.push_back(p);
+          parameters.push_back(p);
         }
     }
   }
-  return parameters_;
+  return parameters;
 }
 
 bool
 Domain::onEdge(size_t resolution, size_t index) const {
   if (n_ == 3) {
-    if (index >= meshSize(3, resolution) - resolution - 1)
+    if (index >= meshSize(resolution) - resolution - 1)
       return true;
     auto issquare = [](size_t n) {
                       size_t root = std::round(std::sqrt(n));
@@ -150,13 +157,13 @@ Domain::onEdge(size_t resolution, size_t index) const {
     return index <= resolution || index >= (resolution + 1) * resolution ||
       index % (resolution + 1) == 0 || index % (resolution + 1) == resolution;
   }
-  return index >= meshSize(n_, resolution) - n_ * resolution;
+  return index >= meshSize(resolution) - n_ * resolution;
 }
 
 TriMesh
 Domain::meshTopology(size_t resolution) const {
   TriMesh mesh;
-  mesh.resizePoints(meshSize(n_, resolution));
+  mesh.resizePoints(meshSize(resolution));
 
   if (n_ == 3) {
     size_t prev = 0, current = 1;
