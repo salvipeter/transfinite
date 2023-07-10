@@ -69,7 +69,7 @@ SurfaceSPatch::setupLoop() {
       ++index[ip];
     }
     pv.push_back(net_[index]);
-    curves.push_back(std::make_shared<BSCurve>(pv));
+    curves.push_back(std::make_shared<BSplineCurve>(BSCurve(pv)));
   }
   setCurves(curves);
 

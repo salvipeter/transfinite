@@ -1,6 +1,6 @@
 #pragma once
 
-#include "geometry.hh"
+#include "curves.hh"
 
 namespace Transfinite {
 
@@ -8,7 +8,7 @@ using namespace Geometry;
 
 class RMF {
 public:
-  void setCurve(const std::shared_ptr<BSCurve> &c);
+  void setCurve(const std::shared_ptr<Curve> &c);
   void setStart(const Vector3D &start);
   void setEnd(const Vector3D &end);
   void update();
@@ -29,7 +29,7 @@ private:
   Frame nextFrame(const Frame &prev, double u) const;
 
   const static size_t resolution_;
-  std::shared_ptr<BSCurve> curve_;
+  std::shared_ptr<Curve> curve_;
   Vector3D start_, end_;
   std::vector<Frame> frames_;
   double angleCorrection_;

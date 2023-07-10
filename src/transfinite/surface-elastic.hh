@@ -17,7 +17,7 @@ protected:
   virtual std::shared_ptr<Ribbon> newRibbon() const override;
 
 private:
-  const double domain_tolerance;
+  double domain_tolerance;
 };
 
 } // namespace Transfinite

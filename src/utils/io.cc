@@ -31,7 +31,7 @@ CurveVector readLOP(std::string filename) {
     cpts.resize(nc);
     for (size_t j = 0; j < nc; ++j)
       f >> cpts[j][0] >> cpts[j][1] >> cpts[j][2];
-    result.push_back(std::make_shared<BSCurve>(deg, knots, cpts));
+    result.push_back(std::make_shared<BSplineCurve>(BSCurve(deg, knots, cpts)));
   }
 
   return result;

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "geometry.hh"
+#include "curves.hh"
 
 #include <cmath>
 
@@ -20,7 +20,7 @@ class Domain {
 public:
   Domain();
   virtual ~Domain();
-  void setSide(size_t i, const std::shared_ptr<BSCurve> &curve);
+  void setSide(size_t i, const std::shared_ptr<Curve> &curve);
   void setSides(const CurveVector &curves);
   virtual bool update();
   size_t size() const;

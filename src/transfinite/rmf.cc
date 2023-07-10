@@ -9,7 +9,7 @@ namespace Transfinite {
 const size_t RMF::resolution_ = 100;
 
 void
-RMF::setCurve(const std::shared_ptr<BSCurve> &c) {
+RMF::setCurve(const std::shared_ptr<Curve> &c) {
   curve_ = c;
 }
 

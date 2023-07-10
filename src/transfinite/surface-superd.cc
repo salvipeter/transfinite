@@ -133,7 +133,7 @@ SurfaceSuperD::setupLoop() {
     auto base = generateBase(i);
     PointVector pv;
     pv.assign(base.begin(), base.end());
-    curves.push_back(std::make_shared<BSCurve>(pv));
+    curves.push_back(std::make_shared<BSplineCurve>(BSCurve(pv)));
   }
   setCurves(curves);
 

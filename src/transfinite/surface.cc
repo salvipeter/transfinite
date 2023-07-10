@@ -24,7 +24,7 @@ Surface::setGamma(bool use_gamma) {
 }
 
 void
-Surface::setCurve(size_t i, const std::shared_ptr<BSCurve> &curve) {
+Surface::setCurve(size_t i, const std::shared_ptr<Curve> &curve) {
   if (n_ <= i) {
     ribbons_.resize(i + 1);
     n_ = i + 1;
@@ -52,8 +52,6 @@ Surface::setupLoop() {
   // - propagate adjacency information
   // - normalize curves
   // - reverse curves when needed (and normalize once again, for safety)
-  for (size_t i = 0; i < n_; ++i)
-    ribbons_[i]->curve()->normalize();
   for (size_t i = 0; i < n_; ++i) {
     std::shared_ptr<Ribbon> rp = ribbons_[prev(i)], rn = ribbons_[next(i)];
     ribbons_[i]->setNeighbors(rp, rn);
@@ -66,18 +64,14 @@ Surface::setupLoop() {
       double end_to_end = (r_end - rn_end).norm();
       double start_to_start = (r_start - rn_start).norm();
       double start_to_end = (r_start - rn_end).norm();
-      if (std::min(start_to_start, start_to_end) < std::min(end_to_start, end_to_end)) {
+      if (std::min(start_to_start, start_to_end) < std::min(end_to_start, end_to_end))
         ribbons_[i]->curve()->reverse();
-        ribbons_[i]->curve()->normalize();
-      }
     } else {
       Point3D r_start = ribbons_[i]->curve()->eval(0.0);
       Point3D r_end = ribbons_[i]->curve()->eval(1.0);
       Point3D rp_end = rp->curve()->eval(1.0);
-      if ((r_end - rp_end).norm() < (r_start - rp_end).norm()) {
+      if ((r_end - rp_end).norm() < (r_start - rp_end).norm())
         ribbons_[i]->curve()->reverse();
-        ribbons_[i]->curve()->normalize();
-      }
     }
   }
 }

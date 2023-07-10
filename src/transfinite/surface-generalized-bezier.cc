@@ -148,7 +148,7 @@ SurfaceGeneralizedBezier::setupLoop() {
   for (size_t i = 0; i < n_; ++i) {
     for (size_t j = 0; j <= degree_; ++j)
       cpts[j] = nets_[i][j][0];
-    curves.push_back(std::make_shared<BSCurve>(degree_, knots, cpts));
+    curves.push_back(std::make_shared<BSplineCurve>(BSCurve(degree_, knots, cpts)));
   }
   setCurves(curves);
 

@@ -158,7 +158,7 @@ SurfaceGeneralizedBezier fitWithOriginal(const SurfaceGeneralizedBezier &origina
     }
     return 0;
   };
-  auto setWeight = [&A,&b,n,d,l,bcp,surf,findControlPoint]
+  auto setWeight = [&A,&b,bcp,surf,findControlPoint]
     (size_t j, size_t side, size_t col, size_t row, double w) {
     size_t i = findControlPoint(side, col, row);
     if (i > bcp)

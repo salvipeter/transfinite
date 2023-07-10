@@ -14,7 +14,7 @@ DomainCircular::update() {
 
   DoubleVector lengths; lengths.reserve(n_);
   std::transform(curves_.begin(), curves_.end(), std::back_inserter(lengths),
-                 [](const std::shared_ptr<BSCurve> &c) { return c->arcLength(0.0, 1.0); });
+                 [](const std::shared_ptr<Curve> &c) { return c->arcLength(0.0, 1.0); });
   double normalizer = 2.0 * M_PI / std::accumulate(lengths.begin(), lengths.end(), 0.0);
   std::transform(lengths.begin(), lengths.end(), lengths.begin(),
                  [normalizer](double x) { return x * normalizer; });

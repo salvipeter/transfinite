@@ -16,14 +16,14 @@ RibbonCoons::update() {
   auto p1 = left_->eval(0.0);
   auto q1 = right_->eval(1.0);
   if (right2 == left_)          // 3-sided
-    top_ = std::make_shared<BSCurve>(PointVector{p1}); // 0-degree Bezier curve
+    top_ = std::make_shared<BSplineCurve>(BSCurve(PointVector{p1})); // 0-degree Bezier curve
   else {
     VectorVector der;
     left2->eval(1.0, 1, der);
     auto p2 = p1 - der[1] / 3.0;
     right2->eval(0.0, 1, der);
     auto q2 = q1 + der[1] / 3.0;
-    top_ = std::make_shared<BSCurve>(PointVector{q1, q2, p2, p1});
+    top_ = std::make_shared<BSplineCurve>(BSCurve(PointVector{q1, q2, p2, p1}));
   }
   bl_ = curve_->eval(0.0);
   br_ = curve_->eval(1.0);

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "geometry.hh"
+#include "curves.hh"
 
 #include <functional>
 #include <optional>
@@ -22,7 +22,7 @@ public:
   virtual ~Surface();
   Surface &operator=(const Surface &) = default;
   void setGamma(bool use_gamma);
-  void setCurve(size_t i, const std::shared_ptr<BSCurve> &curve);
+  void setCurve(size_t i, const std::shared_ptr<Curve> &curve);
   void setCurves(const CurveVector &curves);
   virtual void setupLoop();
   double ribbonMultiplier(size_t i) const;

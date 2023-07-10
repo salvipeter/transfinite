@@ -14,9 +14,9 @@ class Ribbon {
 public:
   Ribbon();
   virtual ~Ribbon();
-  std::shared_ptr<const BSCurve> curve() const;
-  std::shared_ptr<BSCurve> curve();
-  void setCurve(const std::shared_ptr<BSCurve> &curve);
+  std::shared_ptr<const Curve> curve() const;
+  std::shared_ptr<Curve> curve();
+  void setCurve(const std::shared_ptr<Curve> &curve);
   void setNeighbors(const std::shared_ptr<Ribbon> &prev, const std::shared_ptr<Ribbon> &next);
   double multiplier() const;
   void setMultiplier(double m);
@@ -30,7 +30,7 @@ public:
   Vector3D normal(double s) const;
 
 protected:
-  std::shared_ptr<BSCurve> curve_;
+  std::shared_ptr<Curve> curve_;
   std::weak_ptr<Ribbon> prev_, next_;
   RMF rmf_;
   std::shared_ptr<NormalFence> normal_fence_;

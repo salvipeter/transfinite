@@ -107,7 +107,7 @@ void showDeviations(const std::shared_ptr<Surface> &surf) {
     for (size_t i = 0; i < n; ++i) {
       for (size_t j = 0; j <= degree; ++j)
         cpts[j] = bs->controlPoint(i, j, 1);
-      inner_curves.push_back(std::make_shared<BSCurve>(degree, knots, cpts));
+      inner_curves.push_back(std::make_shared<BSplineCurve>(BSCurve(degree, knots, cpts)));
     }
   }
 
@@ -460,9 +460,9 @@ void classATest() {
     Point3D pb = c->eval(1.0, 1, der);
     Vector3D vb = der[1];
     PointVector pv = {pa, pa + va / 3.0, pb - vb / 3.0, pb};
-    normal.push_back(std::make_shared<BSCurve>(pv));
+    normal.push_back(std::make_shared<BSplineCurve>(BSCurve(pv)));
     BCurve bc; bc.fitClassA(14, pa, va, pb, vb);
-    class_a.push_back(std::make_shared<BSCurve>(bc.controlPoints()));
+    class_a.push_back(std::make_shared<BSplineCurve>(BSCurve(bc.controlPoints())));
   }
 
   SurfaceCornerBased surf;

@@ -16,7 +16,7 @@ DomainAngular::update() {
   // Compute lengths
   DoubleVector lengths; lengths.reserve(curves_.size());
   std::transform(curves_.begin(), curves_.end(), std::back_inserter(lengths),
-                 [](const std::shared_ptr<BSCurve> &c) { return c->arcLength(0.0, 1.0); });
+                 [](const std::shared_ptr<Curve> &c) { return c->arcLength(0.0, 1.0); });
   double length_sum = std::accumulate(lengths.begin(), lengths.end(), 0.0);
 
   // Compute angles

@@ -8,18 +8,18 @@ Ribbon::Ribbon() : multiplier_(1.0), handler_initialized_(false) {
 Ribbon::~Ribbon() {
 }
 
-std::shared_ptr<const BSCurve>
+std::shared_ptr<const Curve>
 Ribbon::curve() const {
   return curve_;
 }
 
-std::shared_ptr<BSCurve>
+std::shared_ptr<Curve>
 Ribbon::curve() {
   return curve_;
 }
 
 void
-Ribbon::setCurve(const std::shared_ptr<BSCurve> &curve) {
+Ribbon::setCurve(const std::shared_ptr<Curve> &curve) {
   curve_ = curve;
 }
 

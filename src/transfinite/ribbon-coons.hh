@@ -12,7 +12,7 @@ public:
   virtual Point3D eval(const Point2D &sd) const override;
 
 protected:
-  std::shared_ptr<BSCurve> left_, right_, top_;
+  std::shared_ptr<Curve> left_, right_, top_;
   Point3D bl_, br_, tl_, tr_;
 };
 
