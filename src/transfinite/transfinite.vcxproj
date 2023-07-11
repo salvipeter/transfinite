@@ -145,11 +145,13 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="domain-angular.hh" />
+    <ClInclude Include="domain-circle.hh" />
     <ClInclude Include="domain-circular.hh" />
     <ClInclude Include="domain-regular.hh" />
     <ClInclude Include="domain.hh" />
     <ClInclude Include="parameterization-barycentric.hh" />
     <ClInclude Include="parameterization-bilinear.hh" />
+    <ClInclude Include="parameterization-circular.hh" />
     <ClInclude Include="parameterization-constrained-barycentric.hh" />
     <ClInclude Include="parameterization-interconnected.hh" />
     <ClInclude Include="parameterization-overlap.hh" />
@@ -188,11 +190,13 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="domain-angular.cc" />
+    <ClCompile Include="domain-circle.cc" />
     <ClCompile Include="domain-circular.cc" />
     <ClCompile Include="domain-regular.cc" />
     <ClCompile Include="domain.cc" />
     <ClCompile Include="parameterization-barycentric.cc" />
     <ClCompile Include="parameterization-bilinear.cc" />
+    <ClCompile Include="parameterization-circular.cc" />
     <ClCompile Include="parameterization-constrained-barycentric.cc" />
     <ClCompile Include="parameterization-interconnected.cc" />
     <ClCompile Include="parameterization-overlap.cc" />
