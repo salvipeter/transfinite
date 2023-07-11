@@ -64,7 +64,7 @@ namespace {
 Point3D SurfacePolar::polarRibbon(size_t i, const Point2D &pd) const {
   // C0 Bezier displacement version
   double psi = pd[0], d = pd[1];
-  d = inrange(0, d, 1);         // avoid -epsilon and 1+epsilon
+  d = std::clamp(d, 0.0, 1.0);         // avoid -epsilon and 1+epsilon
   size_t i1 = next(i);
 
   // 1. Linear base interpolant
@@ -80,7 +80,7 @@ Point3D SurfacePolar::polarRibbon(size_t i, const Point2D &pd) const {
   double L1 = D1.norm(), L2 = D2.norm();
   D1.normalize(); D2.normalize();
   Vector3D N = D1 ^ D2, D1p = N ^ D1;
-  double angle = psi * acos(inrange(-1, D1 * D2, 1));
+  double angle = psi * acos(std::clamp(D1 * D2, -1.0, 1.0));
   Vector3D D = D1 * cos(angle) + D1p * sin(angle);
   Point2D p = domain_->vertices()[i], q = param_->inverse(i, Point2D(psi, 0));
   double l = (q - p).norm();
@@ -117,7 +117,7 @@ Point3D SurfacePolar::polarRibbon(size_t i, const Point2D &pd) const {
 
 // Point3D SurfacePolar::polarRibbon(size_t i, const Point2D &pd) const {
 //   double psi = pd[0], d = pd[1];
-//   d = inrange(0, d, 1)          // avoid -epsilon and 1+epsilon
+//   d = std::clamp(d, 0.0, 1.0)          // avoid -epsilon and 1+epsilon
 //   double d1 = 1.0 - d;
 //   return ribbons_[i]->curve()->eval(d) * hermite(0, psi) +
 //     ribbons_[i]->crossDerivative(d) * d1 * hermite(1, psi) +

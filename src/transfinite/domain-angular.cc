@@ -28,7 +28,7 @@ DomainAngular::update() {
     Vector3D v1 = -der[1].normalize();
     curves_[next(i)]->eval(0.0, 1, der);
     Vector3D v2 = der[1].normalize();
-    angles.push_back(std::acos(inrange(-1, v1 * v2, 1)));
+    angles.push_back(std::acos(std::clamp(v1 * v2, -1.0, 1.0)));
     angle_sum += angles.back();
   }
   double angle_multiplier = (n_ - 2) * M_PI / angle_sum;

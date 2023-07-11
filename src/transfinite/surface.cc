@@ -154,8 +154,8 @@ Point3D
 Surface::cornerCorrection(size_t i, double s1, double s2) const {
   // Assumes that both s1 and s2 are 0 at the corner,
   // s1 increases towards corner (i-1), and s2 towards corner (i+1).
-  s1 = inrange(0, gamma(s1), 1);
-  s2 = inrange(0, gamma(s2), 1);
+  s1 = std::clamp(gamma(s1), 0.0, 1.0);
+  s2 = std::clamp(gamma(s2), 0.0, 1.0);
   return corner_data_[i].point
     + corner_data_[i].tangent1 * s1
     + corner_data_[i].tangent2 * s2
@@ -164,7 +164,7 @@ Surface::cornerCorrection(size_t i, double s1, double s2) const {
 
 Point3D
 Surface::sideInterpolant(size_t i, double si, double di) const {
-  si = inrange(0, si, 1);
+  si = std::clamp(si, 0.0, 1.0);
   di = std::max(gamma(di), 0.0);
   return ribbons_[i]->eval(Point2D(si, di));
 }

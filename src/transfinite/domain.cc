@@ -71,7 +71,7 @@ Domain::intersectEdgeWithRay(size_t i, const Point2D &p, const Vector2D &v, Poin
   if (t < -epsilon || t > 1 + epsilon)
     return false;
 
-  t = inrange(0.0, t, 1.0);
+  t = std::clamp(t, 0.0, 1.0);
   result = q1 * (1 - t) + q2 * t;
 
   return true;
@@ -225,7 +225,7 @@ double
 Domain::angle(size_t i) const {
   Vector2D v1 = vertices_[prev(i)] - vertices_[i];
   Vector2D v2 = vertices_[next(i)] - vertices_[i];
-  return std::acos(inrange(-1, v1.normalize() * v2.normalize(), 1));
+  return std::acos(std::clamp(v1.normalize() * v2.normalize(), -1.0, 1.0));
 }
 
 void

@@ -28,7 +28,7 @@ ParameterizationPerpPolar::mapToRibbon(size_t i, const Point2D &uv) const {
 
   Vector2D v = uv - origin;
   double d = v.norm() / domain_->edgeLength(i);
-  double phi = std::acos(inrange(-1, vbase.normalize() * v.normalize(), 1));
+  double phi = std::acos(std::clamp(vbase.normalize() * v.normalize(), -1.0, 1.0));
 
   if (p[0] < 0)
     return Point2D(-phi, d);

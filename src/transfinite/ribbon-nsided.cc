@@ -18,7 +18,7 @@ RibbonNSided::update() {
 Vector3D
 RibbonNSided::crossDerivative(double s) const {
   Vector3D n = normal(s);
-  double u = inrange(0, s, 1);
+  double u = std::clamp(s, 0.0, 1.0);
   VectorVector der;
   curve_->eval(u, 1, der);
   Vector3D &d = der[1].normalize();
@@ -38,7 +38,7 @@ RibbonNSided::eval(const Point2D &sd) const {
   // s ranges from -pi to 1+pi, where values <0 and >1 are meant as angles
   // d is the ratio of the sweep in the domain to the length of the base side
   // d is negative for points "behind" the ribbon
-  double u = inrange(0, sd[0], 1);
+  double u = std::clamp(sd[0], 0.0, 1.0);
   Point3D p = curve_->eval(u);
   double length = sd[1] * base_length_;
   return p + crossDerivative(sd[0]) * length;

@@ -17,7 +17,7 @@ ParameterizationPolar::mapToRibbon(size_t i, const Point2D &uv) const {
   Vector2D v2 = uv - domain_->vertices()[i];
   if (v2.norm() < epsilon)
     return Point2D(0.0, 1.0);
-  double phi = std::acos(inrange(-1, v1.normalize() * v2.normalize(), 1));
+  double phi = std::acos(std::clamp(v1.normalize() * v2.normalize(), -1.0, 1.0));
   return Point2D(phi / domain_->angle(i), barycentric(uv)[i]);
 }
 

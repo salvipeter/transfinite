@@ -14,15 +14,6 @@ affineCombine(const Point3D &p, double x, const Point3D &q) {
   return p * (1 - x) + q * x;
 }
 
-double
-inrange(double min, double x, double max) {
-  if (x < min)
-    return min;
-  if (x > max)
-    return max;
-  return x;
-}
-
 size_t
 binomial(size_t n, size_t k) {
   if (k > n)

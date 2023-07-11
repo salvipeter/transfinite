@@ -32,7 +32,7 @@ SurfaceElastic::eval(const Point2D &uv) const {
   Matrix3d A = Matrix3d::Zero(), b = Matrix3d::Zero();
 
   for (size_t i = 0; i < n_; ++i) {
-    auto s = inrange(0, sds[i][0], 1);
+    auto s = std::clamp(sds[i][0], 0.0, 1.0);
     auto boundary_point = affineCombine(dpoly[prev(i)], s, dpoly[i]);
     auto ui = boundary_point[0], vi = boundary_point[1];
     auto di = (uv - boundary_point).norm();

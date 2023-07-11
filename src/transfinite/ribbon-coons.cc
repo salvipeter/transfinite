@@ -40,8 +40,8 @@ RibbonCoons::crossDerivative(double) const {
 
 Point3D
 RibbonCoons::eval(const Point2D &sd) const {
-  auto s = inrange(0, sd[0], 1), d = inrange(0, sd[1], 1);
-  auto s1 = inrange(0, 1 - s, 1), d1 = inrange(0, 1 - d, 1);
+  auto s = std::clamp(sd[0], 0.0, 1.0), d = std::clamp(sd[1], 0.0, 1.0);
+  auto s1 = std::clamp(1 - s, 0.0, 1.0), d1 = std::clamp(1 - d, 0.0, 1.0);
   auto p1 = curve_->eval(s) * d1 + top_->eval(s1) * d;
   auto p2 = left_->eval(d1) * s1 + right_->eval(d) * s;
   auto p12 = (bl_ * s1 + br_ * s) * d1 + (tl_ * s1 + tr_ * s) * d;
