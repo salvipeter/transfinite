@@ -234,7 +234,7 @@ SurfaceBiharmonic::generateDomain(size_t resolution) const {
   double length = 0;
   for (size_t i = 0; i < domain_->size(); ++i) {
     auto curve = ribbons_[i]->curve();
-    length += curve->arcLength(curve->basis().low(), curve->basis().high());
+    length += curve->arcLength(0.0, 1.0);
     for (size_t j = 0; j < resolution; ++j) {
       double u = (double)j / resolution;
       points3d.push_back(curve->eval(u));

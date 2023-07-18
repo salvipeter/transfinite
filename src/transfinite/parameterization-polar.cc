@@ -1,3 +1,5 @@
+#include <algorithm>
+
 #include "domain.hh"
 #include "utilities.hh"
 #include "parameterization-polar.hh"
