@@ -194,6 +194,13 @@ void bezierTest() {
   auto surf = std::make_shared<SurfaceGeneralizedBezier>();
   loadBezier("../../models/" + filename + ".gbp", surf.get());
 
+  std::cout << surf->domain()->size() << ' ' << surf->degree() << std::endl;
+  std::cout << surf->centralControlPoint() << std::endl;
+  for (size_t i = 0; i < surf->domain()->size(); ++i)
+    for (size_t j = 0; j < surf->degree(); ++j)
+      std::cout << surf->controlPoint(i, j, 0) << std::endl;
+  return;
+
   std::chrono::steady_clock::time_point begin, end;
   begin = std::chrono::steady_clock::now();
   surf->eval(100).writeOBJ("../../models/" + filename + "-GB.obj");
