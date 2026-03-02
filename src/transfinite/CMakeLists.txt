@@ -49,3 +49,8 @@ add_library(transfinite
 if(LIBTRIANGLE_FOUND)
   target_compile_definitions(transfinite PUBLIC HAVE_LIBTRIANGLE)
 endif()
+
+target_link_libraries(transfinite
+    PUBLIC Eigen3::Eigen
+)
+

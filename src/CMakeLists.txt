@@ -12,8 +12,7 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|(Apple)?Clang")
   set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 endif()
 
-find_package(Eigen3 3.3 REQUIRED NO_MODULE)
-include_directories(${EIGEN3_INCLUDE_DIR})
+find_package(Eigen3 REQUIRED)
 
 add_subdirectory(transfinite)
 add_subdirectory(utils)
